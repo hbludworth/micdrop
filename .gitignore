@@ -1,0 +1,19 @@
+node_modules
+dist
+build
+.build
+.serverless
+.vscode
+*.zip
+.DS_Store
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
+mysql
+.eslintcache
+jest_html_reporters.html
+yarn-error.log
+@oare
+.env
+functions
