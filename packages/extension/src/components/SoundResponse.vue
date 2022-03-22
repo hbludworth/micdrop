@@ -99,7 +99,6 @@ export default defineComponent({
     let now = 0;
     let updateCount = 0;
     const handleAnimation = () => {
-      console.log("handled");
       now = Date.now();
       if (analyzer.value && dataArray.value && now > then + 250) {
         analyzer.value.getByteFrequencyData(dataArray.value);

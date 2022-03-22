@@ -1,4 +1,5 @@
 import express from 'express';
+import fileupload from 'express-fileupload';
 import history from 'connect-history-api-fallback';
 import setupRoutes from './setupRoutes';
 
@@ -19,7 +20,7 @@ app.use((req, res, next) => {
   }
 });
 
-app.use(express.static('public'));
+app.use(fileupload());
 
 setupRoutes(app);
 

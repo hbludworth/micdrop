@@ -187,25 +187,33 @@ export default defineComponent({
       }, 1000);
     };
 
-    const submit = () => {
-      const newNode = document.createElement("div");
-      newNode.id = "emailContent";
+    const submit = async () => {
+      if (audioUrl.value) {
+        const newNode = document.createElement("div");
+        newNode.id = "emailContent";
 
-      const inputArea = document.querySelector(".LW-avf");
-      inputArea?.appendChild(newNode);
+        const inputArea = document.querySelector(".LW-avf");
+        inputArea?.appendChild(newNode);
 
-      Vue.use(VueCompositionApi);
-      new Vue({
-        vuetify,
-        render: (h) =>
-          h(BasePlayback, {
-            props: {
-              audioUrl: audioUrl.value,
-            },
-          }),
-      }).$mount("#emailContent");
+        const blob = await (await fetch(audioUrl.value)).blob();
+        const file = new File([blob], "newFile.mp3", {
+          type: "audio/mpeg",
+        });
 
-      dialogOpen.value = false;
+        Vue.use(VueCompositionApi);
+        new Vue({
+          vuetify,
+          render: (h) =>
+            h(BasePlayback, {
+              props: {
+                audioUrl: audioUrl.value,
+                file,
+              },
+            }),
+        }).$mount("#emailContent");
+
+        dialogOpen.value = false;
+      }
     };
 
     return {
