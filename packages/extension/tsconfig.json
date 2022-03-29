@@ -14,7 +14,8 @@
     "types": [
       "webpack-env",
       "firefox-webext-browser",
-      "dom-mediacapture-record"
+      "dom-mediacapture-record",
+      "chrome"
     ],
     "paths": {
       "@/*": ["src/*"]

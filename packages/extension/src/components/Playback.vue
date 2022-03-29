@@ -4,7 +4,7 @@
       <audio :src="audioUrl" controls class="hide-audio" ref="defaultAudio" />
       <v-card
         class="pa-3 mt-6 rounded-pill"
-        width="375"
+        width="385"
         color="blue lighten-3"
         flat
       >
@@ -68,7 +68,7 @@
       <v-spacer />
       <span class="text-overline"> Powered by </span>
       <v-img
-        :src="imageURL"
+        :src="imageURL || require('../assets/MicDropLogo.png')"
         height="15px"
         max-width="80px"
         contain
@@ -203,9 +203,10 @@ export default defineComponent({
     });
 
     require("../assets/MicDropLogo.png");
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const imageURL = chrome.runtime.getURL("img/MicDropLogo.e4787ec6.png");
+    const imageURL =
+      chrome && chrome.runtime
+        ? chrome.runtime.getURL("img/MicDropLogo.e4787ec6.png")
+        : null;
 
     return {
       defaultAudio,
