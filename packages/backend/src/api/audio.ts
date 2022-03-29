@@ -6,17 +6,17 @@ import path from 'path';
 
 const router = express.Router();
 
-router.route('/audio/:uuid').get(async (req, res, next) => {
+router.route('/audio/:uuid').get(async (req, res, _next) => {
   const { uuid } = req.params;
 
-  res.sendFile(path.resolve(`./public/${uuid}.mp3`), (err) => {
+  res.sendFile(path.resolve(`./public/audio/${uuid}.mp3`), (err) => {
     if (err) {
       res.status(500).end();
     }
   });
 });
 
-router.route('/audio').post(async (req, res, next) => {
+router.route('/audio').post(async (req, res, _next) => {
   if (!req.files) {
     res.status(400).end();
     return;
@@ -26,7 +26,7 @@ router.route('/audio').post(async (req, res, next) => {
 
   const uuid = v4();
 
-  fs.writeFile(`./public/${uuid}.mp3`, file.data, (err) => {
+  fs.writeFile(`./public/audio/${uuid}.mp3`, file.data, (err) => {
     if (err) {
       res.status(500).end();
     }

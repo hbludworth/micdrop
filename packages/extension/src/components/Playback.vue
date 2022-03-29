@@ -68,7 +68,7 @@
       <v-spacer />
       <span class="text-overline"> Powered by </span>
       <v-img
-        :src="imageURL || require('../assets/MicDropLogo.png')"
+        src="http://localhost:8081/api/v1/image/logo"
         height="15px"
         max-width="80px"
         contain
@@ -202,12 +202,6 @@ export default defineComponent({
       }
     });
 
-    require("../assets/MicDropLogo.png");
-    const imageURL =
-      chrome && chrome.runtime
-        ? chrome.runtime.getURL("img/MicDropLogo.e4787ec6.png")
-        : null;
-
     return {
       defaultAudio,
       icons,
@@ -218,7 +212,6 @@ export default defineComponent({
       audioLoaded,
       convertTime,
       mediaStream,
-      imageURL,
     };
   },
 });

@@ -103,12 +103,9 @@ import {
   mdiArrowULeftTopBold,
   mdiMicrophone,
 } from "@mdi/js";
-import BasePlayback from "./BasePlayback.vue";
 import Playback from "./Playback.vue";
 import SoundResponse from "./SoundResponse.vue";
-import Vue from "vue";
-import vuetify from "../plugins/vuetify";
-import VueCompositionApi from "@vue/composition-api";
+import axios from "axios";
 
 export default defineComponent({
   name: "MicDropButton",
@@ -189,28 +186,50 @@ export default defineComponent({
 
     const submit = async () => {
       if (audioUrl.value) {
-        const newNode = document.createElement("div");
-        newNode.id = "emailContent";
-
-        const inputArea = document.querySelector(".LW-avf");
-        inputArea?.appendChild(newNode);
-
         const blob = await (await fetch(audioUrl.value)).blob();
         const file = new File([blob], "newFile.mp3", {
           type: "audio/mpeg",
         });
 
-        Vue.use(VueCompositionApi);
-        new Vue({
-          vuetify,
-          render: (h) =>
-            h(BasePlayback, {
-              props: {
-                audioUrl: audioUrl.value,
-                file,
-              },
-            }),
-        }).$mount("#emailContent");
+        const formData = new FormData();
+        formData.append("newFile", file, "newFile.mp3");
+
+        const { data: uuid } = await axios.post(
+          "http://localhost:8081/api/v1/audio",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        const inputArea = document.querySelector(".LW-avf");
+
+        const div = document.createElement("div");
+        div.id = "playback-insertion-point";
+        div.classList.add("playback-insertion-point");
+
+        const link = document.createElement("a");
+        link.href = `http://localhost:8080/playback/${uuid}`;
+        link.target = "_blank";
+
+        const image = document.createElement("img");
+        image.src = "http://localhost:8081/api/v1/image/placeholder";
+        image.width = 400;
+
+        link.appendChild(image);
+
+        div.appendChild(link);
+
+        const uuidPlaceholder = document.createElement("span");
+        uuidPlaceholder.id = "audio-uuid";
+        uuidPlaceholder.hidden = true;
+        uuidPlaceholder.innerHTML = uuid;
+
+        div.appendChild(uuidPlaceholder);
+
+        inputArea?.appendChild(div);
 
         dialogOpen.value = false;
       }
