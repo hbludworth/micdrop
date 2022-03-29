@@ -224,7 +224,7 @@ export default defineComponent({
 
         const uuidPlaceholder = document.createElement("span");
         uuidPlaceholder.id = "audio-uuid";
-        uuidPlaceholder.hidden = true;
+        uuidPlaceholder.style.display = "none";
         uuidPlaceholder.innerHTML = uuid;
 
         div.appendChild(uuidPlaceholder);
