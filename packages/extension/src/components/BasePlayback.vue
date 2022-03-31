@@ -1,8 +1,5 @@
 <template>
-  <div
-    id="playback-insertion-point"
-    class="postcsswrapper playback-insertion-point"
-  >
+  <div id="playback-insertion-point" class="postcsswrapper">
     <v-app>
       <playback :audioUrl="audioUrl" />
       <span id="audio-uuid" hidden>{{ newUuid }}</span>

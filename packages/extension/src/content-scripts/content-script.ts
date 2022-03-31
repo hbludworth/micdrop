@@ -38,23 +38,25 @@ observeMicrophone();
 const receiverObserver = new MutationObserver(() => {
   if (
     document.querySelector('div.a3s.aiL') &&
-    document.querySelector(`[id*="playback-insertion-point"]`) &&
-    !document.querySelector('div.playback-insertion-point')
+    document.querySelector(`[id*="image-placeholder"]`) &&
+    !document.querySelector(`[id*="playback-insertion-point"]`)
   ) {
     receiverObserver.disconnect();
     const newNode = document.createElement('div');
     newNode.id = 'emailInsertion';
 
-    const playback = document.querySelector(`[id*="playback-insertion-point"]`);
+    const imagePlaceholder = document.querySelector(
+      `[id*="image-placeholder"]`
+    );
 
     const rawUuid = document.querySelector(`[id*="audio-uuid"]`)?.innerHTML;
     const uuid = rawUuid?.replaceAll('<wbr>', '');
 
-    if (playback) {
-      while (playback.firstChild) {
-        playback.removeChild(playback.firstChild);
+    if (imagePlaceholder) {
+      while (imagePlaceholder.firstChild) {
+        imagePlaceholder.removeChild(imagePlaceholder.firstChild);
       }
-      playback.appendChild(newNode);
+      imagePlaceholder.appendChild(newNode);
     }
 
     Vue.use(VueCompositionApi);

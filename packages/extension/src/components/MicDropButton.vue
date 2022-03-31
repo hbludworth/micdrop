@@ -192,9 +192,7 @@ export default defineComponent({
       const inputArea = document.querySelector(".LW-avf");
 
       const div = document.createElement("div");
-      div.id = "playback-insertion-point";
-      div.classList.add("playback-insertion-point");
-      div.classList.add("image-placeholder");
+      div.id = "image-placeholder";
       div.hidden = true;
 
       const link = document.createElement("a");
@@ -268,7 +266,7 @@ export default defineComponent({
         }).$mount("#emailContent");
 
         const contentObserver = new MutationObserver(() => {
-          if (!document.querySelector("div.image-placeholder")) {
+          if (!document.getElementById("image-placeholder")) {
             contentObserver.disconnect();
 
             insertImagePlaceholder(uuid);
