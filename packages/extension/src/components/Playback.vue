@@ -1,7 +1,13 @@
 <template>
   <div>
     <v-row class="ma-0 justify-center">
-      <audio :src="audioUrl" controls class="hide-audio" ref="defaultAudio" />
+      <audio
+        :src="audioUrl"
+        controls
+        class="hide-audio"
+        ref="defaultAudio"
+        crossorigin="anonymous"
+      />
       <v-card
         class="pa-3 mt-6 rounded-pill"
         width="385"
