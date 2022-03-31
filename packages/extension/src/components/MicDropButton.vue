@@ -105,7 +105,11 @@ import {
 } from "@mdi/js";
 import Playback from "./Playback.vue";
 import SoundResponse from "./SoundResponse.vue";
+import BasePlayback from "./BasePlayback.vue";
 import axios from "axios";
+import Vue from "vue";
+import vuetify from "../plugins/vuetify";
+import VueCompositionApi from "@vue/composition-api";
 
 export default defineComponent({
   name: "MicDropButton",
@@ -184,6 +188,37 @@ export default defineComponent({
       }, 1000);
     };
 
+    const insertImagePlaceholder = (uuid: string) => {
+      const inputArea = document.querySelector(".LW-avf");
+
+      const div = document.createElement("div");
+      div.id = "playback-insertion-point";
+      div.classList.add("playback-insertion-point");
+      div.classList.add("image-placeholder");
+      div.hidden = true;
+
+      const link = document.createElement("a");
+      link.href = `http://localhost:8080/playback/${uuid}`;
+      link.target = "_blank";
+
+      const image = document.createElement("img");
+      image.src = "http://localhost:8081/api/v1/image/placeholder";
+      image.width = 400;
+
+      link.appendChild(image);
+
+      div.appendChild(link);
+
+      const uuidPlaceholder = document.createElement("span");
+      uuidPlaceholder.id = "audio-uuid";
+      uuidPlaceholder.style.display = "none";
+      uuidPlaceholder.innerHTML = uuid;
+
+      div.appendChild(uuidPlaceholder);
+
+      inputArea?.appendChild(div);
+    };
+
     const submit = async () => {
       if (audioUrl.value) {
         const blob = await (await fetch(audioUrl.value)).blob();
@@ -204,32 +239,51 @@ export default defineComponent({
           }
         );
 
-        const inputArea = document.querySelector(".LW-avf");
+        insertImagePlaceholder(uuid);
 
-        const div = document.createElement("div");
-        div.id = "playback-insertion-point";
-        div.classList.add("playback-insertion-point");
+        const inputTable = document.querySelector(".iN");
+        const tbody = inputTable?.children.item(0);
+        const tr = tbody?.children.item(0);
 
-        const link = document.createElement("a");
-        link.href = `http://localhost:8080/playback/${uuid}`;
-        link.target = "_blank";
+        const playbackRow = document.createElement("tr");
+        const playbackData = document.createElement("td");
+        playbackRow.appendChild(playbackData);
 
-        const image = document.createElement("img");
-        image.src = "http://localhost:8081/api/v1/image/placeholder";
-        image.width = 400;
+        const insertionDiv = document.createElement("div");
+        insertionDiv.id = "emailContent";
+        playbackData.appendChild(insertionDiv);
 
-        link.appendChild(image);
+        tr?.insertAdjacentElement("beforebegin", playbackRow);
 
-        div.appendChild(link);
+        Vue.use(VueCompositionApi);
+        new Vue({
+          vuetify,
+          render: (h) =>
+            h(BasePlayback, {
+              props: {
+                audioUrl: audioUrl.value,
+                file,
+              },
+            }),
+        }).$mount("#emailContent");
 
-        const uuidPlaceholder = document.createElement("span");
-        uuidPlaceholder.id = "audio-uuid";
-        uuidPlaceholder.style.display = "none";
-        uuidPlaceholder.innerHTML = uuid;
+        const contentObserver = new MutationObserver(() => {
+          if (!document.querySelector("div.image-placeholder")) {
+            contentObserver.disconnect();
 
-        div.appendChild(uuidPlaceholder);
+            insertImagePlaceholder(uuid);
 
-        inputArea?.appendChild(div);
+            observeContent();
+          }
+        });
+
+        const observeContent = () => {
+          contentObserver.observe(document.body, {
+            childList: true,
+            subtree: true,
+          });
+        };
+        observeContent();
 
         dialogOpen.value = false;
       }
