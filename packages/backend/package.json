@@ -19,6 +19,10 @@
   },
   "scripts": {
     "dev": "ts-node-dev ./src/server.ts --respawn --transpileOnly",
-    "build": "rm -rf build && tsc"
+    "build": "rm -rf build && tsc",
+    "start": "NODE_ENV=production node ./build/src/server.js"
+  },
+  "engines": {
+    "node": ">=15.0.1"
   }
 }
