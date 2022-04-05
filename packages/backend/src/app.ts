@@ -2,6 +2,7 @@ import express from 'express';
 import fileupload from 'express-fileupload';
 import history from 'connect-history-api-fallback';
 import setupRoutes from './setupRoutes';
+import path from 'path';
 
 const app = express();
 app.use((req, res, next) => {
@@ -25,5 +26,7 @@ app.use(fileupload());
 setupRoutes(app);
 
 app.use(history());
+
+app.use(express.static(path.join(__dirname, '../../dist')));
 
 export default app;
