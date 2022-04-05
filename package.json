@@ -15,7 +15,7 @@
     "client": "yarn workspace frontend serve",
     "server": "yarn workspace backend dev",
     "extension": "yarn workspace extension start",
-    "zip-server": "cp -R .ebextensions packages/backend && cd packages/backend && zip -q -r micdrop-build.zip build dist package.json yarn.lock .ebextensions && mv micdrop-build.zip ../.."
+    "zip-server": "cd packages/backend && zip -q -r micdrop-build.zip build dist package.json yarn.lock && mv micdrop-build.zip ../.."
   },
   "dependencies": {
     "concurrently": "^5.3.0"
