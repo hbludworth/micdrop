@@ -22,4 +22,8 @@ router.route('/image/logo').get(async (_req, res, _next) => {
   });
 });
 
+router.route('/image/test').get(async (_req, res, _next) => {
+  res.json('cheese');
+});
+
 export default router;
