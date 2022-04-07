@@ -2,11 +2,7 @@
   <div>
     <v-container class="ma-0 pa-10" fluid>
       <v-row class="justify-center">
-        <v-img
-          src="http://localhost:8081/api/v1/image/logo"
-          max-width="300px"
-          class="mb-12 mt-8"
-        />
+        <v-img :src="logoURL" max-width="300px" class="mb-12 mt-8" />
       </v-row>
       <v-row class="justify-center mt-10">
         <h3>Hey! You've received an audio message through MicDrop!</h3>
@@ -15,7 +11,7 @@
         <span> To listen, simply hit the play button below.</span>
       </v-row>
       <v-row class="justify-center my-12">
-        <playback :audioUrl="`http://localhost:8081/api/v1/audio/${uuid}`" />
+        <playback :audioUrl="audioURL" />
       </v-row>
       <v-row class="justify-center">
         <h3>Want to send your own audio messages?</h3>
@@ -60,8 +56,21 @@ export default defineComponent({
   components: {
     Playback,
   },
-  setup() {
-    return {};
+  setup(props) {
+    const logoURL =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:8081/api/v1/image/logo"
+        : "http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/image/logo";
+
+    const audioURL =
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:8081/api/v1/audio/${props.uuid}`
+        : `http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/audio/${props.uuid}`;
+
+    return {
+      logoURL,
+      audioURL,
+    };
   },
 });
 </script>

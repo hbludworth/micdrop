@@ -74,7 +74,7 @@
       <v-spacer />
       <span class="text-overline"> Powered by </span>
       <v-img
-        src="http://localhost:8081/api/v1/image/logo"
+        :src="logoURL"
         height="15px"
         max-width="80px"
         contain
@@ -208,6 +208,11 @@ export default defineComponent({
       }
     });
 
+    const logoURL =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:8081/api/v1/image/logo"
+        : "http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/image/logo";
+
     return {
       defaultAudio,
       icons,
@@ -218,6 +223,7 @@ export default defineComponent({
       audioLoaded,
       convertTime,
       mediaStream,
+      logoURL,
     };
   },
 });

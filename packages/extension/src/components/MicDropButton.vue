@@ -202,11 +202,17 @@ export default defineComponent({
       div.appendChild(previewMessage);
 
       const link = document.createElement("a");
-      link.href = `http://localhost:8080/playback/${uuid}`;
+      link.href =
+        process.env.NODE_ENV === "development"
+          ? `http://localhost:8080/playback/${uuid}`
+          : `http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/playback/${uuid}`;
       link.target = "_blank";
 
       const image = document.createElement("img");
-      image.src = "http://localhost:8081/api/v1/image/placeholder";
+      image.src =
+        process.env.NODE_ENV === "development"
+          ? "http://localhost:8081/api/v1/image/placeholder"
+          : "http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/image/placeholder";
       image.width = 400;
 
       link.appendChild(image);
@@ -233,15 +239,16 @@ export default defineComponent({
         const formData = new FormData();
         formData.append("newFile", file, "newFile.mp3");
 
-        const { data: uuid } = await axios.post(
-          "http://localhost:8081/api/v1/audio",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
+        const url =
+          process.env.NODE_ENV === "development"
+            ? "http://localhost:8081/api/v1/audio"
+            : "http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/audio";
+
+        const { data: uuid } = await axios.post(url, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
 
         insertImagePlaceholder(uuid);
 
@@ -266,7 +273,8 @@ export default defineComponent({
             h(BasePlayback, {
               props: {
                 audioUrl: audioUrl.value,
-                file,
+                // file,
+                uuid,
               },
             }),
         }).$mount("#emailContent");
