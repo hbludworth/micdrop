@@ -3,7 +3,6 @@
   "name": "__MSG_extName__",
   "description": "Send and playback audio message in Gmail.",
   "default_locale": "en",
-  "permissions": ["activeTab", "<all_urls>", "*://*/*"],
   "icons": {
     "16": "icons/ExtensionLogo.png",
     "48": "icons/ExtensionLogo.png",
