@@ -4,15 +4,15 @@
   "description": "Send and playback audio message in Gmail.",
   "default_locale": "en",
   "icons": {
-    "16": "icons/ExtensionLogo.png",
-    "48": "icons/ExtensionLogo.png",
-    "128": "icons/ExtensionLogo.png"
+    "16": "icons/16.png",
+    "48": "icons/48.png",
+    "128": "icons/128.png"
   },
   "browser_action": {
     "default_title": "__MSG_extName__",
     "default_icon": {
-      "19": "icons/ExtensionLogo.png",
-      "38": "icons/ExtensionLogo.png"
+      "19": "icons/19.png",
+      "38": "icons/38.png"
     }
   },
   "content_scripts": [
