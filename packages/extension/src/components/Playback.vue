@@ -211,7 +211,7 @@ export default defineComponent({
     const logoURL =
       process.env.NODE_ENV === "development"
         ? "http://localhost:8081/api/v1/image/logo"
-        : "http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/image/logo";
+        : "https://www.sendmicdrop.com/api/v1/image/logo";
 
     return {
       defaultAudio,

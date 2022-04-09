@@ -205,14 +205,14 @@ export default defineComponent({
       link.href =
         process.env.NODE_ENV === "development"
           ? `http://localhost:8080/playback/${uuid}`
-          : `http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/playback/${uuid}`;
+          : `https://www.sendmicdrop.com/playback/${uuid}`;
       link.target = "_blank";
 
       const image = document.createElement("img");
       image.src =
         process.env.NODE_ENV === "development"
           ? "http://localhost:8081/api/v1/image/placeholder"
-          : "http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/image/placeholder";
+          : "https://www.sendmicdrop.com/api/v1/image/placeholder";
       image.width = 400;
 
       link.appendChild(image);
@@ -242,7 +242,7 @@ export default defineComponent({
         const url =
           process.env.NODE_ENV === "development"
             ? "http://localhost:8081/api/v1/audio"
-            : "http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/audio";
+            : "https://www.sendmicdrop.com/api/v1/audio";
 
         const { data: uuid } = await axios.post(url, formData, {
           headers: {
@@ -273,7 +273,6 @@ export default defineComponent({
             h(BasePlayback, {
               props: {
                 audioUrl: audioUrl.value,
-                // file,
                 uuid,
               },
             }),

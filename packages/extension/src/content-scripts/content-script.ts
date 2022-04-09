@@ -68,7 +68,7 @@ const receiverObserver = new MutationObserver(() => {
             audioUrl:
               process.env.NODE_ENV === 'development'
                 ? `http://localhost:8081/api/v1/audio/${uuid}`
-                : `http://micdrop-env.eba-3yq5uha5.us-east-1.elasticbeanstalk.com/api/v1/audio/${uuid}`,
+                : `https://www.sendmicdrop.com/api/v1/audio/${uuid}`,
           },
         }),
     }).$mount('#emailInsertion');

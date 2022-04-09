@@ -1,29 +1,42 @@
 import express from 'express';
-import path from 'path';
+import AWS from 'aws-sdk';
 
 const router = express.Router();
 
 router.route('/image/placeholder').get(async (_req, res, _next) => {
-  res.sendFile(
-    path.resolve(`./public/images/PlaceholderScrubber.png`),
-    (err) => {
-      if (err) {
-        res.status(500).end();
-      }
-    }
-  );
+  const s3 = new AWS.S3();
+
+  const params = {
+    Bucket: 'micdrop-images',
+    Key: 'placeholder.png',
+  };
+
+  const image = (await s3.getObject(params).promise()).Body;
+
+  if (image) {
+    res.contentType('png');
+    res.send(image).end();
+  } else {
+    res.status(404).end();
+  }
 });
 
 router.route('/image/logo').get(async (_req, res, _next) => {
-  res.sendFile(path.resolve(`./public/images/MicDropLogo.png`), (err) => {
-    if (err) {
-      res.status(500).end();
-    }
-  });
-});
+  const s3 = new AWS.S3();
 
-router.route('/image/test').get(async (_req, res, _next) => {
-  res.json('cheese');
+  const params = {
+    Bucket: 'micdrop-images',
+    Key: 'logo.png',
+  };
+
+  const image = (await s3.getObject(params).promise()).Body;
+
+  if (image) {
+    res.contentType('png');
+    res.send(image).end();
+  } else {
+    res.status(404).end();
+  }
 });
 
 export default router;

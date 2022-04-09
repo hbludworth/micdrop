@@ -1,19 +1,28 @@
 import express from 'express';
 import { v4 } from 'uuid';
-import fs from 'fs';
 import fileUpload from 'express-fileupload';
-import path from 'path';
+import AWS from 'aws-sdk';
 
 const router = express.Router();
 
 router.route('/audio/:uuid').get(async (req, res, _next) => {
   const { uuid } = req.params;
 
-  res.sendFile(path.resolve(`./public/audio/${uuid}.mp3`), (err) => {
-    if (err) {
-      res.status(500).end();
-    }
-  });
+  const s3 = new AWS.S3();
+
+  const params = {
+    Bucket: 'micdrop-audio',
+    Key: `${uuid}.mp3`,
+  };
+
+  const audioFile = (await s3.getObject(params).promise()).Body;
+
+  if (audioFile) {
+    res.contentType('mpeg');
+    res.send(audioFile).end();
+  } else {
+    res.status(404).end();
+  }
 });
 
 router.route('/audio').post(async (req, res, _next) => {
@@ -22,15 +31,19 @@ router.route('/audio').post(async (req, res, _next) => {
     return;
   }
 
+  const s3 = new AWS.S3();
+
   const file = req.files.newFile as fileUpload.UploadedFile;
 
   const uuid = v4();
 
-  fs.writeFile(`./public/audio/${uuid}.mp3`, file.data, (err) => {
-    if (err) {
-      res.status(500).end();
-    }
-  });
+  const params: AWS.S3.PutObjectRequest = {
+    Bucket: 'micdrop-audio',
+    Key: `${uuid}.mp3`,
+    Body: file.data,
+  };
+
+  await s3.putObject(params).promise();
 
   res.status(201).json(uuid);
 });
