@@ -1,7 +1,6 @@
 {
   "manifest_version": 2,
   "name": "__MSG_extName__",
-  "version": "0.0.1",
   "description": "Send and playback audio message in Gmail.",
   "default_locale": "en",
   "permissions": ["activeTab", "<all_urls>", "*://*/*"],
