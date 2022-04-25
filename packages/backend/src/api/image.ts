@@ -6,7 +6,13 @@ const router = express.Router();
 router.route('/image/:key').get(async (req, res, _next) => {
   const s3 = new AWS.S3();
 
-  const { key } = req.params;
+  // FIXME temporary fix while awaiting review
+
+  let { key } = req.params;
+
+  if (!key.includes('.')) {
+    key += '.png';
+  }
 
   const params = {
     Bucket: 'micdrop-images',
