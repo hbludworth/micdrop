@@ -211,8 +211,8 @@ export default defineComponent({
       const image = document.createElement("img");
       image.src =
         process.env.NODE_ENV === "development"
-          ? "http://localhost:8081/api/v1/image/placeholder"
-          : "https://www.sendmicdrop.com/api/v1/image/placeholder";
+          ? "http://localhost:8081/api/v1/image/placeholder.png"
+          : "https://www.sendmicdrop.com/api/v1/image/placeholder.png";
       image.width = 400;
 
       link.appendChild(image);

@@ -210,8 +210,8 @@ export default defineComponent({
 
     const logoURL =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo"
-        : "https://www.sendmicdrop.com/api/v1/image/logo";
+        ? "http://localhost:8081/api/v1/image/logo.png"
+        : "https://www.sendmicdrop.com/api/v1/image/logo.png";
 
     return {
       defaultAudio,

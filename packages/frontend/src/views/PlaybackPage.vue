@@ -17,7 +17,13 @@
         <h3>Want to send your own audio messages?</h3>
       </v-row>
       <v-row class="justify-center text--disabled my-4">
-        <span>With the <a>MicDrop Chrome Extension</a>, you can:</span>
+        <span
+          >With the
+          <a
+            href="https://chrome.google.com/webstore/detail/cfeaabebicbbcmddmgphgncpdlkadgfl?authuser=2&hl=en"
+            >MicDrop Chrome Extension</a
+          >, you can:</span
+        >
       </v-row>
       <v-row class="justify-center text--disabled">
         <span>- Reply to this message with your own recording</span>
@@ -31,12 +37,6 @@
       <v-row class="justify-center text--disabled">
         <span>- And so much more!</span>
       </v-row>
-      <!-- <v-row class="justify-center text--disabled">
-        <span
-          >Add our Chrome Extension <a>here</a> to reply with a MicDrop audio
-          message, send your own audio emails, and listen within Gmail.</span
-        >
-      </v-row> -->
     </v-container>
   </div>
 </template>
@@ -59,8 +59,8 @@ export default defineComponent({
   setup(props) {
     const logoURL =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo"
-        : "https://www.sendmicdrop.com/api/v1/image/logo";
+        ? "http://localhost:8081/api/v1/image/logo.png"
+        : "https://www.sendmicdrop.com/api/v1/image/logo.png";
 
     const audioURL =
       process.env.NODE_ENV === "development"
