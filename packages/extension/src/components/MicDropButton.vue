@@ -279,7 +279,9 @@ export default defineComponent({
         }).$mount("#emailContent");
 
         const contentObserver = new MutationObserver(() => {
-          if (!document.getElementById("image-placeholder")) {
+          if (!document.querySelector("td.gU.Up")) {
+            contentObserver.disconnect();
+          } else if (!document.getElementById("image-placeholder")) {
             contentObserver.disconnect();
 
             insertImagePlaceholder(uuid);
