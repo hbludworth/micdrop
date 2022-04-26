@@ -1,1 +1,1 @@
-# micdrop_monorepo
+# MicDrop
