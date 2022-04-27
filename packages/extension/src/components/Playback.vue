@@ -89,7 +89,7 @@
           class="mt-2 ml-1"
         />
       </a>
-      <v-tooltip top>
+      <v-tooltip top open-delay="500">
         <template #activator="{ on, attrs }">
           <v-btn
             href="mailto:feedback@sendmicdrop.com"
