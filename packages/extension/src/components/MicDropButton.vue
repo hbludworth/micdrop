@@ -12,7 +12,7 @@
         <v-icon size="20px" color="#737373">{{ icons.mdiMicrophone }}</v-icon>
       </v-btn>
       <v-dialog v-model="dialogOpen" width="600" content-class="rounded-xl">
-        <v-card height="350">
+        <v-card height="355">
           <v-card-title> </v-card-title>
           <v-card-text class="ma-0 pa-0">
             <v-row class="justify-center ma-4 mt-4">
@@ -80,17 +80,36 @@
             >
               <span>Press to Begin Recording</span>
             </v-row>
-            <v-row justify="center" class="ma-0">
-              <playback v-if="audioUrl" :audioUrl="audioUrl" />
-            </v-row>
-            <v-row v-if="audioUrl" class="ma-0 mt-n10">
-              <v-spacer />
-              <v-btn color="#4286f5" class="white--text mr-2" @click="submit"
-                >SUBMIT</v-btn
-              >
+            <v-row class="ma-0" v-if="audioUrl">
+              <v-col cols="2" class="pa-0" />
+              <v-col cols="8" class="pa-0">
+                <v-row justify="center" class="ma-0">
+                  <playback :audioUrl="audioUrl" />
+                </v-row>
+              </v-col>
+              <v-col cols="2" class="pa-0" align-self="center">
+                <v-row class="ma-0 pb-1" justify="center">
+                  <v-tooltip top open-delay="500">
+                    <template #activator="{ on, attrs }">
+                      <v-btn
+                        color="#4286f5"
+                        @click="submit"
+                        fab
+                        depressed
+                        v-bind="attrs"
+                        v-on="on"
+                        ><v-icon color="white">{{
+                          icons.mdiEmailSendOutline
+                        }}</v-icon></v-btn
+                      >
+                    </template>
+                    <span>Add to Email</span>
+                  </v-tooltip>
+                </v-row>
+              </v-col>
             </v-row>
           </v-card-text>
-          <v-card-actions></v-card-actions>
+          <v-card-actions class="pa-0"></v-card-actions>
         </v-card>
       </v-dialog>
     </v-app>
@@ -104,6 +123,7 @@ import {
   mdiDelete,
   mdiArrowULeftTopBold,
   mdiMicrophone,
+  mdiEmailSendOutline,
 } from "@mdi/js";
 import Playback from "./Playback.vue";
 import SoundResponse from "./SoundResponse.vue";
@@ -127,6 +147,7 @@ export default defineComponent({
       mdiStopCircle,
       mdiDelete,
       mdiArrowULeftTopBold,
+      mdiEmailSendOutline,
     });
 
     const isRecording = ref(false);
