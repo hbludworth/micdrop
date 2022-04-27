@@ -214,11 +214,18 @@ export default defineComponent({
     const insertImagePlaceholder = (uuid: string) => {
       const inputArea = document.querySelector(".LW-avf");
 
+      if (document.getElementById("image-placeholder")) {
+        const existingPlaceholder =
+          document.getElementById("image-placeholder");
+        existingPlaceholder?.remove();
+      }
+
       const div = document.createElement("div");
       div.id = "image-placeholder";
       div.hidden = true;
 
       const previewMessage = document.createElement("span");
+      previewMessage.id = "preview-message";
       previewMessage.style.display = "none";
       previewMessage.innerHTML =
         "You've received a MicDrop audio message. Play now!" +
@@ -226,6 +233,7 @@ export default defineComponent({
       div.appendChild(previewMessage);
 
       const link = document.createElement("a");
+      link.id = "placeholder-img-link";
       link.href =
         process.env.NODE_ENV === "development"
           ? `http://localhost:8080/playback/${uuid}`
@@ -233,6 +241,7 @@ export default defineComponent({
       link.target = "_blank";
 
       const image = document.createElement("img");
+      image.id = "placeholder-img-file";
       image.src =
         process.env.NODE_ENV === "development"
           ? "http://localhost:8081/api/v1/image/placeholder.png"
@@ -306,7 +315,13 @@ export default defineComponent({
         const contentObserver = new MutationObserver(() => {
           if (!document.querySelector("td.gU.Up")) {
             contentObserver.disconnect();
-          } else if (!document.getElementById("image-placeholder")) {
+          } else if (
+            !document.getElementById("image-placeholder") ||
+            !document.getElementById("preview-message") ||
+            !document.getElementById("placeholder-img-link") ||
+            !document.getElementById("placeholder-img-file") ||
+            !document.getElementById("audio-uuid")
+          ) {
             contentObserver.disconnect();
 
             insertImagePlaceholder(uuid);

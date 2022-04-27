@@ -73,14 +73,7 @@
     <v-row class="ma-0 mt-0">
       <v-spacer />
       <span class="text-overline"> Powered by </span>
-      <a
-        :href="
-          NODE_ENV === 'development'
-            ? 'localhost:8080'
-            : 'https://www.sendmicdrop.com'
-        "
-        target="_blank"
-      >
+      <a :href="logoLink" target="_blank">
         <v-img
           :src="logoURL"
           height="15px"
@@ -239,6 +232,11 @@ export default defineComponent({
         ? "http://localhost:8081/api/v1/image/logo.png"
         : "https://www.sendmicdrop.com/api/v1/image/logo.png";
 
+    const logoLink =
+      process.env.NODE_ENV === "development"
+        ? "localhost:8080"
+        : "https://www.sendmicdrop.com";
+
     return {
       defaultAudio,
       icons,
@@ -250,6 +248,7 @@ export default defineComponent({
       convertTime,
       mediaStream,
       logoURL,
+      logoLink,
     };
   },
 });
