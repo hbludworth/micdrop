@@ -2,7 +2,9 @@
   <div>
     <v-container class="ma-0 pa-10" fluid>
       <v-row class="justify-center">
-        <v-img :src="logoURL" max-width="300px" class="mb-12 mt-8" />
+        <router-link to="/"
+          ><v-img :src="logoURL" max-width="300px" class="mb-12 mt-8"
+        /></router-link>
       </v-row>
       <v-row class="justify-center mt-10">
         <h3>Hey! You've received an audio message through MicDrop!</h3>

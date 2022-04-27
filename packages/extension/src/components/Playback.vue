@@ -73,13 +73,22 @@
     <v-row class="ma-0 mt-0">
       <v-spacer />
       <span class="text-overline"> Powered by </span>
-      <v-img
-        :src="logoURL"
-        height="15px"
-        max-width="80px"
-        contain
-        class="mt-2 ml-1"
-      />
+      <a
+        :href="
+          NODE_ENV === 'development'
+            ? 'localhost:8080'
+            : 'https://www.sendmicdrop.com'
+        "
+        target="_blank"
+      >
+        <v-img
+          :src="logoURL"
+          height="15px"
+          max-width="80px"
+          contain
+          class="mt-2 ml-1"
+        />
+      </a>
       <v-tooltip top>
         <template #activator="{ on, attrs }">
           <v-btn
