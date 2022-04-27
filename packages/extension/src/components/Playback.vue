@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width: 385px">
     <v-row class="ma-0 justify-center">
       <audio
         :src="audioUrl"
@@ -70,7 +70,7 @@
         </v-row>
       </v-card>
     </v-row>
-    <v-row class="ma-0 mt-n1">
+    <v-row class="ma-0 mt-0">
       <v-spacer />
       <span class="text-overline"> Powered by </span>
       <v-img
@@ -80,6 +80,22 @@
         contain
         class="mt-2 ml-1"
       />
+      <v-tooltip top>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            href="mailto:feedback@sendmicdrop.com"
+            v-on="on"
+            v-bind="attrs"
+            icon
+            small
+            color="blue lighten-2"
+            class="mr-n3"
+          >
+            <v-icon small>{{ icons.mdiMessageAlertOutline }}</v-icon></v-btn
+          >
+        </template>
+        <span>Send Feedback</span>
+      </v-tooltip>
       <v-spacer />
     </v-row>
   </div>
@@ -93,7 +109,7 @@ import {
   watch,
   nextTick,
 } from "@vue/composition-api";
-import { mdiPlayCircle, mdiPauseCircle } from "@mdi/js";
+import { mdiPlayCircle, mdiPauseCircle, mdiMessageAlertOutline } from "@mdi/js";
 import SoundResponse from "./SoundResponse.vue";
 
 export default defineComponent({
@@ -110,6 +126,7 @@ export default defineComponent({
     const icons = ref({
       mdiPlayCircle,
       mdiPauseCircle,
+      mdiMessageAlertOutline,
     });
 
     const defaultAudio = ref<HTMLAudioElement | null>(null);
