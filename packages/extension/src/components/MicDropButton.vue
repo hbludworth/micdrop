@@ -139,7 +139,17 @@ export default defineComponent({
     Playback,
     SoundResponse,
   },
-  setup() {
+  props: {
+    composeBoxElement: {
+      type: Element,
+      required: true,
+    },
+    composeBoxIndex: {
+      type: Number,
+      required: true,
+    },
+  },
+  setup({ composeBoxElement, composeBoxIndex }) {
     const dialogOpen = ref(false);
 
     const icons = ref({
@@ -212,11 +222,11 @@ export default defineComponent({
     };
 
     const insertImagePlaceholder = (uuid: string) => {
-      const inputArea = document.querySelector(".LW-avf");
+      const inputArea = composeBoxElement.querySelector(".LW-avf");
 
-      if (document.getElementById("image-placeholder")) {
+      if (composeBoxElement.querySelector("#image-placeholder")) {
         const existingPlaceholder =
-          document.getElementById("image-placeholder");
+          composeBoxElement.querySelector("#image-placeholder");
         existingPlaceholder?.remove();
       }
 
@@ -285,8 +295,7 @@ export default defineComponent({
 
         insertImagePlaceholder(uuid);
 
-        const inputTable = document.querySelector(".iN");
-        const tbody = inputTable?.children.item(0);
+        const tbody = composeBoxElement.children.item(0);
         const tr = tbody?.children.item(0);
 
         const playbackRow = document.createElement("tr");
@@ -294,7 +303,7 @@ export default defineComponent({
         playbackRow.appendChild(playbackData);
 
         const insertionDiv = document.createElement("div");
-        insertionDiv.id = "emailContent";
+        insertionDiv.id = `emailContent-${composeBoxIndex}`;
         playbackData.appendChild(insertionDiv);
 
         tr?.insertAdjacentElement("beforebegin", playbackRow);
@@ -310,17 +319,15 @@ export default defineComponent({
                 includeCenteredRow: true,
               },
             }),
-        }).$mount("#emailContent");
+        }).$mount(`#emailContent-${composeBoxIndex}`);
 
         const contentObserver = new MutationObserver(() => {
-          if (!document.querySelector("td.gU.Up")) {
-            contentObserver.disconnect();
-          } else if (
-            !document.getElementById("image-placeholder") ||
-            !document.getElementById("preview-message") ||
-            !document.getElementById("placeholder-img-link") ||
-            !document.getElementById("placeholder-img-file") ||
-            !document.getElementById("audio-uuid")
+          if (
+            !composeBoxElement.querySelector("#image-placeholder") ||
+            !composeBoxElement.querySelector("#preview-message") ||
+            !composeBoxElement.querySelector("#placeholder-img-link") ||
+            !composeBoxElement.querySelector("#placeholder-img-file") ||
+            !composeBoxElement.querySelector("#audio-uuid")
           ) {
             contentObserver.disconnect();
 
@@ -331,7 +338,7 @@ export default defineComponent({
         });
 
         const observeContent = () => {
-          contentObserver.observe(document.body, {
+          contentObserver.observe(composeBoxElement, {
             childList: true,
             subtree: true,
           });
