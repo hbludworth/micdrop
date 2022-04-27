@@ -1,7 +1,10 @@
 <template>
   <div id="playback-insertion-point" class="postcsswrapper">
     <v-app>
-      <playback :audioUrl="audioUrl" />
+      <v-row v-if="includeCenteredRow" class="ma-0" justify="center">
+        <playback :audioUrl="audioUrl" />
+      </v-row>
+      <playback v-else :audioUrl="audioUrl" />
       <span id="audio-uuid" hidden>{{ uuid }}</span>
     </v-app>
   </div>
@@ -16,6 +19,10 @@ export default defineComponent({
     Playback,
   },
   props: {
+    includeCenteredRow: {
+      type: Boolean,
+      default: false,
+    },
     audioUrl: {
       type: String,
       required: true,

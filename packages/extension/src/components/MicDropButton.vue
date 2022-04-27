@@ -80,7 +80,9 @@
             >
               <span>Press to Begin Recording</span>
             </v-row>
-            <playback v-if="audioUrl" :audioUrl="audioUrl" />
+            <v-row justify="center" class="ma-0">
+              <playback v-if="audioUrl" :audioUrl="audioUrl" />
+            </v-row>
             <v-row v-if="audioUrl" class="ma-0 mt-n10">
               <v-spacer />
               <v-btn color="#4286f5" class="white--text mr-2" @click="submit"
@@ -196,6 +198,7 @@ export default defineComponent({
       div.hidden = true;
 
       const previewMessage = document.createElement("span");
+      previewMessage.style.display = "none";
       previewMessage.innerHTML =
         "You've received a MicDrop audio message. Play now!" +
         "&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;";
@@ -274,6 +277,7 @@ export default defineComponent({
               props: {
                 audioUrl: audioUrl.value,
                 uuid,
+                includeCenteredRow: true,
               },
             }),
         }).$mount("#emailContent");
