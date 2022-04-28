@@ -85,13 +85,13 @@
       <v-tooltip top open-delay="500">
         <template #activator="{ on, attrs }">
           <v-btn
-            href="mailto:feedback@sendmicdrop.com"
             v-on="on"
             v-bind="attrs"
             icon
             small
             color="blue lighten-2"
             class="mr-n3"
+            @click="sendFeedback"
           >
             <v-icon small>{{ icons.mdiMessageAlertOutline }}</v-icon></v-btn
           >
@@ -237,6 +237,12 @@ export default defineComponent({
         ? "localhost:8080"
         : "https://www.sendmicdrop.com";
 
+    const sendFeedback = () => {
+      window.open(
+        "mailto:feedback@sendmicdrop.com?subject=Feedback Report - MicDrop"
+      );
+    };
+
     return {
       defaultAudio,
       icons,
@@ -249,6 +255,7 @@ export default defineComponent({
       mediaStream,
       logoURL,
       logoLink,
+      sendFeedback,
     };
   },
 });
