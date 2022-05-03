@@ -53,7 +53,14 @@
             >
           </v-col>
           <v-col cols="6">
-            <video :src="videoURL" height="420px" autoplay loop width="700px" />
+            <video
+              :src="videoURL"
+              height="420px"
+              autoplay
+              loop
+              width="700px"
+              muted
+            />
           </v-col>
         </v-row>
       </v-card>
@@ -232,8 +239,8 @@ export default defineComponent({
 
     const videoURL =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/landingPageScreenRecording.mov"
-        : "https://sendmicdrop.com/api/v1/image/landingPageScreenRecording.mov";
+        ? "http://localhost:8081/api/v1/image/MicDropScreenRecording.mp4"
+        : "https://sendmicdrop.com/api/v1/image/MicDropScreenRecording.mp4";
 
     return {
       logoURL,
