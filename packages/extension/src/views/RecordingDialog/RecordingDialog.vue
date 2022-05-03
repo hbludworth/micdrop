@@ -1,119 +1,106 @@
 <template>
-  <div class="mic-button postcsswrapper">
-    <v-app>
-      <v-btn
-        @click="dialogOpen = !dialogOpen"
-        text
-        class="ml-3 pa-0 mr-n1"
-        min-width="28"
-        min-height="28"
-        max-height="28"
-      >
-        <v-icon size="20px" color="#737373">{{ icons.mdiMicrophone }}</v-icon>
-      </v-btn>
-      <v-dialog v-model="dialogOpen" width="600" content-class="rounded-xl">
-        <v-card height="355">
-          <v-card-title> </v-card-title>
-          <v-card-text class="ma-0 pa-0">
-            <v-row class="justify-center ma-4 mt-4">
-              <v-btn
-                v-if="!audioUrl && !isRecording"
-                height="125"
-                width="125"
-                @click="startRecording"
-                fab
-                x-large
-                color="#4286f5"
-                depressed
-              >
-                <v-icon color="white" size="55px">{{
-                  icons.mdiMicrophone
-                }}</v-icon>
-              </v-btn>
-              <v-btn
-                v-if="!audioUrl && isRecording"
-                height="125"
-                width="125"
-                @click="stopRecording"
-                fab
-                x-large
-                color="#ea4235"
-                depressed
-              >
-                <v-icon color="white" size="55px">{{
-                  icons.mdiStopCircle
-                }}</v-icon>
-              </v-btn>
-              <v-btn
-                v-if="audioUrl"
-                height="125"
-                width="125"
-                @click="deleteRecording"
-                fab
-                x-large
-                color="grey lighten-1"
-                depressed
-              >
-                <v-icon color="white" size="55px">{{
-                  icons.mdiArrowULeftTopBold
-                }}</v-icon>
-              </v-btn>
+  <v-dialog
+    :value="value"
+    @input="$emit('input', $event)"
+    width="600"
+    content-class="rounded-xl"
+  >
+    <v-card height="355">
+      <v-card-title> </v-card-title>
+      <v-card-text class="ma-0 pa-0">
+        <v-row class="justify-center ma-4 mt-4">
+          <v-btn
+            v-if="!audioUrl && !isRecording"
+            height="125"
+            width="125"
+            @click="startRecording"
+            fab
+            x-large
+            color="#4286f5"
+            depressed
+          >
+            <v-icon color="white" size="55px">{{ icons.mdiMicrophone }}</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="!audioUrl && isRecording"
+            height="125"
+            width="125"
+            @click="stopRecording"
+            fab
+            x-large
+            color="#ea4235"
+            depressed
+          >
+            <v-icon color="white" size="55px">{{ icons.mdiStopCircle }}</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="audioUrl"
+            height="125"
+            width="125"
+            @click="deleteRecording"
+            fab
+            x-large
+            color="grey lighten-1"
+            depressed
+          >
+            <v-icon color="white" size="55px">{{
+              icons.mdiArrowULeftTopBold
+            }}</v-icon>
+          </v-btn>
+        </v-row>
+        <v-row class="justify-center mx-0">
+          <span class="text-h4">{{ seconds }} seconds</span>
+        </v-row>
+        <v-row
+          v-if="isRecording && mediaStream"
+          class="justify-center mt-8 mx-0"
+        >
+          <sound-response :mediaStream="mediaStream" />
+        </v-row>
+        <v-row
+          v-if="!isRecording && !audioUrl"
+          class="justify-center mt-6 mx-0"
+        >
+          <span class="text-h5">Welcome to MicDrop</span>
+        </v-row>
+        <v-row
+          v-if="!isRecording && !audioUrl"
+          class="justify-center mt-4 mx-0"
+        >
+          <span>Press to Begin Recording</span>
+        </v-row>
+        <v-row class="ma-0" v-if="audioUrl">
+          <v-col cols="2" class="pa-0" />
+          <v-col cols="8" class="pa-0">
+            <v-row justify="center" class="ma-0">
+              <playback :audioUrl="audioUrl" />
             </v-row>
-            <v-row class="justify-center mx-0">
-              <span class="text-h4">{{ seconds }} seconds</span>
+          </v-col>
+          <v-col cols="2" class="pa-0" align-self="center">
+            <v-row class="ma-0 pb-1" justify="center">
+              <v-tooltip top open-delay="500">
+                <template #activator="{ on, attrs }">
+                  <v-btn
+                    color="#4286f5"
+                    @click="submit"
+                    fab
+                    depressed
+                    v-bind="attrs"
+                    v-on="on"
+                    ><v-icon color="white">{{
+                      icons.mdiEmailSendOutline
+                    }}</v-icon></v-btn
+                  >
+                </template>
+                <span>Add to Email</span>
+              </v-tooltip>
             </v-row>
-            <v-row
-              v-if="isRecording && mediaStream"
-              class="justify-center mt-8 mx-0"
-            >
-              <sound-response :mediaStream="mediaStream" />
-            </v-row>
-            <v-row
-              v-if="!isRecording && !audioUrl"
-              class="justify-center mt-6 mx-0"
-            >
-              <span class="text-h5">Welcome to MicDrop</span>
-            </v-row>
-            <v-row
-              v-if="!isRecording && !audioUrl"
-              class="justify-center mt-4 mx-0"
-            >
-              <span>Press to Begin Recording</span>
-            </v-row>
-            <v-row class="ma-0" v-if="audioUrl">
-              <v-col cols="2" class="pa-0" />
-              <v-col cols="8" class="pa-0">
-                <v-row justify="center" class="ma-0">
-                  <playback :audioUrl="audioUrl" />
-                </v-row>
-              </v-col>
-              <v-col cols="2" class="pa-0" align-self="center">
-                <v-row class="ma-0 pb-1" justify="center">
-                  <v-tooltip top open-delay="500">
-                    <template #activator="{ on, attrs }">
-                      <v-btn
-                        color="#4286f5"
-                        @click="submit"
-                        fab
-                        depressed
-                        v-bind="attrs"
-                        v-on="on"
-                        ><v-icon color="white">{{
-                          icons.mdiEmailSendOutline
-                        }}</v-icon></v-btn
-                      >
-                    </template>
-                    <span>Add to Email</span>
-                  </v-tooltip>
-                </v-row>
-              </v-col>
-            </v-row>
-          </v-card-text>
-          <v-card-actions class="pa-0"></v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-app>
-  </div>
+          </v-col>
+        </v-row>
+      </v-card-text>
+      <v-card-actions class="pa-0"></v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script lang="ts">
@@ -122,15 +109,15 @@ import {
   mdiStopCircle,
   mdiDelete,
   mdiArrowULeftTopBold,
-  mdiMicrophone,
   mdiEmailSendOutline,
+  mdiMicrophone,
 } from "@mdi/js";
-import Playback from "./Playback.vue";
-import SoundResponse from "./SoundResponse.vue";
-import BasePlayback from "./BasePlayback.vue";
+import Playback from "../Playback/Playback.vue";
+import SoundResponse from "../../components/SoundResponse.vue";
+import BasePlayback from "../Playback/BasePlayback.vue";
 import axios from "axios";
 import Vue from "vue";
-import vuetify from "../plugins/vuetify";
+import vuetify from "../../plugins/vuetify";
 import VueCompositionApi from "@vue/composition-api";
 
 export default defineComponent({
@@ -140,6 +127,10 @@ export default defineComponent({
     SoundResponse,
   },
   props: {
+    value: {
+      type: Boolean,
+      required: true,
+    },
     composeBoxElement: {
       type: Element,
       required: true,
@@ -149,15 +140,13 @@ export default defineComponent({
       required: true,
     },
   },
-  setup({ composeBoxElement, composeBoxIndex }) {
-    const dialogOpen = ref(false);
-
+  setup({ composeBoxElement, composeBoxIndex }, { emit }) {
     const icons = ref({
-      mdiMicrophone,
       mdiStopCircle,
       mdiDelete,
       mdiArrowULeftTopBold,
       mdiEmailSendOutline,
+      mdiMicrophone,
     });
 
     const isRecording = ref(false);
@@ -345,12 +334,11 @@ export default defineComponent({
         };
         observeContent();
 
-        dialogOpen.value = false;
+        emit("input", false);
       }
     };
 
     return {
-      dialogOpen,
       icons,
       isRecording,
       audioUrl,

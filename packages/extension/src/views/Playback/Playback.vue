@@ -112,7 +112,7 @@ import {
   nextTick,
 } from "@vue/composition-api";
 import { mdiPlayCircle, mdiPauseCircle, mdiMessageAlertOutline } from "@mdi/js";
-import SoundResponse from "./SoundResponse.vue";
+import SoundResponse from "../../components/SoundResponse.vue";
 
 export default defineComponent({
   props: {
