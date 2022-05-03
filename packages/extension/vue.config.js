@@ -26,4 +26,8 @@ module.exports = {
     },
     extract: false,
   },
+
+  configureWebpack: {
+    devtool: 'source-map',
+  },
 };
