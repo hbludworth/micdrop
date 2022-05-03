@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "__MSG_extName__",
   "description": "Send and playback audio message in Gmail.",
   "default_locale": "en",
@@ -20,5 +20,8 @@
       "matches": ["*://mail.google.com/*"],
       "js": ["js/content-script.js"]
     }
-  ]
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }
