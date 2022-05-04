@@ -3,12 +3,12 @@ import MicButton from '../../views/MicButton/MicButton.vue';
 import vuetify from '../../plugins/vuetify';
 import VueCompositionApi from '@vue/composition-api';
 
-class ComposeBoxObserver {
-  private composeBoxObserver = new MutationObserver(() => {
+class ComposeBoxesObserver {
+  private composeBoxesObserver = new MutationObserver(() => {
     const allComposeBoxes = document.querySelectorAll('tr.btC');
     allComposeBoxes.forEach((composeBox, index) => {
       if (!composeBox.querySelector('div.mic-button')) {
-        this.composeBoxObserver.disconnect();
+        this.composeBoxesObserver.disconnect();
         const newNode = document.createElement('div');
         newNode.id = `newButton-${index}`;
 
@@ -32,11 +32,11 @@ class ComposeBoxObserver {
   });
 
   public observeComposeBoxes = (): void => {
-    this.composeBoxObserver.observe(document.body, {
+    this.composeBoxesObserver.observe(document.body, {
       childList: true,
       subtree: true,
     });
   };
 }
 
-export default ComposeBoxObserver;
+export default ComposeBoxesObserver;

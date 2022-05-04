@@ -3,15 +3,15 @@ import BasePlayback from '../../views/Playback/BasePlayback.vue';
 import vuetify from '../../plugins/vuetify';
 import VueCompositionApi from '@vue/composition-api';
 
-class ReceiverObserver {
-  private receiverObserver = new MutationObserver(() => {
+class ReceiversObserver {
+  private receiversObserver = new MutationObserver(() => {
     const allReceievedEmails = document.querySelectorAll('div.a3s.aiL');
     allReceievedEmails.forEach((receivedEmail, index) => {
       if (
         receivedEmail.querySelector(`[id*="image-placeholder"]`) &&
         !receivedEmail.querySelector(`[id*="playback-insertion-point"]`)
       ) {
-        this.receiverObserver.disconnect();
+        this.receiversObserver.disconnect();
         const newNode = document.createElement('div');
         newNode.id = `emailInsertion-${index}`;
 
@@ -49,11 +49,11 @@ class ReceiverObserver {
   });
 
   public observeReceiver = (): void => {
-    this.receiverObserver.observe(document.body, {
+    this.receiversObserver.observe(document.body, {
       childList: true,
       subtree: true,
     });
   };
 }
 
-export default ReceiverObserver;
+export default ReceiversObserver;
