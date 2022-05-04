@@ -10,52 +10,20 @@
       <v-card-text class="ma-0 pa-0">
         <v-row class="justify-center ma-4 mt-4">
           <v-btn
-            v-if="!audioUrl && !isRecording"
             height="125"
             width="125"
-            @click="startRecording"
+            @click="primaryButtonOptions.clickAction"
             fab
             x-large
-            color="#4286f5"
+            :color="primaryButtonOptions.color"
             depressed
+            ><v-icon color="white" size="55px">{{
+              primaryButtonOptions.icon
+            }}</v-icon></v-btn
           >
-            <v-icon color="white" size="55px">{{ icons.mdiMicrophone }}</v-icon>
-          </v-btn>
-          <v-btn
-            v-if="!audioUrl && isRecording"
-            height="125"
-            width="125"
-            @click="stopRecording"
-            fab
-            x-large
-            color="#ea4235"
-            depressed
-          >
-            <v-icon color="white" size="55px">{{ icons.mdiStopCircle }}</v-icon>
-          </v-btn>
-          <v-btn
-            v-if="audioUrl"
-            height="125"
-            width="125"
-            @click="deleteRecording"
-            fab
-            x-large
-            color="grey lighten-1"
-            depressed
-          >
-            <v-icon color="white" size="55px">{{
-              icons.mdiArrowULeftTopBold
-            }}</v-icon>
-          </v-btn>
         </v-row>
         <v-row class="justify-center mx-0">
           <span class="text-h4">{{ seconds }} seconds</span>
-        </v-row>
-        <v-row
-          v-if="isRecording && mediaStream"
-          class="justify-center mt-8 mx-0"
-        >
-          <sound-response :mediaStream="mediaStream" />
         </v-row>
         <v-row
           v-if="!isRecording && !audioUrl"
@@ -68,6 +36,12 @@
           class="justify-center mt-4 mx-0"
         >
           <span>Press to Begin Recording</span>
+        </v-row>
+        <v-row
+          v-if="isRecording && mediaStream"
+          class="justify-center mt-8 mx-0"
+        >
+          <sound-response :mediaStream="mediaStream" />
         </v-row>
         <v-row class="ma-0" v-if="audioUrl">
           <v-col cols="2" class="pa-0" />
@@ -104,7 +78,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "@vue/composition-api";
+import {
+  defineComponent,
+  ref,
+  computed,
+  ComputedRef,
+} from "@vue/composition-api";
 import {
   mdiStopCircle,
   mdiDelete,
@@ -114,11 +93,15 @@ import {
 } from "@mdi/js";
 import Playback from "../Playback/Playback.vue";
 import SoundResponse from "../../components/SoundResponse.vue";
-import BasePlayback from "../Playback/BasePlayback.vue";
 import axios from "axios";
-import Vue from "vue";
-import vuetify from "../../plugins/vuetify";
-import VueCompositionApi from "@vue/composition-api";
+import { insertImagePlaceholder, insertPlaybackBox } from "./utils";
+import ImagePlaceholderObserver from "../../utils/contentObservers/ImagePlaceholderObserver";
+
+export interface PrimaryButtonOptions {
+  icon: string;
+  clickAction: () => void;
+  color: string;
+}
 
 export default defineComponent({
   name: "MicDropButton",
@@ -141,6 +124,30 @@ export default defineComponent({
     },
   },
   setup({ composeBoxElement, composeBoxIndex }, { emit }) {
+    const primaryButtonOptions: ComputedRef<PrimaryButtonOptions> = computed(
+      () => {
+        if (!audioUrl.value && !isRecording.value) {
+          return {
+            icon: icons.value.mdiMicrophone,
+            clickAction: startRecording,
+            color: "#4286f5",
+          };
+        } else if (!audioUrl.value && isRecording.value) {
+          return {
+            icon: icons.value.mdiStopCircle,
+            clickAction: stopRecording,
+            color: "#ea4235",
+          };
+        } else {
+          return {
+            icon: icons.value.mdiArrowULeftTopBold,
+            clickAction: deleteRecording,
+            color: "grey lighten-1",
+          };
+        }
+      }
+    );
+
     const icons = ref({
       mdiStopCircle,
       mdiDelete,
@@ -164,7 +171,6 @@ export default defineComponent({
           mediaStream.value = await navigator.mediaDevices.getUserMedia({
             audio: true,
           });
-          console.log(mediaStream.value);
           mediaRecorder.value = new MediaRecorder(mediaStream.value);
 
           mediaRecorder.value.ondataavailable = (e) => {
@@ -210,57 +216,6 @@ export default defineComponent({
       }, 1000);
     };
 
-    const insertImagePlaceholder = (uuid: string) => {
-      const inputArea = composeBoxElement.querySelector(".LW-avf");
-
-      if (composeBoxElement.querySelector("#image-placeholder")) {
-        const existingPlaceholder =
-          composeBoxElement.querySelector("#image-placeholder");
-        existingPlaceholder?.remove();
-      }
-
-      const div = document.createElement("div");
-      div.id = "image-placeholder";
-      div.hidden = true;
-
-      const previewMessage = document.createElement("span");
-      previewMessage.id = "preview-message";
-      previewMessage.style.display = "none";
-      previewMessage.innerHTML =
-        "You've received a MicDrop audio message. Play now!" +
-        "&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;&#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp; &#847; &zwnj; &nbsp;";
-      div.appendChild(previewMessage);
-
-      const link = document.createElement("a");
-      link.id = "placeholder-img-link";
-      link.href =
-        process.env.NODE_ENV === "development"
-          ? `http://localhost:8080/playback/${uuid}`
-          : `https://www.sendmicdrop.com/playback/${uuid}`;
-      link.target = "_blank";
-
-      const image = document.createElement("img");
-      image.id = "placeholder-img-file";
-      image.src =
-        process.env.NODE_ENV === "development"
-          ? "http://localhost:8081/api/v1/image/placeholder.png"
-          : "https://www.sendmicdrop.com/api/v1/image/placeholder.png";
-      image.width = 400;
-
-      link.appendChild(image);
-
-      div.appendChild(link);
-
-      const uuidPlaceholder = document.createElement("span");
-      uuidPlaceholder.id = "audio-uuid";
-      uuidPlaceholder.style.display = "none";
-      uuidPlaceholder.innerHTML = uuid;
-
-      div.appendChild(uuidPlaceholder);
-
-      inputArea?.appendChild(div);
-    };
-
     const submit = async () => {
       if (audioUrl.value) {
         const blob = await (await fetch(audioUrl.value)).blob();
@@ -282,57 +237,20 @@ export default defineComponent({
           },
         });
 
-        insertImagePlaceholder(uuid);
+        insertImagePlaceholder(composeBoxElement, uuid);
 
-        const tbody = composeBoxElement.children.item(0);
-        const tr = tbody?.children.item(0);
+        insertPlaybackBox(
+          composeBoxElement,
+          composeBoxIndex,
+          uuid,
+          audioUrl.value
+        );
 
-        const playbackRow = document.createElement("tr");
-        const playbackData = document.createElement("td");
-        playbackRow.appendChild(playbackData);
-
-        const insertionDiv = document.createElement("div");
-        insertionDiv.id = `emailContent-${composeBoxIndex}`;
-        playbackData.appendChild(insertionDiv);
-
-        tr?.insertAdjacentElement("beforebegin", playbackRow);
-
-        Vue.use(VueCompositionApi);
-        new Vue({
-          vuetify,
-          render: (h) =>
-            h(BasePlayback, {
-              props: {
-                audioUrl: audioUrl.value,
-                uuid,
-                includeCenteredRow: true,
-              },
-            }),
-        }).$mount(`#emailContent-${composeBoxIndex}`);
-
-        const contentObserver = new MutationObserver(() => {
-          if (
-            !composeBoxElement.querySelector("#image-placeholder") ||
-            !composeBoxElement.querySelector("#preview-message") ||
-            !composeBoxElement.querySelector("#placeholder-img-link") ||
-            !composeBoxElement.querySelector("#placeholder-img-file") ||
-            !composeBoxElement.querySelector("#audio-uuid")
-          ) {
-            contentObserver.disconnect();
-
-            insertImagePlaceholder(uuid);
-
-            observeContent();
-          }
-        });
-
-        const observeContent = () => {
-          contentObserver.observe(composeBoxElement, {
-            childList: true,
-            subtree: true,
-          });
-        };
-        observeContent();
+        const imagePlaceholderObserver = new ImagePlaceholderObserver(
+          composeBoxElement,
+          uuid
+        );
+        imagePlaceholderObserver.observeContent();
 
         emit("input", false);
       }
@@ -348,6 +266,7 @@ export default defineComponent({
       stopRecording,
       mediaStream,
       submit,
+      primaryButtonOptions,
     };
   },
 });
