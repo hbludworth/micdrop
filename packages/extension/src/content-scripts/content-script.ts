@@ -1,8 +1,11 @@
 import Vue from 'vue';
-import observeComposeBoxes from '../utils/contentObservers/composeBoxObserver';
-import observeReceiver from '../utils/contentObservers/receiverObserver';
+import ComposeBoxObserver from '../utils/contentObservers/ComposeBoxObserver';
+import ReceiverObserver from '../utils/contentObservers/ReceiverObserver';
 
 Vue.config.productionTip = false;
 
-observeComposeBoxes();
-observeReceiver();
+const composeBoxObserver = new ComposeBoxObserver();
+composeBoxObserver.observeComposeBoxes();
+
+const receiverObserver = new ReceiverObserver();
+receiverObserver.observeReceiver();
