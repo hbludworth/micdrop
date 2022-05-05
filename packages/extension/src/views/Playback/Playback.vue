@@ -112,7 +112,7 @@ import {
   nextTick,
 } from "@vue/composition-api";
 import { mdiPlayCircle, mdiPauseCircle, mdiMessageAlertOutline } from "@mdi/js";
-import SoundResponse from "./SoundResponse.vue";
+import SoundResponse from "../../components/SoundResponse.vue";
 
 export default defineComponent({
   props: {
@@ -134,15 +134,13 @@ export default defineComponent({
     const defaultAudio = ref<HTMLAudioElement | null>(null);
 
     const playbackTime = ref(0);
-    const audioDuration = ref(100);
-    const audioLoaded = ref(false);
+    const audioDuration = ref(0);
     const isPlaying = ref(false);
-    const listenerActive = ref(false);
 
     const initSlider = async () => {
       if (defaultAudio.value) {
         while (defaultAudio.value.duration === Infinity) {
-          await new Promise((r) => setTimeout(r, 100));
+          await new Promise((resolve) => setTimeout(resolve, 10));
           defaultAudio.value.currentTime = 10000000 * Math.random();
         }
         defaultAudio.value.currentTime = 0;
@@ -159,20 +157,16 @@ export default defineComponent({
     const playbackListener = () => {
       if (defaultAudio.value) {
         playbackTime.value = defaultAudio.value.currentTime;
-        defaultAudio.value.addEventListener("ended", endListener);
-        defaultAudio.value.addEventListener("pause", pauseListener);
       }
     };
 
     const pauseListener = () => {
       isPlaying.value = false;
-      listenerActive.value = false;
       cleanupListeners();
     };
 
     const endListener = () => {
       isPlaying.value = false;
-      listenerActive.value = false;
       cleanupListeners();
     };
 
@@ -186,6 +180,9 @@ export default defineComponent({
       if (defaultAudio.value?.paused) {
         defaultAudio.value.play();
         isPlaying.value = true;
+        defaultAudio.value?.addEventListener("timeupdate", playbackListener);
+        defaultAudio.value?.addEventListener("ended", endListener);
+        defaultAudio.value?.addEventListener("pause", pauseListener);
       } else {
         defaultAudio.value?.pause();
         isPlaying.value = false;
@@ -200,22 +197,12 @@ export default defineComponent({
       });
 
       defaultAudio.value?.addEventListener("canplay", () => {
-        audioLoaded.value = true;
         if (defaultAudio.value) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           mediaStream.value = defaultAudio.value.captureStream();
         }
       });
-    });
-
-    watch(isPlaying, async () => {
-      if (isPlaying.value) {
-        if (!listenerActive.value) {
-          listenerActive.value = true;
-          defaultAudio.value?.addEventListener("timeupdate", playbackListener);
-        }
-      }
     });
 
     watch(playbackTime, () => {
@@ -250,7 +237,6 @@ export default defineComponent({
       toggleAudio,
       playbackTime,
       audioDuration,
-      audioLoaded,
       convertTime,
       mediaStream,
       logoURL,
