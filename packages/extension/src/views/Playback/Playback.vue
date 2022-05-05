@@ -134,7 +134,7 @@ export default defineComponent({
     const defaultAudio = ref<HTMLAudioElement | null>(null);
 
     const playbackTime = ref(0);
-    const audioDuration = ref(100);
+    const audioDuration = ref(0);
     const audioLoaded = ref(false);
     const isPlaying = ref(false);
     const listenerActive = ref(false);
@@ -142,7 +142,7 @@ export default defineComponent({
     const initSlider = async () => {
       if (defaultAudio.value) {
         while (defaultAudio.value.duration === Infinity) {
-          await new Promise((r) => setTimeout(r, 100));
+          await new Promise((resolve) => setTimeout(resolve, 10));
           defaultAudio.value.currentTime = 10000000 * Math.random();
         }
         defaultAudio.value.currentTime = 0;

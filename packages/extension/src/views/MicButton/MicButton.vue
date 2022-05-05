@@ -1,16 +1,25 @@
 <template>
   <div class="mic-button postcsswrapper">
     <v-app>
-      <v-btn
-        @click="dialogOpen = !dialogOpen"
-        text
-        class="ml-3 pa-0 mr-n1"
-        min-width="28"
-        min-height="28"
-        max-height="28"
-      >
-        <v-icon size="20px" color="#737373">{{ icons.mdiMicrophone }}</v-icon>
-      </v-btn>
+      <v-tooltip top>
+        <template #activator="{ on, attrs }">
+          <v-btn
+            @click="dialogOpen = !dialogOpen"
+            text
+            class="ml-3 pa-0 mr-n1"
+            min-width="28"
+            min-height="28"
+            max-height="28"
+            v-bind="attrs"
+            v-on="on"
+          >
+            <v-icon size="20px" color="#737373">{{
+              icons.mdiMicrophone
+            }}</v-icon>
+          </v-btn>
+        </template>
+        <span>MicDrop</span>
+      </v-tooltip>
       <recording-dialog
         v-model="dialogOpen"
         :composeBoxElement="composeBoxElement"
