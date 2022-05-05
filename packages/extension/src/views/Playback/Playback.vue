@@ -135,9 +135,7 @@ export default defineComponent({
 
     const playbackTime = ref(0);
     const audioDuration = ref(0);
-    const audioLoaded = ref(false);
     const isPlaying = ref(false);
-    const listenerActive = ref(false);
 
     const initSlider = async () => {
       if (defaultAudio.value) {
@@ -159,20 +157,16 @@ export default defineComponent({
     const playbackListener = () => {
       if (defaultAudio.value) {
         playbackTime.value = defaultAudio.value.currentTime;
-        defaultAudio.value.addEventListener("ended", endListener);
-        defaultAudio.value.addEventListener("pause", pauseListener);
       }
     };
 
     const pauseListener = () => {
       isPlaying.value = false;
-      listenerActive.value = false;
       cleanupListeners();
     };
 
     const endListener = () => {
       isPlaying.value = false;
-      listenerActive.value = false;
       cleanupListeners();
     };
 
@@ -186,6 +180,9 @@ export default defineComponent({
       if (defaultAudio.value?.paused) {
         defaultAudio.value.play();
         isPlaying.value = true;
+        defaultAudio.value?.addEventListener("timeupdate", playbackListener);
+        defaultAudio.value?.addEventListener("ended", endListener);
+        defaultAudio.value?.addEventListener("pause", pauseListener);
       } else {
         defaultAudio.value?.pause();
         isPlaying.value = false;
@@ -200,22 +197,12 @@ export default defineComponent({
       });
 
       defaultAudio.value?.addEventListener("canplay", () => {
-        audioLoaded.value = true;
         if (defaultAudio.value) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-ignore
           mediaStream.value = defaultAudio.value.captureStream();
         }
       });
-    });
-
-    watch(isPlaying, async () => {
-      if (isPlaying.value) {
-        if (!listenerActive.value) {
-          listenerActive.value = true;
-          defaultAudio.value?.addEventListener("timeupdate", playbackListener);
-        }
-      }
     });
 
     watch(playbackTime, () => {
@@ -250,7 +237,6 @@ export default defineComponent({
       toggleAudio,
       playbackTime,
       audioDuration,
-      audioLoaded,
       convertTime,
       mediaStream,
       logoURL,
