@@ -41,13 +41,13 @@
           <v-spacer />
           <sound-response
             :key="!isPlaying"
-            v-if="!isPlaying || !mediaStream"
+            v-if="!isPlaying"
             mini
             class="mx-2"
           />
           <sound-response
-            v-if="mediaStream && isPlaying"
-            :mediaStream="mediaStream"
+            v-if="isPlaying"
+            :audioElement="defaultAudio"
             mini
             class="mx-2"
           />
@@ -189,19 +189,10 @@ export default defineComponent({
       }
     };
 
-    const mediaStream = ref<MediaStream>();
     onMounted(async () => {
       await nextTick();
       defaultAudio.value?.addEventListener("loadedmetadata", async () => {
         await initSlider();
-      });
-
-      defaultAudio.value?.addEventListener("canplay", () => {
-        if (defaultAudio.value) {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          mediaStream.value = defaultAudio.value.captureStream();
-        }
       });
     });
 
@@ -238,7 +229,6 @@ export default defineComponent({
       playbackTime,
       audioDuration,
       convertTime,
-      mediaStream,
       logoURL,
       logoLink,
       sendFeedback,

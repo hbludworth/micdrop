@@ -96,6 +96,7 @@ import SoundResponse from "../../components/SoundResponse.vue";
 import axios from "axios";
 import { insertImagePlaceholder, insertPlaybackBox } from "./utils";
 import ImagePlaceholderObserver from "../../utils/contentObservers/ImagePlaceholderObserver";
+import audioEncoder from "audio-encoder";
 
 export interface PrimaryButtonOptions {
   icon: string;
@@ -178,7 +179,7 @@ export default defineComponent({
           };
 
           mediaRecorder.value.onstop = () => {
-            const blob = new Blob(chunks, { type: "audio/mpeg" });
+            const blob = new Blob(chunks, { type: "audio/x-wav" });
             chunks = [];
             audioUrl.value = window.URL.createObjectURL(blob);
           };
@@ -219,40 +220,45 @@ export default defineComponent({
     const submit = async () => {
       if (audioUrl.value) {
         const blob = await (await fetch(audioUrl.value)).blob();
-        const file = new File([blob], "newFile.mp3", {
-          type: "audio/mpeg",
+        const arrayBuffer = await blob.arrayBuffer();
+
+        const audioContext = new AudioContext();
+        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+        audioEncoder(audioBuffer, null, null, async (audioBlob: Blob) => {
+          const formData = new FormData();
+          formData.append("newFile", audioBlob, "newFile.wav");
+
+          const url =
+            process.env.NODE_ENV === "development"
+              ? "http://localhost:8081/api/v1/audio"
+              : "https://www.sendmicdrop.com/api/v1/audio";
+
+          const { data: uuid } = await axios.post(url, formData, {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          });
+
+          insertImagePlaceholder(composeBoxElement, uuid);
+
+          insertPlaybackBox(
+            composeBoxElement,
+            composeBoxIndex,
+            uuid,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            audioUrl.value
+          );
+
+          const imagePlaceholderObserver = new ImagePlaceholderObserver(
+            composeBoxElement,
+            uuid
+          );
+          imagePlaceholderObserver.observeContent();
+
+          emit("input", false);
         });
-
-        const formData = new FormData();
-        formData.append("newFile", file, "newFile.mp3");
-
-        const url =
-          process.env.NODE_ENV === "development"
-            ? "http://localhost:8081/api/v1/audio"
-            : "https://www.sendmicdrop.com/api/v1/audio";
-
-        const { data: uuid } = await axios.post(url, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
-
-        insertImagePlaceholder(composeBoxElement, uuid);
-
-        insertPlaybackBox(
-          composeBoxElement,
-          composeBoxIndex,
-          uuid,
-          audioUrl.value
-        );
-
-        const imagePlaceholderObserver = new ImagePlaceholderObserver(
-          composeBoxElement,
-          uuid
-        );
-        imagePlaceholderObserver.observeContent();
-
-        emit("input", false);
       }
     };
 
