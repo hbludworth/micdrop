@@ -1,26 +1,17 @@
 <template>
   <div>
-    <v-app-bar
-      color="rgba(242, 242, 242, 1)"
-      height="100"
-      app
-      elevate-on-scroll
-    >
+    <v-app-bar color="primary" height="120" app elevate-on-scroll>
       <a href="#top">
         <v-img :src="logoURL" max-width="280" class="ma-12" href="#top" />
       </a>
 
       <v-spacer />
       <div class="mr-10">
-        <v-btn text color="rgba(83, 132, 237, 1)" href="#aboutCard"
-          >About</v-btn
-        >
-        <v-btn text color="rgba(83, 132, 237, 1)" href="#requestDemoCard"
-          >Request a Demo</v-btn
-        >
+        <v-btn text color="white" href="#aboutCard">About</v-btn>
+        <v-btn text color="white" href="#requestDemoCard">Request a Demo</v-btn>
         <v-btn
-          color="rgba(83, 132, 237, 1)"
-          class="white--text ml-2"
+          color="white"
+          class="primary--text ml-2"
           depressed
           href="https://chrome.google.com/webstore/detail/cfeaabebicbbcmddmgphgncpdlkadgfl?authuser=2&hl=en"
           target="_blank"
@@ -43,7 +34,7 @@
               you can get more done.
             </div>
             <v-btn
-              color="rgba(83, 132, 237, 1)"
+              color="primary"
               class="white--text mt-14"
               depressed
               x-large
@@ -65,7 +56,7 @@
         </v-row>
       </v-card>
 
-      <v-card color="rgba(83, 132, 237, 1)" flat rounded class="mt-6">
+      <v-card color="primary" flat rounded class="mt-6">
         <span class="anchor" id="aboutCard"></span>
         <v-row class="ma-0">
           <v-col cols="6" class="pa-8">
@@ -209,11 +200,7 @@
               </v-row>
               <v-row class="ma-0 mt-6" justify="end">
                 <span class="mr-4 mt-1 red--text">Coming Soon</span>
-                <v-btn
-                  color="rgba(83, 132, 237, 1)"
-                  class="white--text"
-                  depressed
-                  disabled
+                <v-btn color="primary" class="white--text" depressed disabled
                   >Submit</v-btn
                 >
               </v-row>
@@ -234,8 +221,8 @@ export default defineComponent({
   setup() {
     const logoURL =
       process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo.png"
-        : "https://www.sendmicdrop.com/api/v1/image/logo.png";
+        ? "http://localhost:8081/api/v1/image/logo-drop.png"
+        : "https://www.sendmicdrop.com/api/v1/image/logo-drop.png";
 
     const videoURL =
       process.env.NODE_ENV === "development"
