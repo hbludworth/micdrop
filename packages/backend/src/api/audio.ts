@@ -12,13 +12,13 @@ router.route('/audio/:uuid').get(async (req, res, _next) => {
 
   const params = {
     Bucket: 'micdrop-audio',
-    Key: `${uuid}.mp3`,
+    Key: `${uuid}.wav`,
   };
 
   const audioFile = (await s3.getObject(params).promise()).Body;
 
   if (audioFile) {
-    res.contentType('mpeg');
+    res.contentType('audio/x-wav');
     res.send(audioFile).end();
   } else {
     res.status(404).end();
@@ -39,7 +39,7 @@ router.route('/audio').post(async (req, res, _next) => {
 
   const params: AWS.S3.PutObjectRequest = {
     Bucket: 'micdrop-audio',
-    Key: `${uuid}.mp3`,
+    Key: `${uuid}.wav`,
     Body: file.data,
   };
 

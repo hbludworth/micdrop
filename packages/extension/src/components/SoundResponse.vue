@@ -39,6 +39,10 @@ export default defineComponent({
       type: MediaStream,
       required: false,
     },
+    audioElement: {
+      type: HTMLAudioElement,
+      required: false,
+    },
     mini: {
       type: Boolean,
       default: false,
@@ -155,6 +159,20 @@ export default defineComponent({
           props.mediaStream
         );
         source.connect(analyzer.value);
+        analyzer.value.getByteFrequencyData(dataArray.value);
+        handleAnimation();
+      } else if (props.audioElement) {
+        audioContext.value = new AudioContext();
+        analyzer.value = audioContext.value.createAnalyser();
+        analyzer.value.fftSize = 32;
+        const bufferLength = analyzer.value.frequencyBinCount;
+        dataArray.value = new Uint8Array(bufferLength);
+        analyzer.value.getByteFrequencyData(dataArray.value);
+        const source = audioContext.value.createMediaElementSource(
+          props.audioElement
+        );
+        source.connect(analyzer.value);
+        source.connect(audioContext.value.destination);
         analyzer.value.getByteFrequencyData(dataArray.value);
         handleAnimation();
       }
