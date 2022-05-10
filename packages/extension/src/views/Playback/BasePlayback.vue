@@ -2,9 +2,18 @@
   <div id="playback-insertion-point" class="postcsswrapper">
     <v-app>
       <v-row v-if="includeCenteredRow" class="ma-0" justify="center">
-        <playback :audioUrl="audioUrl" />
+        <playback
+          :audioUrl="audioUrl"
+          :showRemoveButton="showRemoveButton"
+          @remove="$emit('remove')"
+        />
       </v-row>
-      <playback v-else :audioUrl="audioUrl" />
+      <playback
+        v-else
+        :audioUrl="audioUrl"
+        :showRemoveButton="showRemoveButton"
+        @remove="$emit('remove')"
+      />
       <span id="audio-uuid" hidden>{{ uuid }}</span>
     </v-app>
   </div>
@@ -30,6 +39,10 @@ export default defineComponent({
     uuid: {
       type: String,
       required: false,
+    },
+    showRemoveButton: {
+      type: Boolean,
+      default: false,
     },
   },
   setup() {

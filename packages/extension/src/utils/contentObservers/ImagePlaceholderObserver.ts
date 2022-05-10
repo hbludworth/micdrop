@@ -31,6 +31,10 @@ class ImagePlaceholderObserver {
       subtree: true,
     });
   };
+
+  public disconnectObserver = (): void => {
+    this.contentObserver.disconnect();
+  };
 }
 
 export default ImagePlaceholderObserver;

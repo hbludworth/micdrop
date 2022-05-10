@@ -2,6 +2,8 @@ import Vue from 'vue';
 import vuetify from '../../plugins/vuetify';
 import VueCompositionApi from '@vue/composition-api';
 import BasePlayback from '../Playback/BasePlayback.vue';
+import ImagePlaceholderObserver from '@/utils/contentObservers/ImagePlaceholderObserver';
+import axios from 'axios';
 
 const insertImagePlaceholder = (composeBoxElement: Element, uuid: string) => {
   const inputArea = composeBoxElement.querySelector('.LW-avf');
@@ -58,12 +60,14 @@ const insertPlaybackBox = (
   composeBoxElement: Element,
   composeBoxIndex: number,
   uuid: string,
-  audioUrl: string
+  audioUrl: string,
+  imagePlaceholderObserver: ImagePlaceholderObserver
 ) => {
   const tbody = composeBoxElement.children.item(0);
   const tr = tbody?.children.item(0);
 
   const playbackRow = document.createElement('tr');
+  playbackRow.classList.add('playback-row');
   const playbackData = document.createElement('td');
   playbackRow.appendChild(playbackData);
 
@@ -82,9 +86,34 @@ const insertPlaybackBox = (
           audioUrl,
           uuid,
           includeCenteredRow: true,
+          showRemoveButton: true,
+        },
+        on: {
+          remove: async () =>
+            await removeRecording(
+              composeBoxElement,
+              uuid,
+              imagePlaceholderObserver
+            ),
         },
       }),
   }).$mount(`#emailContent-${composeBoxIndex}`);
+};
+
+const removeRecording = async (
+  composeBoxElement: Element,
+  uuid: string,
+  imagePlaceholderObserver: ImagePlaceholderObserver
+) => {
+  composeBoxElement.querySelector('tr.playback-row')?.remove();
+  imagePlaceholderObserver.disconnectObserver();
+  composeBoxElement.querySelector('#image-placeholder')?.remove();
+
+  const url =
+    process.env.NODE_ENV === 'development'
+      ? `http://localhost:8081/api/v1/audio/${uuid}`
+      : `https://www.sendmicdrop.com/api/v1/audio/${uuid}`;
+  await axios.delete(url);
 };
 
 export { insertImagePlaceholder, insertPlaybackBox };

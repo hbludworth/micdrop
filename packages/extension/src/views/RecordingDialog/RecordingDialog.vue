@@ -240,6 +240,11 @@ export default defineComponent({
             },
           });
 
+          const imagePlaceholderObserver = new ImagePlaceholderObserver(
+            composeBoxElement,
+            uuid
+          );
+
           insertImagePlaceholder(composeBoxElement, uuid);
 
           insertPlaybackBox(
@@ -248,13 +253,10 @@ export default defineComponent({
             uuid,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            audioUrl.value
+            audioUrl.value,
+            imagePlaceholderObserver
           );
 
-          const imagePlaceholderObserver = new ImagePlaceholderObserver(
-            composeBoxElement,
-            uuid
-          );
           imagePlaceholderObserver.observeContent();
 
           emit("input", false);
