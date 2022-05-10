@@ -43,12 +43,14 @@
             <sound-response
               :key="!isPlaying"
               v-if="!isPlaying"
+              :progressFraction="progressFraction"
               mini
               class="mx-2"
             />
             <sound-response
               v-if="isPlaying"
               :audioElement="defaultAudio"
+              :progressFraction="progressFraction"
               mini
               class="mx-2"
             />
@@ -155,6 +157,15 @@ export default defineComponent({
     const audioDuration = ref(0);
     const isPlaying = ref(false);
 
+    const progressFraction = ref(0);
+    const individualDuration = ref(0);
+    const progressFractionInterval = ref(0);
+
+    const initProgressFraction = () => {
+      progressFraction.value = 0;
+      individualDuration.value = (audioDuration.value / 16) * 1000;
+    };
+
     const initSlider = async () => {
       if (defaultAudio.value) {
         while (defaultAudio.value.duration === Infinity) {
@@ -163,6 +174,7 @@ export default defineComponent({
         }
         defaultAudio.value.currentTime = 0;
         audioDuration.value = Math.round(defaultAudio.value.duration);
+        initProgressFraction();
       }
     };
 
@@ -181,6 +193,7 @@ export default defineComponent({
     const pauseListener = () => {
       isPlaying.value = false;
       cleanupListeners();
+      clearInterval(progressFractionInterval.value);
     };
 
     const endListener = () => {
@@ -201,6 +214,10 @@ export default defineComponent({
         defaultAudio.value?.addEventListener("timeupdate", playbackListener);
         defaultAudio.value?.addEventListener("ended", endListener);
         defaultAudio.value?.addEventListener("pause", pauseListener);
+
+        progressFractionInterval.value = setInterval(() => {
+          progressFraction.value += 0.1;
+        }, individualDuration.value / 10);
       } else {
         defaultAudio.value?.pause();
         isPlaying.value = false;
@@ -250,6 +267,7 @@ export default defineComponent({
       logoURL,
       logoLink,
       sendFeedback,
+      progressFraction,
     };
   },
 });

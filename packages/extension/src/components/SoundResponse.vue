@@ -43,6 +43,10 @@ export default defineComponent({
       type: HTMLAudioElement,
       required: false,
     },
+    progressFraction: {
+      type: Number,
+      required: false,
+    },
     mini: {
       type: Boolean,
       default: false,
@@ -78,25 +82,41 @@ export default defineComponent({
         case 1:
         case 2:
         case 3:
-          return "#4286f5"; // blue
+          return `rgba(66, 134, 245, ${getAlpha(index)})`; // blue
         case 4:
         case 5:
         case 10:
         case 11:
-          return "#f5b400"; // yellow
+          return `rgba(245, 180, 0, ${getAlpha(index)})`; // yellow
         case 6:
         case 7:
         case 8:
         case 9:
-          return "#ea4235"; // red
+          return `rgba(234, 66, 53, ${getAlpha(index)})`; // red
         case 12:
         case 13:
         case 14:
         case 15:
-          return "#34a853"; // green
+          return `rgba(52, 168, 83, ${getAlpha(index)})`; // green
         default:
-          return "#ea4235"; // red
+          return `rgba(234, 66, 53, ${getAlpha(index)})`; // red
       }
+    };
+
+    const getAlpha = (index: number) => {
+      if (props.progressFraction === undefined) {
+        return 1;
+      }
+      if (props.progressFraction > index + 1) {
+        return 1;
+      }
+      if (props.progressFraction < index) {
+        return 0.2;
+      }
+
+      const decimalValue = props.progressFraction % 1;
+      const adjustedDecimalValue = 0.7 * decimalValue + 0.2;
+      return adjustedDecimalValue;
     };
 
     let then = 0;
