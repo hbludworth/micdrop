@@ -13,9 +13,7 @@
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon size="20px" color="#737373">{{
-              icons.mdiMicrophone
-            }}</v-icon>
+            <v-img max-width="20px" max-height="20px" :src="iconURL" />
           </v-btn>
         </template>
         <span>MicDrop</span>
@@ -56,9 +54,15 @@ export default defineComponent({
       mdiMicrophone,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    require("../../assets/icons/128.png");
+
+    const iconURL = browser.runtime.getURL("/img/128.4e87e08d.png");
+
     return {
       dialogOpen,
       icons,
+      iconURL,
     };
   },
 });
