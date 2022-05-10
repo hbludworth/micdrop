@@ -8,27 +8,28 @@
         ref="defaultAudio"
         crossorigin="anonymous"
       />
-      <v-card
-        class="pa-3 mt-6 rounded-pill"
-        width="385"
-        color="blue lighten-3"
-        flat
-      >
-        <v-row class="justify-center align-center ma-0">
-          <v-btn
-            height="60"
-            width="60"
-            @click="toggleAudio"
-            fab
-            x-large
-            :color="isPlaying ? '#ea4235' : '#4286f5'"
-            depressed
-          >
-            <v-icon color="white" size="35px">{{
-              isPlaying ? icons.mdiPauseCircle : icons.mdiPlayCircle
-            }}</v-icon>
-          </v-btn>
-          <!-- <v-slider
+      <v-hover v-slot="{ hover }">
+        <v-card
+          class="pa-3 mt-6 rounded-pill"
+          width="385"
+          color="blue lighten-3"
+          flat
+        >
+          <v-row class="justify-center align-center ma-0">
+            <v-btn
+              height="60"
+              width="60"
+              @click="toggleAudio"
+              fab
+              x-large
+              :color="isPlaying ? '#ea4235' : '#4286f5'"
+              depressed
+            >
+              <v-icon color="white" size="35px">{{
+                isPlaying ? icons.mdiPauseCircle : icons.mdiPlayCircle
+              }}</v-icon>
+            </v-btn>
+            <!-- <v-slider
             v-model="playbackTime"
             min="0"
             :max="audioDuration"
@@ -38,37 +39,44 @@
             ticks
             step="0.1"
           /> -->
-          <v-spacer />
-          <sound-response
-            :key="!isPlaying"
-            v-if="!isPlaying"
-            mini
-            class="mx-2"
-          />
-          <sound-response
-            v-if="isPlaying"
-            :audioElement="defaultAudio"
-            mini
-            class="mx-2"
-          />
-          <v-spacer />
-          <v-btn
-            height="60"
-            width="60"
-            fab
-            x-large
-            color="#34a853"
-            depressed
-            class="white--text"
-          >
-            {{
-              playbackTime !== 0
-                ? convertTime(playbackTime)
-                : convertTime(audioDuration)
-            }}
-          </v-btn>
-        </v-row>
-      </v-card>
+            <v-spacer />
+            <sound-response
+              :key="!isPlaying"
+              v-if="!isPlaying"
+              mini
+              class="mx-2"
+            />
+            <sound-response
+              v-if="isPlaying"
+              :audioElement="defaultAudio"
+              mini
+              class="mx-2"
+            />
+            <v-spacer />
+            <v-btn
+              height="60"
+              width="60"
+              fab
+              x-large
+              :color="hover && showRemoveButton ? '#ea4235' : '#34a853'"
+              depressed
+              class="white--text"
+            >
+              <v-icon
+                v-if="hover && showRemoveButton"
+                size="35px"
+                @click="$emit('remove')"
+                >{{ icons.mdiCloseCircle }}</v-icon
+              >
+              <span v-else>{{
+                playbackTime !== 0
+                  ? convertTime(playbackTime)
+                  : convertTime(audioDuration)
+              }}</span>
+            </v-btn>
+          </v-row>
+        </v-card>
+      </v-hover>
     </v-row>
     <v-row class="ma-0 mt-0">
       <v-spacer />
@@ -111,7 +119,12 @@ import {
   watch,
   nextTick,
 } from "@vue/composition-api";
-import { mdiPlayCircle, mdiPauseCircle, mdiMessageAlertOutline } from "@mdi/js";
+import {
+  mdiPlayCircle,
+  mdiPauseCircle,
+  mdiMessageAlertOutline,
+  mdiCloseCircle,
+} from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 
 export default defineComponent({
@@ -119,6 +132,10 @@ export default defineComponent({
     audioUrl: {
       type: String,
       required: true,
+    },
+    showRemoveButton: {
+      type: Boolean,
+      default: false,
     },
   },
   components: {
@@ -129,6 +146,7 @@ export default defineComponent({
       mdiPlayCircle,
       mdiPauseCircle,
       mdiMessageAlertOutline,
+      mdiCloseCircle,
     });
 
     const defaultAudio = ref<HTMLAudioElement | null>(null);
