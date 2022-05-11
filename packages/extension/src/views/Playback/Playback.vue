@@ -8,7 +8,7 @@
         ref="defaultAudio"
         crossorigin="anonymous"
       />
-      <v-hover v-slot="{ hover }">
+      <v-hover v-model="playbackHover">
         <v-card
           class="pa-3 mt-6 rounded-pill"
           width="385"
@@ -29,17 +29,39 @@
                 isPlaying ? icons.mdiPauseCircle : icons.mdiPlayCircle
               }}</v-icon>
             </v-btn>
-            <!-- <v-slider
-            v-model="playbackTime"
-            min="0"
-            :max="audioDuration"
-            class="mx-4"
-            hide-details
-            color="info"
-            ticks
-            step="0.1"
-          /> -->
+            <v-hover v-model="soundResponseHover">
+              <v-slider
+                v-model="playbackTime"
+                min="0"
+                :max="audioDuration"
+                class="mx-4 slider"
+                hide-details
+                color="transparent"
+                track-color="transparent"
+                step="0.05"
+                @input="updateSlider"
+              />
+            </v-hover>
+            <span
+              v-if="soundResponseHover"
+              class="
+                scrubber-indicator
+                mb-n10
+                text-caption
+                grey--text
+                text--lighten-1
+              "
+            >
+              <v-icon small class="mt-n1" color="grey lighten-1">{{
+                icons.mdiChevronLeft
+              }}</v-icon>
+              <span>Drag to Scrub</span>
+              <v-icon small class="mt-n1" color="grey lighten-1">{{
+                icons.mdiChevronRight
+              }}</v-icon>
+            </span>
             <v-spacer />
+
             <sound-response
               :key="!isPlaying"
               v-if="!isPlaying"
@@ -60,12 +82,12 @@
               width="60"
               fab
               x-large
-              :color="hover && showRemoveButton ? '#ea4235' : '#34a853'"
+              :color="playbackHover && showRemoveButton ? '#ea4235' : '#34a853'"
               depressed
               class="white--text"
             >
               <v-icon
-                v-if="hover && showRemoveButton"
+                v-if="playbackHover && showRemoveButton"
                 size="35px"
                 @click="$emit('remove')"
                 >{{ icons.mdiCloseCircle }}</v-icon
@@ -118,7 +140,6 @@ import {
   defineComponent,
   ref,
   onMounted,
-  watch,
   nextTick,
 } from "@vue/composition-api";
 import {
@@ -126,6 +147,8 @@ import {
   mdiPauseCircle,
   mdiMessageAlertOutline,
   mdiCloseCircle,
+  mdiChevronLeft,
+  mdiChevronRight,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 
@@ -149,6 +172,8 @@ export default defineComponent({
       mdiPauseCircle,
       mdiMessageAlertOutline,
       mdiCloseCircle,
+      mdiChevronLeft,
+      mdiChevronRight,
     });
 
     const defaultAudio = ref<HTMLAudioElement | null>(null);
@@ -162,7 +187,10 @@ export default defineComponent({
     const progressFractionInterval = ref(0);
 
     const initProgressFraction = () => {
-      progressFraction.value = 0;
+      if (defaultAudio.value?.currentTime !== undefined) {
+        progressFraction.value =
+          (defaultAudio.value.currentTime / audioDuration.value) * 16 - 0.5;
+      }
       individualDuration.value = (audioDuration.value / 16) * 1000;
     };
 
@@ -184,9 +212,12 @@ export default defineComponent({
       return [minutes, seconds % 60].map(format).join(":");
     };
 
-    const playbackListener = () => {
+    const playbackListener = async () => {
       if (defaultAudio.value) {
+        allowUpdates.value = false;
         playbackTime.value = defaultAudio.value.currentTime;
+        await nextTick();
+        allowUpdates.value = true;
       }
     };
 
@@ -215,6 +246,8 @@ export default defineComponent({
         defaultAudio.value?.addEventListener("ended", endListener);
         defaultAudio.value?.addEventListener("pause", pauseListener);
 
+        initProgressFraction();
+
         progressFractionInterval.value = setInterval(() => {
           progressFraction.value += 0.1;
         }, individualDuration.value / 10);
@@ -229,15 +262,6 @@ export default defineComponent({
       defaultAudio.value?.addEventListener("loadedmetadata", async () => {
         await initSlider();
       });
-    });
-
-    watch(playbackTime, () => {
-      const diff = Math.abs(
-        playbackTime.value - (defaultAudio.value?.currentTime || 0)
-      );
-      if (diff > 0.5 && defaultAudio.value) {
-        defaultAudio.value.currentTime = playbackTime.value;
-      }
     });
 
     const logoURL =
@@ -256,6 +280,21 @@ export default defineComponent({
       );
     };
 
+    const allowUpdates = ref(true);
+
+    const updateSlider = () => {
+      if (allowUpdates.value) {
+        if (defaultAudio.value) {
+          defaultAudio.value.pause();
+          defaultAudio.value.currentTime = playbackTime.value;
+        }
+        initProgressFraction();
+      }
+    };
+
+    const playbackHover = ref(false);
+    const soundResponseHover = ref(false);
+
     return {
       defaultAudio,
       icons,
@@ -268,6 +307,10 @@ export default defineComponent({
       logoLink,
       sendFeedback,
       progressFraction,
+      updateSlider,
+      allowUpdates,
+      playbackHover,
+      soundResponseHover,
     };
   },
 });
@@ -276,5 +319,38 @@ export default defineComponent({
 <style scoped>
 .hide-audio {
   display: none;
+}
+
+.slider {
+  position: absolute;
+  z-index: 1000;
+  width: 200px;
+}
+
+.slider >>> .v-slider__thumb {
+  height: 80px;
+  width: 80px;
+}
+
+.slider >>> .v-slider--horizontal .v-slider__track-container {
+  height: 80px;
+}
+
+.scrubber-indicator {
+  position: absolute;
+  z-index: 999;
+  animation: fadeInOut 3s infinite;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 </style>
