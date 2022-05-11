@@ -42,37 +42,27 @@
                 @input="updateSlider"
               />
             </v-hover>
-            <span
+            <v-card
               v-if="soundResponseHover"
-              class="
-                scrubber-indicator
-                mb-n10
-                text-caption
-                grey--text
-                text--lighten-1
-              "
+              class="scrubber-indicator rounded-pill"
+              outlined
             >
-              <v-icon small class="mt-n1" color="grey lighten-1">{{
-                icons.mdiChevronLeft
-              }}</v-icon>
-              <span>Drag to Scrub</span>
-              <v-icon small class="mt-n1" color="grey lighten-1">{{
-                icons.mdiChevronRight
-              }}</v-icon>
-            </span>
+              <span class="text-caption grey--text text--lighten-1">
+                <v-icon small class="mt-n1" color="grey lighten-1">{{
+                  icons.mdiChevronLeft
+                }}</v-icon>
+                <span>Drag to Seek</span>
+                <v-icon small class="mt-n1" color="grey lighten-1">{{
+                  icons.mdiChevronRight
+                }}</v-icon>
+              </span>
+            </v-card>
             <v-spacer />
-
             <sound-response
-              :key="!isPlaying"
-              v-if="!isPlaying"
-              :progressFraction="progressFraction"
-              mini
-              class="mx-2"
-            />
-            <sound-response
-              v-if="isPlaying"
+              v-if="defaultAudio"
               :audioElement="defaultAudio"
               :progressFraction="progressFraction"
+              :isPlaying="isPlaying"
               mini
               class="mx-2"
             />
@@ -327,11 +317,6 @@ export default defineComponent({
   width: 200px;
 }
 
-.slider >>> .v-slider__thumb {
-  height: 80px;
-  width: 80px;
-}
-
 .slider >>> .v-slider--horizontal .v-slider__track-container {
   height: 80px;
 }
@@ -339,7 +324,7 @@ export default defineComponent({
 .scrubber-indicator {
   position: absolute;
   z-index: 999;
-  animation: fadeInOut 3s infinite;
+  animation: fadeInOut 4s infinite;
 }
 
 @keyframes fadeInOut {

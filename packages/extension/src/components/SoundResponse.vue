@@ -31,6 +31,7 @@ import {
   ref,
   onMounted,
   onUnmounted,
+  watch,
 } from "@vue/composition-api";
 
 export default defineComponent({
@@ -51,12 +52,18 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    isPlaying: {
+      type: Boolean,
+      required: true,
+    },
   },
   setup(props) {
     const currentFrequencyData = ref<number[]>([
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ]);
     const targetFrequencyData = ref<number[]>([]);
+
+    const animationCancelled = ref(false);
 
     const getHeight = (index: number) => {
       const isFirstHalf = index < 8;
@@ -123,40 +130,42 @@ export default defineComponent({
     let now = 0;
     let updateCount = 0;
     const handleAnimation = () => {
-      now = Date.now();
-      if (analyzer.value && dataArray.value && now > then + 250) {
-        analyzer.value.getByteFrequencyData(dataArray.value);
-        targetFrequencyData.value = Array.from(dataArray.value);
-        then = now;
-      } else if (
-        analyzer.value &&
-        dataArray.value &&
-        targetFrequencyData.value.length > 0
-      ) {
-        currentFrequencyData.value = currentFrequencyData.value.map(
-          (val, index) => {
-            const isFirstHalf = index < 8;
-            const indexToUse = isFirstHalf ? index : 15 - index;
-            const increasedValue = val + (indexToUse + 1) * 0.6;
-            if (increasedValue < targetFrequencyData.value[indexToUse]) {
-              return increasedValue;
+      if (!animationCancelled.value) {
+        now = Date.now();
+        if (analyzer.value && dataArray.value && now > then + 250) {
+          analyzer.value.getByteFrequencyData(dataArray.value);
+          targetFrequencyData.value = Array.from(dataArray.value);
+          then = now;
+        } else if (
+          analyzer.value &&
+          dataArray.value &&
+          targetFrequencyData.value.length > 0
+        ) {
+          currentFrequencyData.value = currentFrequencyData.value.map(
+            (val, index) => {
+              const isFirstHalf = index < 8;
+              const indexToUse = isFirstHalf ? index : 15 - index;
+              const increasedValue = val + (indexToUse + 1) * 0.6;
+              if (increasedValue < targetFrequencyData.value[indexToUse]) {
+                return increasedValue;
+              }
+              updateCount++;
+              if (updateCount === 16) {
+                updateCount = 0;
+                targetFrequencyData.value = [];
+              }
+              return currentFrequencyData.value[indexToUse];
             }
-            updateCount++;
-            if (updateCount === 16) {
-              updateCount = 0;
-              targetFrequencyData.value = [];
+          );
+        } else if (analyzer.value && dataArray.value) {
+          currentFrequencyData.value = currentFrequencyData.value.map(
+            (val, index) => {
+              const isFirstHalf = index < 8;
+              const indexToUse = isFirstHalf ? index : 15 - index;
+              return val - (indexToUse + 1) * 0.6;
             }
-            return currentFrequencyData.value[indexToUse];
-          }
-        );
-      } else if (analyzer.value && dataArray.value) {
-        currentFrequencyData.value = currentFrequencyData.value.map(
-          (val, index) => {
-            const isFirstHalf = index < 8;
-            const indexToUse = isFirstHalf ? index : 15 - index;
-            return val - (indexToUse + 1) * 0.6;
-          }
-        );
+          );
+        }
       }
       if (analyzer.value) {
         requestAnimationFrame(handleAnimation);
@@ -202,6 +211,17 @@ export default defineComponent({
       analyzer.value?.disconnect();
       analyzer.value = undefined;
     });
+
+    watch(
+      () => props.isPlaying,
+      () => {
+        if (!props.isPlaying) {
+          animationCancelled.value = true;
+        } else {
+          animationCancelled.value = false;
+        }
+      }
+    );
 
     return {
       handleAnimation,
