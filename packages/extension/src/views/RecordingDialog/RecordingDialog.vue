@@ -41,7 +41,7 @@
           v-if="isRecording && mediaStream"
           class="justify-center mt-8 mx-0"
         >
-          <sound-response :mediaStream="mediaStream" />
+          <sound-response :mediaStream="mediaStream" :isPlaying="true" />
         </v-row>
         <v-row class="ma-0" v-if="audioUrl">
           <v-col cols="2" class="pa-0" />
