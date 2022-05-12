@@ -31,6 +31,7 @@ import {
   ref,
   onMounted,
   onUnmounted,
+  watch,
 } from "@vue/composition-api";
 
 export default defineComponent({
@@ -43,9 +44,17 @@ export default defineComponent({
       type: HTMLAudioElement,
       required: false,
     },
+    progressFraction: {
+      type: Number,
+      required: false,
+    },
     mini: {
       type: Boolean,
       default: false,
+    },
+    isPlaying: {
+      type: Boolean,
+      required: true,
     },
   },
   setup(props) {
@@ -53,6 +62,8 @@ export default defineComponent({
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     ]);
     const targetFrequencyData = ref<number[]>([]);
+
+    const animationCancelled = ref(false);
 
     const getHeight = (index: number) => {
       const isFirstHalf = index < 8;
@@ -78,65 +89,83 @@ export default defineComponent({
         case 1:
         case 2:
         case 3:
-          return "#4286f5"; // blue
+          return `rgba(66, 134, 245, ${getAlpha(index)})`; // blue
         case 4:
         case 5:
         case 10:
         case 11:
-          return "#f5b400"; // yellow
+          return `rgba(245, 180, 0, ${getAlpha(index)})`; // yellow
         case 6:
         case 7:
         case 8:
         case 9:
-          return "#ea4235"; // red
+          return `rgba(234, 66, 53, ${getAlpha(index)})`; // red
         case 12:
         case 13:
         case 14:
         case 15:
-          return "#34a853"; // green
+          return `rgba(52, 168, 83, ${getAlpha(index)})`; // green
         default:
-          return "#ea4235"; // red
+          return `rgba(234, 66, 53, ${getAlpha(index)})`; // red
       }
+    };
+
+    const getAlpha = (index: number) => {
+      if (props.progressFraction === undefined) {
+        return 1;
+      }
+      if (props.progressFraction > index + 1) {
+        return 1;
+      }
+      if (props.progressFraction < index) {
+        return 0.2;
+      }
+
+      const decimalValue = props.progressFraction % 1;
+      const adjustedDecimalValue = 0.7 * decimalValue + 0.2;
+      return adjustedDecimalValue;
     };
 
     let then = 0;
     let now = 0;
     let updateCount = 0;
     const handleAnimation = () => {
-      now = Date.now();
-      if (analyzer.value && dataArray.value && now > then + 250) {
-        analyzer.value.getByteFrequencyData(dataArray.value);
-        targetFrequencyData.value = Array.from(dataArray.value);
-        then = now;
-      } else if (
-        analyzer.value &&
-        dataArray.value &&
-        targetFrequencyData.value.length > 0
-      ) {
-        currentFrequencyData.value = currentFrequencyData.value.map(
-          (val, index) => {
-            const isFirstHalf = index < 8;
-            const indexToUse = isFirstHalf ? index : 15 - index;
-            const increasedValue = val + (indexToUse + 1) * 0.6;
-            if (increasedValue < targetFrequencyData.value[indexToUse]) {
-              return increasedValue;
+      if (!animationCancelled.value) {
+        now = Date.now();
+        if (analyzer.value && dataArray.value && now > then + 250) {
+          analyzer.value.getByteFrequencyData(dataArray.value);
+          targetFrequencyData.value = Array.from(dataArray.value);
+          then = now;
+        } else if (
+          analyzer.value &&
+          dataArray.value &&
+          targetFrequencyData.value.length > 0
+        ) {
+          currentFrequencyData.value = currentFrequencyData.value.map(
+            (val, index) => {
+              const isFirstHalf = index < 8;
+              const indexToUse = isFirstHalf ? index : 15 - index;
+              const increasedValue = val + (indexToUse + 1) * 0.6;
+              if (increasedValue < targetFrequencyData.value[indexToUse]) {
+                return increasedValue;
+              }
+              updateCount++;
+              if (updateCount === 16) {
+                updateCount = 0;
+                targetFrequencyData.value = [];
+              }
+              return currentFrequencyData.value[indexToUse];
             }
-            updateCount++;
-            if (updateCount === 16) {
-              updateCount = 0;
-              targetFrequencyData.value = [];
+          );
+        } else if (analyzer.value && dataArray.value) {
+          currentFrequencyData.value = currentFrequencyData.value.map(
+            (val, index) => {
+              const isFirstHalf = index < 8;
+              const indexToUse = isFirstHalf ? index : 15 - index;
+              return val - (indexToUse + 1) * 0.6;
             }
-            return currentFrequencyData.value[indexToUse];
-          }
-        );
-      } else if (analyzer.value && dataArray.value) {
-        currentFrequencyData.value = currentFrequencyData.value.map(
-          (val, index) => {
-            const isFirstHalf = index < 8;
-            const indexToUse = isFirstHalf ? index : 15 - index;
-            return val - (indexToUse + 1) * 0.6;
-          }
-        );
+          );
+        }
       }
       if (analyzer.value) {
         requestAnimationFrame(handleAnimation);
@@ -182,6 +211,17 @@ export default defineComponent({
       analyzer.value?.disconnect();
       analyzer.value = undefined;
     });
+
+    watch(
+      () => props.isPlaying,
+      () => {
+        if (!props.isPlaying) {
+          animationCancelled.value = true;
+        } else {
+          animationCancelled.value = false;
+        }
+      }
+    );
 
     return {
       handleAnimation,

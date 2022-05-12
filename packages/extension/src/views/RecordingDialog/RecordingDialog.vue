@@ -41,7 +41,7 @@
           v-if="isRecording && mediaStream"
           class="justify-center mt-8 mx-0"
         >
-          <sound-response :mediaStream="mediaStream" />
+          <sound-response :mediaStream="mediaStream" :isPlaying="true" />
         </v-row>
         <v-row class="ma-0" v-if="audioUrl">
           <v-col cols="2" class="pa-0" />
@@ -240,6 +240,11 @@ export default defineComponent({
             },
           });
 
+          const imagePlaceholderObserver = new ImagePlaceholderObserver(
+            composeBoxElement,
+            uuid
+          );
+
           insertImagePlaceholder(composeBoxElement, uuid);
 
           insertPlaybackBox(
@@ -248,13 +253,10 @@ export default defineComponent({
             uuid,
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
-            audioUrl.value
+            audioUrl.value,
+            imagePlaceholderObserver
           );
 
-          const imagePlaceholderObserver = new ImagePlaceholderObserver(
-            composeBoxElement,
-            uuid
-          );
           imagePlaceholderObserver.observeContent();
 
           emit("input", false);

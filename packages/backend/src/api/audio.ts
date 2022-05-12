@@ -5,25 +5,41 @@ import AWS from 'aws-sdk';
 
 const router = express.Router();
 
-router.route('/audio/:uuid').get(async (req, res, _next) => {
-  const { uuid } = req.params;
+router
+  .route('/audio/:uuid')
+  .get(async (req, res, _next) => {
+    const { uuid } = req.params;
 
-  const s3 = new AWS.S3();
+    const s3 = new AWS.S3();
 
-  const params = {
-    Bucket: 'micdrop-audio',
-    Key: `${uuid}.wav`,
-  };
+    const params: AWS.S3.GetObjectRequest = {
+      Bucket: 'micdrop-audio',
+      Key: `${uuid}.wav`,
+    };
 
-  const audioFile = (await s3.getObject(params).promise()).Body;
+    const audioFile = (await s3.getObject(params).promise()).Body;
 
-  if (audioFile) {
-    res.contentType('audio/x-wav');
-    res.send(audioFile).end();
-  } else {
-    res.status(404).end();
-  }
-});
+    if (audioFile) {
+      res.contentType('audio/x-wav');
+      res.send(audioFile).end();
+    } else {
+      res.status(404).end();
+    }
+  })
+  .delete(async (req, res, _next) => {
+    const { uuid } = req.params;
+
+    const s3 = new AWS.S3();
+
+    const params: AWS.S3.DeleteObjectRequest = {
+      Bucket: 'micdrop-audio',
+      Key: `${uuid}.wav`,
+    };
+
+    await s3.deleteObject(params).promise();
+
+    res.status(200).end();
+  });
 
 router.route('/audio').post(async (req, res, _next) => {
   if (!req.files) {
