@@ -7,7 +7,11 @@ class ComposeBoxesObserver {
   private composeBoxesObserver = new MutationObserver(() => {
     const allComposeBoxes = document.querySelectorAll('tr.btC');
     allComposeBoxes.forEach((composeBox, index) => {
-      if (!composeBox.querySelector('div.mic-button')) {
+      const composeBoxElement = composeBox.closest('.iN');
+      if (
+        !composeBox.querySelector('div.mic-button') &&
+        !composeBoxElement?.querySelector('.playback-row')
+      ) {
         this.composeBoxesObserver.disconnect();
         const newNode = document.createElement('div');
         newNode.id = `newButton-${index}`;
@@ -21,12 +25,17 @@ class ComposeBoxesObserver {
           render: (h) =>
             h(MicButton, {
               props: {
-                composeBoxElement: composeBox.closest('.iN'),
+                composeBoxElement,
                 composeBoxIndex: index,
               },
             }),
         }).$mount(`#newButton-${index}`);
         this.observeComposeBoxes();
+      } else if (
+        composeBox.querySelector('div.mic-button') &&
+        composeBoxElement?.querySelector('.playback-row')
+      ) {
+        composeBox.querySelector('div.mic-button')?.remove();
       }
     });
   });
