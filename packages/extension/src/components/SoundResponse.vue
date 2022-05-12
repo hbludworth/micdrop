@@ -56,6 +56,10 @@ export default defineComponent({
       type: Boolean,
       required: true,
     },
+    autoStart: {
+      type: Boolean,
+      required: false,
+    },
   },
   setup(props) {
     const currentFrequencyData = ref<number[]>([
@@ -176,7 +180,9 @@ export default defineComponent({
     const analyzer = ref<AnalyserNode>();
     const dataArray = ref<Uint8Array>();
 
-    onMounted(() => {
+    const hasBeenSetup = ref(false);
+    const setup = () => {
+      hasBeenSetup.value = true;
       if (props.mediaStream) {
         audioContext.value = new AudioContext();
         analyzer.value = audioContext.value.createAnalyser();
@@ -205,6 +211,12 @@ export default defineComponent({
         analyzer.value.getByteFrequencyData(dataArray.value);
         handleAnimation();
       }
+    };
+
+    onMounted(() => {
+      if (props.autoStart) {
+        setup();
+      }
     });
 
     onUnmounted(() => {
@@ -215,6 +227,9 @@ export default defineComponent({
     watch(
       () => props.isPlaying,
       () => {
+        if (!hasBeenSetup.value) {
+          setup();
+        }
         if (!props.isPlaying) {
           animationCancelled.value = true;
         } else {
