@@ -40,11 +40,14 @@
                 track-color="transparent"
                 step="0.05"
                 @input="updateSlider"
+                @mousedown="hideAnimation = true"
+                @mouseup="hideAnimation = false"
               />
             </v-hover>
             <v-card
               v-if="soundResponseHover"
               class="scrubber-indicator rounded-pill"
+              :class="{ 'scrubber-hide': hideAnimation }"
               outlined
             >
               <span class="text-caption grey--text text--lighten-1">
@@ -285,6 +288,8 @@ export default defineComponent({
     const playbackHover = ref(false);
     const soundResponseHover = ref(false);
 
+    const hideAnimation = ref(false);
+
     return {
       defaultAudio,
       icons,
@@ -301,6 +306,7 @@ export default defineComponent({
       allowUpdates,
       playbackHover,
       soundResponseHover,
+      hideAnimation,
     };
   },
 });
@@ -325,6 +331,10 @@ export default defineComponent({
   position: absolute;
   z-index: 999;
   animation: fadeInOut 4s infinite;
+}
+
+.scrubber-hide {
+  display: none;
 }
 
 @keyframes fadeInOut {
