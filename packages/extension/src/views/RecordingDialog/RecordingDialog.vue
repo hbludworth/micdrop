@@ -101,12 +101,7 @@ import axios from "axios";
 import { insertImagePlaceholder, insertPlaybackBox } from "./utils";
 import ImagePlaceholderObserver from "../../utils/contentObservers/ImagePlaceholderObserver";
 import audioEncoder from "audio-encoder";
-
-export interface PrimaryButtonOptions {
-  icon: string;
-  clickAction: () => void;
-  color: string;
-}
+import { PrimaryButtonOptions } from "types";
 
 export default defineComponent({
   name: "MicDropButton",

@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { defineComponent } from "@vue/composition-api";
-import Playback from "extension/src//views/Playback/Playback.vue";
+import Playback from "extension/src/views/Playback/Playback.vue";
 
 export default defineComponent({
   name: "PlaybackPage",

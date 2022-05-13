@@ -1,3 +1,4 @@
+yarn workspace types build
 yarn workspace extension build
 yarn workspace frontend build
 yarn workspace backend build
