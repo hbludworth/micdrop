@@ -16,7 +16,16 @@
     "server": "yarn workspace backend dev",
     "extension": "yarn workspace extension start",
     "zip-server": "yarn build && cd packages/backend && zip -q -r micdrop-build.zip build dist package.json yarn.lock .platform && mv micdrop-build.zip ../..",
-    "zip-ext": "yarn build && cd packages/extension/dist && zip -q -r micdrop-ext-build.zip * && mv micdrop-ext-build.zip ../../.."
+    "zip-ext": "yarn build && cd packages/extension/dist && zip -q -r micdrop-ext-build.zip * && mv micdrop-ext-build.zip ../../..",
+    "migrate:make": "yarn workspace backend migrate:make",
+    "migrate:latest": "yarn workspace backend migrate:latest",
+    "migrate:down": "yarn workspace backend migrate:down",
+    "migrate:up": "yarn workspace backend migrate:up",
+    "migrate:rollback": "yarn workspace backend migrate:rollback",
+    "migrate:up-prod": "NODE_ENV=production yarn migrate:up",
+    "migrate:latest-prod": "NODE_ENV=production yarn migrate:latest",
+    "migrate:rollback-prod": "NODE_ENV=production yarn migrate:rollback",
+    "migrate:down-prod": "NODE_ENV=production yarn migrate:down"
   },
   "dependencies": {
     "concurrently": "^5.3.0"
