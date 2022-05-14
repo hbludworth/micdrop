@@ -24,6 +24,7 @@
         :composeBoxElement="composeBoxElement"
         :composeBoxIndex="composeBoxIndex"
       />
+      <mic-drop-snackbar />
     </v-app>
   </div>
 </template>
@@ -32,11 +33,13 @@
 import { defineComponent, ref, watch } from "@vue/composition-api";
 import { mdiMicrophone } from "@mdi/js";
 import RecordingDialog from "../RecordingDialog/RecordingDialog.vue";
+import MicDropSnackbar from "frontend/src/components/base/MicDropSnackbar.vue";
 
 export default defineComponent({
   name: "MicButton",
   components: {
     RecordingDialog,
+    MicDropSnackbar,
   },
   props: {
     composeBoxElement: {

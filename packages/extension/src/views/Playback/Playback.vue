@@ -144,6 +144,7 @@ import {
   mdiChevronRight,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
+import sl from "frontend/src/serviceLocator";
 
 export default defineComponent({
   props: {
@@ -160,6 +161,9 @@ export default defineComponent({
     SoundResponse,
   },
   setup() {
+    const server = sl.get("serverProxy");
+    const actions = sl.get("globalActions");
+
     const icons = ref({
       mdiPlayCircle,
       mdiPauseCircle,
@@ -250,17 +254,21 @@ export default defineComponent({
       }
     };
 
+    const logoURL = ref("");
+
     onMounted(async () => {
       await nextTick();
       defaultAudio.value?.addEventListener("loadedmetadata", async () => {
         await initSlider();
       });
+      try {
+        logoURL.value = await server.getImage("logo.png");
+      } catch {
+        actions.showErrorSnackbar(
+          "Error loading logo image. Please refresh to try again."
+        );
+      }
     });
-
-    const logoURL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo.png"
-        : "https://www.sendmicdrop.com/api/v1/image/logo.png";
 
     const logoLink =
       process.env.NODE_ENV === "development"
