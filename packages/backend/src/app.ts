@@ -3,6 +3,7 @@ import fileupload from 'express-fileupload';
 import history from 'connect-history-api-fallback';
 import setupRoutes from './setupRoutes';
 import path from 'path';
+import errorMiddleware from './middlewares/error';
 
 const app = express();
 app.use((req, res, next) => {
@@ -25,6 +26,8 @@ app.use(express.json());
 app.use(fileupload());
 
 setupRoutes(app);
+
+app.use(errorMiddleware);
 
 app.use(history());
 

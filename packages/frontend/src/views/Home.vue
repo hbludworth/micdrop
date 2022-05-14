@@ -214,20 +214,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import { defineComponent, ref, onMounted } from "@vue/composition-api";
+import sl from "../serviceLocator";
 
 export default defineComponent({
   name: "Home",
   setup() {
-    const logoURL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo-drop.png"
-        : "https://www.sendmicdrop.com/api/v1/image/logo-drop.png";
+    const server = sl.get("serverProxy");
+    const actions = sl.get("globalActions");
 
-    const videoURL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/MicDropScreenRecording.mp4"
-        : "https://sendmicdrop.com/api/v1/image/MicDropScreenRecording.mp4";
+    const logoURL = ref("");
+    const videoURL = ref("");
+    onMounted(async () => {
+      try {
+        logoURL.value = await server.getImage("logo-drop.png");
+      } catch {
+        actions.showErrorSnackbar(
+          "Error retrieving logo resource. Please refresh to try again."
+        );
+      }
+
+      try {
+        videoURL.value = await server.getImage("MicDropScreenRecording.mp4");
+      } catch {
+        actions.showErrorSnackbar(
+          "Error retrieving video resource. Please refresh to try again."
+        );
+      }
+    });
 
     return {
       logoURL,

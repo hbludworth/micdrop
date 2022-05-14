@@ -97,11 +97,11 @@ import {
 } from "@mdi/js";
 import Playback from "../Playback/Playback.vue";
 import SoundResponse from "../../components/SoundResponse.vue";
-import axios from "axios";
 import { insertImagePlaceholder, insertPlaybackBox } from "./utils";
 import ImagePlaceholderObserver from "../../utils/contentObservers/ImagePlaceholderObserver";
 import audioEncoder from "audio-encoder";
 import { PrimaryButtonOptions } from "types";
+import sl from "frontend/src/serviceLocator";
 
 export default defineComponent({
   name: "MicDropButton",
@@ -124,6 +124,9 @@ export default defineComponent({
     },
   },
   setup({ composeBoxElement, composeBoxIndex }, { emit }) {
+    const server = sl.get("serverProxy");
+    const actions = sl.get("globalActions");
+
     const primaryButtonOptions: ComputedRef<PrimaryButtonOptions> = computed(
       () => {
         if (!audioUrl.value && !isRecording.value) {
@@ -225,40 +228,34 @@ export default defineComponent({
         const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
         audioEncoder(audioBuffer, null, null, async (audioBlob: Blob) => {
-          const formData = new FormData();
-          formData.append("newFile", audioBlob, "newFile.wav");
+          try {
+            const uuid = await server.uploadAudio(audioBlob);
 
-          const url =
-            process.env.NODE_ENV === "development"
-              ? "http://localhost:8081/api/v1/audio"
-              : "https://www.sendmicdrop.com/api/v1/audio";
+            const imagePlaceholderObserver = new ImagePlaceholderObserver(
+              composeBoxElement,
+              uuid
+            );
 
-          const { data: uuid } = await axios.post(url, formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          });
+            insertImagePlaceholder(composeBoxElement, uuid);
 
-          const imagePlaceholderObserver = new ImagePlaceholderObserver(
-            composeBoxElement,
-            uuid
-          );
+            insertPlaybackBox(
+              composeBoxElement,
+              composeBoxIndex,
+              uuid,
+              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+              // @ts-ignore
+              audioUrl.value,
+              imagePlaceholderObserver
+            );
 
-          insertImagePlaceholder(composeBoxElement, uuid);
+            imagePlaceholderObserver.observeContent();
 
-          insertPlaybackBox(
-            composeBoxElement,
-            composeBoxIndex,
-            uuid,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            audioUrl.value,
-            imagePlaceholderObserver
-          );
-
-          imagePlaceholderObserver.observeContent();
-
-          emit("input", false);
+            emit("input", false);
+          } catch {
+            actions.showErrorSnackbar(
+              "Error inserting audio file. Please try again."
+            );
+          }
         });
       }
     };
