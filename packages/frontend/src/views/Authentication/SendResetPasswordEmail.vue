@@ -57,7 +57,7 @@ import {
   computed,
   onMounted,
 } from "@vue/composition-api";
-import sl from "../serviceLocator";
+import sl from "../../serviceLocator";
 
 export default defineComponent({
   setup() {

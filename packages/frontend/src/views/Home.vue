@@ -6,7 +6,7 @@
       </a>
 
       <v-spacer />
-      <div class="mr-10">
+      <div class="mr-8">
         <v-btn text color="white" href="#aboutCard">About</v-btn>
         <v-btn text color="white" href="#requestDemoCard">Request a Demo</v-btn>
         <v-btn
@@ -25,6 +25,9 @@
             <v-btn text v-on="on" color="white">Welcome, {{ firstName }}</v-btn>
           </template>
           <v-list>
+            <v-list-item @click="router.push('/account_dashboard')">
+              <v-list-item-title>Dashboard</v-list-item-title>
+            </v-list-item>
             <v-list-item @click="logout">
               <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
@@ -284,6 +287,7 @@ export default defineComponent({
       isAuthenticated,
       firstName,
       logout,
+      router,
     };
   },
 });

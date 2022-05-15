@@ -71,7 +71,7 @@ import {
   computed,
   onMounted,
 } from "@vue/composition-api";
-import sl from "../serviceLocator";
+import sl from "../../serviceLocator";
 
 export default defineComponent({
   setup() {
@@ -111,8 +111,9 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        const email = await server.verifyPasswordResetCode(oobCode);
         logoURL.value = await server.getImage("logo.png");
+        const email = await server.verifyPasswordResetCode(oobCode);
+
         resettingEmail.value = email;
       } catch (err) {
         handleAuthError(err as any);
@@ -157,6 +158,7 @@ export default defineComponent({
       serverError,
       resettingEmail,
       logoURL,
+      verifyingCode,
     };
   },
 });
