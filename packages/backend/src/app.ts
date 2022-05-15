@@ -4,6 +4,7 @@ import history from 'connect-history-api-fallback';
 import setupRoutes from './setupRoutes';
 import path from 'path';
 import errorMiddleware from './middlewares/error';
+import userMiddleware from './middlewares/user';
 
 const app = express();
 app.use((req, res, next) => {
@@ -23,6 +24,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
+app.use(userMiddleware);
+
 app.use(fileupload());
 
 setupRoutes(app);

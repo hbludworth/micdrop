@@ -2,6 +2,7 @@ import app from './app';
 import sl from './serviceLocator';
 import { User } from 'types';
 import UserDao from './api/daos/UserDao';
+import { initializeFirebase } from './firebase';
 
 declare global {
   namespace Express {
@@ -13,6 +14,12 @@ declare global {
 
 sl.set('UserDao', UserDao);
 
-app.listen(8081, () => {
-  console.log('The server is listening on port 8081...');
+initializeFirebase((err) => {
+  if (err) {
+    console.error(err); // eslint-disable-line no-console
+  } else {
+    app.listen(8081, () => {
+      console.log('Listening on port 8081'); // eslint-disable-line no-console
+    });
+  }
 });
