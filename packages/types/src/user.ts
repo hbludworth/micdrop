@@ -4,5 +4,7 @@ export interface User {
   lastName: string;
   email: string;
   isAdmin: boolean;
-  subscriptionLevel: string;
+  subscriptionLevel: SubscriptionLevel;
 }
+
+export type SubscriptionLevel = 'free';

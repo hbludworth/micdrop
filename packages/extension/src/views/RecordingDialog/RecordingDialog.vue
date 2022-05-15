@@ -186,10 +186,14 @@ export default defineComponent({
             audioUrl.value = window.URL.createObjectURL(blob);
           };
         } catch (err) {
-          console.log("The following getUserMedia error occurred: " + err);
+          actions.showErrorSnackbar(
+            "Error loading recording interface. Please try again."
+          );
         }
       } else {
-        console.log("getUserMedia not supported on your browser!");
+        actions.showErrorSnackbar(
+          "Your browser does not support audio recording. Please update or try another browser."
+        );
       }
 
       mediaRecorder.value?.start();

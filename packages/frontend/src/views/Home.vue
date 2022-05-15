@@ -11,12 +11,25 @@
         <v-btn text color="white" href="#requestDemoCard">Request a Demo</v-btn>
         <v-btn
           color="white"
-          class="primary--text ml-2"
+          class="primary--text mx-2"
           depressed
           href="https://chrome.google.com/webstore/detail/cfeaabebicbbcmddmgphgncpdlkadgfl?authuser=2&hl=en"
           target="_blank"
           >Install Now</v-btn
         >
+        <v-btn v-if="!isAuthenticated" text color="white" to="/login"
+          >Login</v-btn
+        >
+        <v-menu v-else offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn text v-on="on" color="white">Welcome, {{ firstName }}</v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="logout">
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </v-app-bar>
 
@@ -214,7 +227,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "@vue/composition-api";
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  computed,
+} from "@vue/composition-api";
 import sl from "../serviceLocator";
 
 export default defineComponent({
@@ -222,6 +240,8 @@ export default defineComponent({
   setup() {
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
+    const store = sl.get("store");
+    const router = sl.get("router");
 
     const logoURL = ref("");
     const videoURL = ref("");
@@ -243,9 +263,27 @@ export default defineComponent({
       }
     });
 
+    const isAuthenticated = computed(() => store.getters.isAuthenticated);
+    const firstName = computed(() =>
+      store.getters.user ? store.getters.user.firstName : ""
+    );
+
+    const logout = async () => {
+      try {
+        store.logout();
+        await server.logout();
+        router.push("/login");
+      } catch {
+        actions.showErrorSnackbar("Error logging out. Please try again");
+      }
+    };
+
     return {
       logoURL,
       videoURL,
+      isAuthenticated,
+      firstName,
+      logout,
     };
   },
 });
