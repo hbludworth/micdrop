@@ -8,3 +8,9 @@ export interface User {
 }
 
 export type SubscriptionLevel = 'free';
+
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}

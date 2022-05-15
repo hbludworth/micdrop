@@ -2,10 +2,12 @@ import Vue from 'vue';
 import VueRouter, { RouteConfig } from 'vue-router';
 import Home from '../views/Home.vue';
 import PlaybackPage from '../views/PlaybackPage.vue';
-import Login from '../views/Login.vue';
-import Register from '../views/Register.vue';
-import ResetPassword from '../views/ResetPassword.vue';
-import SendResetPasswordEmail from '../views/SendResetPasswordEmail.vue';
+import Login from '../views/Authentication/Login.vue';
+import Register from '../views/Authentication/Register.vue';
+import ResetPassword from '../views/Authentication/ResetPassword.vue';
+import SendResetPasswordEmail from '../views/Authentication/SendResetPasswordEmail.vue';
+import AccountDashboard from '../views/AccountDashboard/AccountDashboard.vue';
+import authenticatedGuard from '@/navigationGuards/authenticatedGuard';
 
 Vue.use(VueRouter);
 
@@ -40,6 +42,12 @@ const routes: Array<RouteConfig> = [
     path: '/send_reset_password',
     name: 'SendResetPasswordEmail',
     component: SendResetPasswordEmail,
+  },
+  {
+    path: '/account_dashboard',
+    name: 'AccountDashboard',
+    component: AccountDashboard,
+    beforeEnter: authenticatedGuard,
   },
 ];
 

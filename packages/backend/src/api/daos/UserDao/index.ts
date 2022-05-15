@@ -1,4 +1,4 @@
-import { SubscriptionLevel, User } from 'types';
+import { SubscriptionLevel, User, UpdateProfilePayload } from 'types';
 import knex from '../../../connection';
 
 class UserDao {
@@ -47,6 +47,19 @@ class UserDao {
   async uuidExists(uuid: string): Promise<boolean> {
     const user = await knex('user').first().where({ uuid });
     return !!user;
+  }
+
+  async updateProfile(
+    userUuid: string,
+    { email, firstName, lastName }: Required<UpdateProfilePayload>
+  ): Promise<void> {
+    await knex('user')
+      .update({
+        email,
+        first_name: firstName,
+        last_name: lastName,
+      })
+      .where('uuid', userUuid);
   }
 }
 

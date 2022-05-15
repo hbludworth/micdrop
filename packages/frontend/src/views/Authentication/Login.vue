@@ -43,7 +43,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "@vue/composition-api";
 import { LoginPayload } from "types";
-import sl from "../serviceLocator";
+import sl from "../../serviceLocator";
 
 export default defineComponent({
   name: "Login",
@@ -80,7 +80,7 @@ export default defineComponent({
 
       try {
         await server.login(loginPayload);
-        router.push("/");
+        router.push("/account_dashboard");
       } catch (err) {
         const errorCode = (err as any).code;
         if (

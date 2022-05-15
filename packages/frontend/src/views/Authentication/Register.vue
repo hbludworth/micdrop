@@ -71,7 +71,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from "@vue/composition-api";
 import { RegisterPayload } from "types";
-import sl from "../serviceLocator";
+import sl from "../../serviceLocator";
 
 export default defineComponent({
   name: "Register",
