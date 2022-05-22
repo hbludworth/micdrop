@@ -6,77 +6,22 @@
     content-class="rounded-xl"
   >
     <v-card height="355">
-      <v-card-title> </v-card-title>
-      <v-card-text class="ma-0 pa-0">
-        <v-row class="justify-center ma-4 mt-4">
-          <v-btn
-            height="125"
-            width="125"
-            @click="primaryButtonOptions.clickAction"
-            fab
-            x-large
-            :color="primaryButtonOptions.color"
-            depressed
-            ><v-icon color="white" size="55px">{{
-              primaryButtonOptions.icon
-            }}</v-icon></v-btn
-          >
-        </v-row>
-        <v-row class="justify-center mx-0">
-          <span class="text-h4">{{ seconds }} seconds</span>
-        </v-row>
-        <v-row
-          v-if="!isRecording && !audioUrl"
-          class="justify-center mt-6 mx-0"
-        >
-          <span class="text-h5">Welcome to MicDrop</span>
-        </v-row>
-        <v-row
-          v-if="!isRecording && !audioUrl"
-          class="justify-center mt-4 mx-0"
-        >
-          <span>Press to Begin Recording</span>
-        </v-row>
-        <v-row
-          v-if="isRecording && mediaStream"
-          class="justify-center mt-8 mx-0"
-        >
-          <sound-response
-            :mediaStream="mediaStream"
-            :isPlaying="true"
-            :autoStart="true"
-          />
-        </v-row>
-        <v-row class="ma-0" v-if="audioUrl">
-          <v-col cols="2" class="pa-0" />
-          <v-col cols="8" class="pa-0">
-            <v-row justify="center" class="ma-0">
-              <playback :audioUrl="audioUrl" />
-            </v-row>
-          </v-col>
-          <v-col cols="2" class="pa-0" align-self="center">
-            <v-row class="ma-0 pb-1" justify="center">
-              <v-tooltip top open-delay="500">
-                <template #activator="{ on, attrs }">
-                  <v-btn
-                    color="#4286f5"
-                    @click="submit"
-                    fab
-                    depressed
-                    v-bind="attrs"
-                    v-on="on"
-                    ><v-icon color="white">{{
-                      icons.mdiEmailSendOutline
-                    }}</v-icon></v-btn
-                  >
-                </template>
-                <span>Add to Email</span>
-              </v-tooltip>
-            </v-row>
-          </v-col>
-        </v-row>
-      </v-card-text>
-      <v-card-actions class="pa-0"></v-card-actions>
+      <v-row v-show="loading" justify="center" class="ma-0 pa-0">
+        <v-progress-circular
+          indeterminate
+          size="150"
+          width="15"
+          color="primary"
+          class="mt-14"
+        />
+      </v-row>
+      <iframe
+        v-show="!loading"
+        :src="iframeSource"
+        allow="microphone"
+        loading="eager"
+        ref="recordingFrame"
+      />
     </v-card>
   </v-dialog>
 </template>
@@ -85,22 +30,14 @@
 import {
   defineComponent,
   ref,
-  computed,
-  ComputedRef,
+  onMounted,
+  onUnmounted,
+  watch,
 } from "@vue/composition-api";
-import {
-  mdiStopCircle,
-  mdiDelete,
-  mdiArrowULeftTopBold,
-  mdiEmailSendOutline,
-  mdiMicrophone,
-} from "@mdi/js";
-import Playback from "../Playback/Playback.vue";
-import SoundResponse from "../../components/SoundResponse.vue";
+import Playback from "frontend/src/components/Playback/Playback.vue";
+import SoundResponse from "frontend/src/components/SoundResponse.vue";
 import { insertImagePlaceholder, insertPlaybackBox } from "./utils";
 import ImagePlaceholderObserver from "../../utils/contentObservers/ImagePlaceholderObserver";
-import audioEncoder from "audio-encoder";
-import { PrimaryButtonOptions } from "types";
 import sl from "frontend/src/serviceLocator";
 
 export default defineComponent({
@@ -124,157 +61,84 @@ export default defineComponent({
     },
   },
   setup({ composeBoxElement, composeBoxIndex }, { emit }) {
-    const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
 
-    const primaryButtonOptions: ComputedRef<PrimaryButtonOptions> = computed(
-      () => {
-        if (!audioUrl.value && !isRecording.value) {
-          return {
-            icon: icons.value.mdiMicrophone,
-            clickAction: startRecording,
-            color: "#4286f5",
-          };
-        } else if (!audioUrl.value && isRecording.value) {
-          return {
-            icon: icons.value.mdiStopCircle,
-            clickAction: stopRecording,
-            color: "#ea4235",
-          };
-        } else {
-          return {
-            icon: icons.value.mdiArrowULeftTopBold,
-            clickAction: deleteRecording,
-            color: "grey lighten-1",
-          };
-        }
-      }
+    const loading = ref(true);
+
+    const iframeSource = ref(
+      process.env.NODE_ENV === "development"
+        ? `http://localhost:8080/record`
+        : `https://sendmicdrop.com/record`
     );
 
-    const icons = ref({
-      mdiStopCircle,
-      mdiDelete,
-      mdiArrowULeftTopBold,
-      mdiEmailSendOutline,
-      mdiMicrophone,
+    const uuid = ref<string | null>(null);
+
+    const recordingFrame = ref<HTMLIFrameElement | null>(null);
+    watch(recordingFrame, () => {
+      if (recordingFrame.value) {
+        recordingFrame.value.addEventListener("load", () => {
+          console.log("loading toggled");
+          loading.value = false;
+        });
+      }
     });
 
-    const isRecording = ref(false);
-
-    const mediaStream = ref<MediaStream>();
-    const mediaRecorder = ref<MediaRecorder>();
-
-    let chunks: Blob[] = [];
-    const audioUrl = ref<string>();
-
-    const startRecording = async () => {
-      isRecording.value = true;
-      if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        try {
-          mediaStream.value = await navigator.mediaDevices.getUserMedia({
-            audio: true,
-          });
-          mediaRecorder.value = new MediaRecorder(mediaStream.value);
-
-          mediaRecorder.value.ondataavailable = (e) => {
-            chunks.push(e.data);
-          };
-
-          mediaRecorder.value.onstop = () => {
-            const blob = new Blob(chunks, { type: "audio/x-wav" });
-            chunks = [];
-            audioUrl.value = window.URL.createObjectURL(blob);
-          };
-        } catch (err) {
-          actions.showErrorSnackbar(
-            "Error loading recording interface. Please try again."
-          );
-        }
-      } else {
-        actions.showErrorSnackbar(
-          "Your browser does not support audio recording. Please update or try another browser."
-        );
-      }
-
-      mediaRecorder.value?.start();
-      beginSeconds();
-    };
-
-    const stopRecording = () => {
-      isRecording.value = false;
-      mediaRecorder.value?.stop();
-      clearInterval(countingInterval);
-      mediaStream.value?.getTracks().forEach((track) => track.stop());
-      mediaStream.value = undefined;
-      mediaRecorder.value = undefined;
-    };
-
-    const deleteRecording = () => {
-      audioUrl.value = undefined;
-      seconds.value = 0;
-    };
-
-    const seconds = ref(0);
-    let countingInterval: number | undefined;
-    const beginSeconds = () => {
-      seconds.value = 0;
-      countingInterval = setInterval(() => {
-        seconds.value++;
-      }, 1000);
-    };
-
-    const submit = async () => {
-      if (audioUrl.value) {
-        const blob = await (await fetch(audioUrl.value)).blob();
-        const arrayBuffer = await blob.arrayBuffer();
-
-        const audioContext = new AudioContext();
-        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
-        audioEncoder(audioBuffer, null, null, async (audioBlob: Blob) => {
-          try {
-            const uuid = await server.uploadAudio(audioBlob);
+    const messageEventHandler = async (event: MessageEvent) => {
+      try {
+        if (
+          event.origin !== "https://sendmicdrop.com" &&
+          event.origin !== "http://localhost:8080"
+        ) {
+          return;
+        } else {
+          if (event.data.type === "uuid") {
+            removeMessageEventListener();
+            uuid.value = event.data.content as string;
 
             const imagePlaceholderObserver = new ImagePlaceholderObserver(
               composeBoxElement,
-              uuid
+              uuid.value
             );
 
-            insertImagePlaceholder(composeBoxElement, uuid);
+            insertImagePlaceholder(composeBoxElement, uuid.value);
 
             insertPlaybackBox(
               composeBoxElement,
               composeBoxIndex,
-              uuid,
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore
-              audioUrl.value,
+              uuid.value,
               imagePlaceholderObserver
             );
 
             imagePlaceholderObserver.observeContent();
 
             emit("input", false);
-          } catch {
-            actions.showErrorSnackbar(
-              "Error inserting audio file. Please try again."
-            );
           }
-        });
+        }
+      } catch {
+        actions.showErrorSnackbar("Error inserting audio. Please try again.");
       }
     };
 
+    const addMessageEventListener = () => {
+      window.addEventListener("message", messageEventHandler);
+    };
+
+    const removeMessageEventListener = () => {
+      window.removeEventListener("message", messageEventHandler);
+    };
+
+    onMounted(() => {
+      addMessageEventListener();
+    });
+
+    onUnmounted(() => {
+      removeMessageEventListener();
+    });
+
     return {
-      icons,
-      isRecording,
-      audioUrl,
-      deleteRecording,
-      seconds,
-      startRecording,
-      stopRecording,
-      mediaStream,
-      submit,
-      primaryButtonOptions,
+      recordingFrame,
+      loading,
+      iframeSource,
     };
   },
 });
@@ -283,5 +147,14 @@ export default defineComponent({
 <style scoped lang="scss">
 ::v-deep .v-application--wrap {
   min-height: fit-content;
+}
+
+iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 </style>

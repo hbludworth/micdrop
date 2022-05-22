@@ -7,6 +7,8 @@ import Register from '../views/Authentication/Register.vue';
 import ResetPassword from '../views/Authentication/ResetPassword.vue';
 import SendResetPasswordEmail from '../views/Authentication/SendResetPasswordEmail.vue';
 import AccountDashboard from '../views/AccountDashboard/AccountDashboard.vue';
+import RecordCard from '../views/Record/RecordCard.vue';
+import BasePlayback from '../components/Playback/BasePlayback.vue';
 import authenticatedGuard from '@/navigationGuards/authenticatedGuard';
 
 Vue.use(VueRouter);
@@ -47,6 +49,22 @@ const routes: Array<RouteConfig> = [
     path: '/account_dashboard',
     name: 'AccountDashboard',
     component: AccountDashboard,
+    beforeEnter: authenticatedGuard,
+  },
+  {
+    path: '/record',
+    name: 'Record',
+    component: RecordCard,
+    beforeEnter: authenticatedGuard,
+  },
+  {
+    path: '/base_playback/:uuid',
+    name: 'BasePlayback',
+    props: (route) => ({
+      uuid: route.params.uuid,
+      showRemoveButton: route.query.showRemove === 'true' ? true : false,
+    }),
+    component: BasePlayback,
     beforeEnter: authenticatedGuard,
   },
 ];

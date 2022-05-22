@@ -10,7 +10,6 @@
   "dependencies": {
     "@mdi/js": "^6.6.96",
     "@vue/composition-api": "^1.4.5",
-    "audio-encoder": "^1.0.4",
     "axios": "^0.26.1",
     "core-js": "^3.6.5",
     "vue": "^2.6.11",
@@ -18,7 +17,6 @@
   },
   "devDependencies": {
     "@types/chrome": "^0.0.180",
-    "@types/dom-mediacapture-record": "^1.0.11",
     "@types/firefox-webext-browser": "^67.0.2",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
