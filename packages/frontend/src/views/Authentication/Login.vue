@@ -80,7 +80,7 @@ export default defineComponent({
 
       try {
         await server.login(loginPayload);
-        router.push("/account_dashboard");
+        router.push("/");
       } catch (err) {
         const errorCode = (err as any).code;
         if (

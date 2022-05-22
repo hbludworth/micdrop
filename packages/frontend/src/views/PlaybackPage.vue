@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { defineComponent, onMounted, ref } from "@vue/composition-api";
-import Playback from "extension/src/views/Playback/Playback.vue";
+import Playback from "../components/Playback/Playback.vue";
 import sl from "../serviceLocator";
 
 export default defineComponent({

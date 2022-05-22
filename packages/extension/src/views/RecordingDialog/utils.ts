@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import vuetify from '../../plugins/vuetify';
 import VueCompositionApi from '@vue/composition-api';
-import BasePlayback from '../Playback/BasePlayback.vue';
+import PlaybackFrame from '../PlaybackFrame/PlaybackFrame.vue';
 import ImagePlaceholderObserver from '@/utils/contentObservers/ImagePlaceholderObserver';
 import sl from 'frontend/src/serviceLocator';
 
@@ -62,7 +62,6 @@ const insertPlaybackBox = (
   composeBoxElement: Element,
   composeBoxIndex: number,
   uuid: string,
-  audioUrl: string,
   imagePlaceholderObserver: ImagePlaceholderObserver
 ) => {
   const tbody = composeBoxElement.children.item(0);
@@ -83,39 +82,30 @@ const insertPlaybackBox = (
   new Vue({
     vuetify,
     render: (h) =>
-      h(BasePlayback, {
+      h(PlaybackFrame, {
         props: {
-          audioUrl,
           uuid,
           includeCenteredRow: true,
           showRemoveButton: true,
         },
         on: {
-          remove: async () =>
-            await removeRecording(
-              composeBoxElement,
-              uuid,
-              imagePlaceholderObserver
-            ),
+          remove: () =>
+            removeRecording(composeBoxElement, imagePlaceholderObserver),
         },
       }),
   }).$mount(`#emailContent-${composeBoxIndex}`);
 };
 
-const removeRecording = async (
+const removeRecording = (
   composeBoxElement: Element,
-  uuid: string,
   imagePlaceholderObserver: ImagePlaceholderObserver
 ) => {
-  const server = sl.get('serverProxy');
   const actions = sl.get('globalActions');
 
   try {
     composeBoxElement.querySelector('tr.playback-row')?.remove();
     imagePlaceholderObserver.disconnectObserver();
     composeBoxElement.querySelector('#image-placeholder')?.remove();
-
-    await server.deleteAudio(uuid);
   } catch {
     actions.showErrorSnackbar('Error deleting audio. Please try again.');
   }

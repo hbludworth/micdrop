@@ -1,12 +1,11 @@
 import Vue from 'vue';
-import BasePlayback from '../../views/Playback/BasePlayback.vue';
+import PlaybackFrame from '../../views/PlaybackFrame/PlaybackFrame.vue';
 import vuetify from '../../plugins/vuetify';
 import VueCompositionApi from '@vue/composition-api';
 import sl from 'frontend/src/serviceLocator';
 
 class ReceiversObserver {
   private receiversObserver = new MutationObserver(() => {
-    const server = sl.get('serverProxy');
     const actions = sl.get('globalActions');
 
     const allReceievedEmails = document.querySelectorAll('div.a3s.aiL');
@@ -41,27 +40,17 @@ class ReceiversObserver {
           return;
         }
 
-        let audioUrl: string;
-
-        try {
-          audioUrl = await server.getAudio(uuid);
-        } catch {
-          actions.showErrorSnackbar(
-            'Error retrieving audio file. Please try again.'
-          );
-        } finally {
-          Vue.use(VueCompositionApi);
-          new Vue({
-            vuetify,
-            render: (h) =>
-              h(BasePlayback, {
-                props: {
-                  audioUrl,
-                },
-              }),
-          }).$mount(`#emailInsertion-${index}`);
-          this.observeReceiver();
-        }
+        Vue.use(VueCompositionApi);
+        new Vue({
+          vuetify,
+          render: (h) =>
+            h(PlaybackFrame, {
+              props: {
+                uuid,
+              },
+            }),
+        }).$mount(`#emailInsertion-${index}`);
+        this.observeReceiver();
       }
     });
   });

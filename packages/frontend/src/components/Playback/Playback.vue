@@ -143,7 +143,7 @@ import {
   mdiChevronLeft,
   mdiChevronRight,
 } from "@mdi/js";
-import SoundResponse from "../../components/SoundResponse.vue";
+import SoundResponse from "frontend/src/components/SoundResponse.vue";
 import sl from "frontend/src/serviceLocator";
 
 export default defineComponent({
