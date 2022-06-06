@@ -9,6 +9,7 @@ import SendResetPasswordEmail from '../views/Authentication/SendResetPasswordEma
 import AccountDashboard from '../views/AccountDashboard/AccountDashboard.vue';
 import RecordCard from '../views/Record/RecordCard.vue';
 import BasePlayback from '../components/Playback/BasePlayback.vue';
+import ExtensionPopup from '../views/ExtensionPopup/Popup.vue';
 import authenticatedGuard from '@/navigationGuards/authenticatedGuard';
 
 Vue.use(VueRouter);
@@ -66,6 +67,11 @@ const routes: Array<RouteConfig> = [
     }),
     component: BasePlayback,
     beforeEnter: authenticatedGuard,
+  },
+  {
+    path: '/extension/popup',
+    name: 'ExtensionPopup',
+    component: ExtensionPopup,
   },
 ];
 
