@@ -10,7 +10,7 @@
     ]
   },
   "scripts": {
-    "start": "concurrently --kill-others-on-fail \"yarn extension\" \"yarn server\" \"yarn client\"",
+    "start": "yarn migrate:latest && concurrently --kill-others-on-fail \"yarn extension\" \"yarn server\" \"yarn client\"",
     "build": "./build.sh",
     "client": "yarn workspace frontend serve",
     "server": "yarn workspace backend dev",

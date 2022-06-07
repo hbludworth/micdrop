@@ -3,6 +3,8 @@ import { v4 } from 'uuid';
 import fileUpload from 'express-fileupload';
 import AWS from 'aws-sdk';
 import { HttpBadRequest, HttpInternalError } from '../exceptions';
+import sl from '../serviceLocator';
+import authenticatedRoute from '../middlewares/authenticatedRoute';
 
 const router = express.Router();
 
@@ -31,9 +33,26 @@ router
       next(new HttpInternalError(err as string));
     }
   })
-  .delete(async (req, res, next) => {
+  .delete(authenticatedRoute, async (req, res, next) => {
+    const AudioDao = sl.get('AudioDao');
+
+    const userUuid = req.user!.uuid;
+
     try {
       const { uuid } = req.params;
+
+      const audioBelongsToUser = await AudioDao.audioBelongsToUser(
+        uuid,
+        userUuid
+      );
+      if (!audioBelongsToUser) {
+        next(
+          new HttpBadRequest(
+            'Cannot delete audio file that does not belong to the current user'
+          )
+        );
+        return;
+      }
 
       const s3 = new AWS.S3();
 
@@ -44,13 +63,19 @@ router
 
       await s3.deleteObject(params).promise();
 
+      await AudioDao.deleteAudio(uuid);
+
       res.status(200).end();
     } catch (err) {
       next(new HttpInternalError(err as string));
     }
   });
 
-router.route('/audio').post(async (req, res, next) => {
+router.route('/audio').post(authenticatedRoute, async (req, res, next) => {
+  const AudioDao = sl.get('AudioDao');
+
+  const userUuid = req.user!.uuid;
+
   try {
     if (!req.files) {
       next(new HttpBadRequest('No file was attached for upload.'));
@@ -70,6 +95,8 @@ router.route('/audio').post(async (req, res, next) => {
     };
 
     await s3.putObject(params).promise();
+
+    await AudioDao.createAudio(uuid, userUuid, 'wav');
 
     res.status(201).json(uuid);
   } catch (err) {
