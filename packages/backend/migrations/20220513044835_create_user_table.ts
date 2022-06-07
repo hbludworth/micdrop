@@ -6,7 +6,7 @@ export async function up(knex: Knex): Promise<void> {
   if (!hasUserTable) {
     await knex.schema.createTable('user', (table) => {
       table.increments('id');
-      table.uuid('uuid');
+      table.uuid('uuid').notNullable().unique();
       table.string('first_name');
       table.string('last_name');
       table.string('email');
