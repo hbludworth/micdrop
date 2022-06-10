@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <iframe
-      width="170px"
+      width="200px"
       height="240px"
       :src="iframeSource"
       style="top: 0; left: 0; border: 0"

@@ -9,8 +9,9 @@ import SendResetPasswordEmail from '../views/Authentication/SendResetPasswordEma
 import AccountDashboard from '../views/AccountDashboard/AccountDashboard.vue';
 import RecordCard from '../views/Record/RecordCard.vue';
 import BasePlayback from '../components/Playback/BasePlayback.vue';
-import ExtensionPopup from '../views/ExtensionPopup/Popup.vue';
+import ExtensionPopup from '../views/ExtensionPages/Popup.vue';
 import Tutorial from '../views/Tutorial/index.vue';
+import ExtensionGetStarted from '../views/ExtensionPages/ExtensionGetStarted.vue';
 import authenticatedGuard from '@/navigationGuards/authenticatedGuard';
 
 Vue.use(VueRouter);
@@ -79,6 +80,7 @@ const routes: Array<RouteConfig> = [
     path: '/extension/popup',
     name: 'ExtensionPopup',
     component: ExtensionPopup,
+    beforeEnter: authenticatedGuard,
   },
   {
     path: '/tutorial',
@@ -87,6 +89,14 @@ const routes: Array<RouteConfig> = [
       defaultStep: route.query.step ? Number(route.query.step) : 1,
     }),
     component: Tutorial,
+  },
+  {
+    path: '/extension/get_started_screen',
+    name: 'ExtensionGetStartedScreen',
+    props: (route) => ({
+      detailed: route.query.detailed ? route.query.detailed === 'true' : false,
+    }),
+    component: ExtensionGetStarted,
   },
 ];
 

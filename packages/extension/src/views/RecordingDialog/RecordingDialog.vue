@@ -77,7 +77,6 @@ export default defineComponent({
     watch(recordingFrame, () => {
       if (recordingFrame.value) {
         recordingFrame.value.addEventListener("load", () => {
-          console.log("loading toggled");
           loading.value = false;
         });
       }
