@@ -5,6 +5,7 @@ import AWS from 'aws-sdk';
 import { HttpBadRequest, HttpInternalError } from '../exceptions';
 import sl from '../serviceLocator';
 import authenticatedRoute from '../middlewares/authenticatedRoute';
+import { AudioLimits } from 'types';
 
 const router = express.Router();
 
@@ -99,6 +100,31 @@ router.route('/audio').post(authenticatedRoute, async (req, res, next) => {
     await AudioDao.createAudio(uuid, userUuid, 'wav');
 
     res.status(201).json(uuid);
+  } catch (err) {
+    next(new HttpInternalError(err as string));
+  }
+});
+
+router.route('/audio_limit').get(authenticatedRoute, async (req, res, next) => {
+  const AudioDao = sl.get('AudioDao');
+
+  try {
+    const userUuid = req.user!.uuid;
+    const subscriptionLevel = req.user!.subscriptionLevel;
+
+    if (subscriptionLevel !== 'free') {
+      const response: AudioLimits = {
+        monthlyMessagesLeft: null,
+      };
+      res.json(response);
+      return;
+    }
+
+    const messagesLeft = await AudioDao.getMonthlyMessagesLeft(userUuid);
+    const response: AudioLimits = {
+      monthlyMessagesLeft: messagesLeft,
+    };
+    res.json(response);
   } catch (err) {
     next(new HttpInternalError(err as string));
   }

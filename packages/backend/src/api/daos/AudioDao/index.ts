@@ -26,6 +26,27 @@ class AudioDao {
 
     return !!row;
   }
+
+  async getMonthlyMessagesLeft(userUuid: string): Promise<number> {
+    const MONTHLY_LIMIT = 30;
+
+    const currentDate = new Date();
+    const currentMonth = currentDate.getMonth();
+    const currentYear = currentDate.getFullYear();
+
+    const countRow = await knex('audio')
+      .count({ count: 'uuid' })
+      .where({ user_uuid: userUuid })
+      .andWhereRaw('MONTH(created_on) = ?', [currentMonth + 1])
+      .andWhereRaw('YEAR(created_on) = ?', [currentYear])
+      .first();
+
+    const currentNumberOfMessages =
+      countRow && countRow.count ? (countRow.count as number) : 0;
+
+    const rawNumberLeft = MONTHLY_LIMIT - currentNumberOfMessages;
+    return rawNumberLeft >= 0 ? rawNumberLeft : 0;
+  }
 }
 
 export default new AudioDao();

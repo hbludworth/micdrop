@@ -7,7 +7,7 @@ export interface User {
   subscriptionLevel: SubscriptionLevel;
 }
 
-export type SubscriptionLevel = 'free';
+export type SubscriptionLevel = 'free' | 'pro';
 
 export interface UpdateProfilePayload {
   firstName?: string;
