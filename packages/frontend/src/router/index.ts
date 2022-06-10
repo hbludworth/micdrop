@@ -10,6 +10,7 @@ import AccountDashboard from '../views/AccountDashboard/AccountDashboard.vue';
 import RecordCard from '../views/Record/RecordCard.vue';
 import BasePlayback from '../components/Playback/BasePlayback.vue';
 import ExtensionPopup from '../views/ExtensionPopup/Popup.vue';
+import Tutorial from '../views/Tutorial/index.vue';
 import authenticatedGuard from '@/navigationGuards/authenticatedGuard';
 
 Vue.use(VueRouter);
@@ -29,11 +30,17 @@ const routes: Array<RouteConfig> = [
   {
     path: '/login',
     name: 'Login',
+    props: (route) => ({
+      redirectURL: route.query.redirect || '/',
+    }),
     component: Login,
   },
   {
     path: '/register',
     name: 'Register',
+    props: (route) => ({
+      redirectURL: route.query.redirect || '/',
+    }),
     component: Register,
   },
   {
@@ -72,6 +79,14 @@ const routes: Array<RouteConfig> = [
     path: '/extension/popup',
     name: 'ExtensionPopup',
     component: ExtensionPopup,
+  },
+  {
+    path: '/tutorial',
+    name: 'Tutorial',
+    props: (route) => ({
+      defaultStep: route.query.step ? Number(route.query.step) : 1,
+    }),
+    component: Tutorial,
   },
 ];
 

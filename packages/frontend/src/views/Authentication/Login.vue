@@ -47,6 +47,12 @@ import sl from "../../serviceLocator";
 
 export default defineComponent({
   name: "Login",
+  props: {
+    redirectURL: {
+      type: String,
+      required: true,
+    },
+  },
   beforeRouteEnter: (_to, _from, next) => {
     next(() => {
       const store = sl.get("store");
@@ -56,7 +62,7 @@ export default defineComponent({
       }
     });
   },
-  setup() {
+  setup(props) {
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
     const router = sl.get("router");
@@ -80,7 +86,7 @@ export default defineComponent({
 
       try {
         await server.login(loginPayload);
-        router.push("/");
+        router.push(props.redirectURL);
       } catch (err) {
         const errorCode = (err as any).code;
         if (
