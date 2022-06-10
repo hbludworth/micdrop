@@ -75,7 +75,13 @@ import sl from "../../serviceLocator";
 
 export default defineComponent({
   name: "Register",
-  setup() {
+  props: {
+    redirectURL: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
     const store = sl.get("store");
@@ -153,7 +159,7 @@ export default defineComponent({
       try {
         const user = await server.register(registerPayload);
         store.setUser(user);
-        router.push("/");
+        router.push(props.redirectURL);
       } catch (err) {
         errorMessage.value = (err as any).response.data.message;
       } finally {
