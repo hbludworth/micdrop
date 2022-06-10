@@ -1,4 +1,5 @@
 import axios from '../axiosInstance';
+import { AudioLimits } from 'types';
 
 async function uploadAudio(audioBlob: Blob): Promise<string> {
   const formData = new FormData();
@@ -23,8 +24,14 @@ async function deleteAudio(uuid: string): Promise<void> {
   await axios.delete(`/audio/${uuid}`);
 }
 
+async function getMonthlyMessagesLeft(): Promise<AudioLimits> {
+  const { data } = await axios.get('/audio_limit');
+  return data;
+}
+
 export default {
   uploadAudio,
   getAudio,
   deleteAudio,
+  getMonthlyMessagesLeft,
 };

@@ -5,24 +5,20 @@
       text
       color="primary"
       class="my-1"
-      href="http://localhost:8080/account_dashboard"
+      to="/account_dashboard"
       target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiAccount }}</v-icon> Account</v-btn
     >
-    <v-btn
-      text
-      color="primary"
-      class="my-1"
-      href="http://localhost:8080/tutorial"
-      target="_blank"
+    <v-btn text color="primary" class="my-1" to="/tutorial" target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiClipboardList }}</v-icon
       >Tutorial</v-btn
     >
     <v-btn
+      v-if="subscriptionLevel === 'free'"
       text
       color="rgba(212, 175, 55, 1)"
       class="my-1"
-      href="http://localhost:8080/upgrade"
+      to="/upgrade"
       target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiCheckDecagram }}</v-icon
       >MicDrop Pro</v-btn
@@ -40,7 +36,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "@vue/composition-api";
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  computed,
+} from "@vue/composition-api";
 import {
   mdiAccount,
   mdiClipboardList,
@@ -53,6 +54,11 @@ export default defineComponent({
   setup() {
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
+    const store = sl.get("store");
+
+    const subscriptionLevel = computed(() =>
+      store.getters.user ? store.getters.user.subscriptionLevel : "free"
+    );
 
     const icons = ref({
       mdiAccount,
@@ -75,6 +81,7 @@ export default defineComponent({
     return {
       logoURL,
       icons,
+      subscriptionLevel,
     };
   },
 });

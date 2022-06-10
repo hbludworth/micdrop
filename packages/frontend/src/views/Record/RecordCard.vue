@@ -11,28 +11,89 @@
           x-large
           :color="primaryButtonOptions.color"
           depressed
+          :disabled="currentStep === 1 && disableRecording"
           ><v-icon color="white" size="55px">{{
             primaryButtonOptions.icon
           }}</v-icon></v-btn
         >
       </v-row>
-      <v-row class="justify-center mx-0">
-        <span class="text-h4">{{ seconds }} seconds</span>
-      </v-row>
-      <v-row v-if="!isRecording && !audioUrl" class="justify-center mt-6 mx-0">
+      <v-row v-if="currentStep === 1" class="justify-center mt-6 mx-0">
         <span class="text-h5">Welcome to MicDrop</span>
       </v-row>
-      <v-row v-if="!isRecording && !audioUrl" class="justify-center mt-4 mx-0">
+      <v-row
+        v-if="currentStep === 1"
+        class="justify-center mt-4 mx-0"
+        :class="{ 'fade-animation-2': subscriptionLevel === 'free' }"
+      >
         <span>Press to Begin Recording</span>
       </v-row>
-      <v-row v-if="isRecording && mediaStream" class="justify-center mt-8 mx-0">
+      <v-row
+        v-if="
+          currentStep === 1 &&
+          monthlyMessagesLeft !== null &&
+          subscriptionLevel === 'free'
+        "
+        class="justify-center mt-n5 mx-0 fade-animation"
+      >
+        <span class="primary--text" v-if="monthlyMessagesLeft > 0"
+          >{{ monthlyMessagesLeft }} Message{{
+            monthlyMessagesLeft > 1 ? "s" : ""
+          }}
+          Left This Month</span
+        >
+        <span class="primary--text" v-if="monthlyMessagesLeft === 0"
+          >No More Messages Left This Month</span
+        >
+      </v-row>
+      <v-row
+        v-if="currentStep === 1 && subscriptionLevel === 'free'"
+        class="justify-center mt-10 mx-0 text-caption grey--text"
+      >
+        <span>Want more? Check out</span>
+      </v-row>
+      <v-row
+        v-if="currentStep === 1 && subscriptionLevel === 'free'"
+        class="justify-center mt-3 mx-0"
+      >
+        <v-btn
+          large
+          text
+          color="rgba(212, 175, 55, 1)"
+          to="/upgrade"
+          target="_blank"
+          ><v-icon small class="mr-1">{{ icons.mdiCheckDecagram }}</v-icon
+          >MicDrop Pro</v-btn
+        >
+      </v-row>
+      <v-row v-if="currentStep === 2" class="justify-center mx-0">
+        <span class="text-h4">{{ seconds }} seconds</span>
+      </v-row>
+      <v-row
+        v-if="currentStep === 2 && mediaStream"
+        class="justify-center mt-8 mx-0"
+      >
         <sound-response
           :mediaStream="mediaStream"
           :isPlaying="true"
           :autoStart="true"
         />
       </v-row>
-      <v-row class="ma-0 mt-n4" v-if="audioUrl">
+      <v-row
+        v-if="currentStep === 3 && subscriptionLevel === 'free'"
+        class="justify-center mt-6 mx-0 text-caption grey--text"
+      >
+        <span>Need more recording time?</span
+        ><v-btn
+          x-small
+          text
+          color="rgba(212, 175, 55, 1)"
+          to="/upgrade"
+          target="_blank"
+          class="px-1 ml-1"
+          >Try MicDrop Pro</v-btn
+        >
+      </v-row>
+      <v-row class="ma-0 mt-n4" v-if="currentStep === 3">
         <v-col cols="2" class="pa-0" />
         <v-col cols="8" class="pa-0">
           <v-row justify="center" class="ma-0">
@@ -79,6 +140,8 @@ import {
   ComputedRef,
   computed,
   ref,
+  watch,
+  onMounted,
 } from "@vue/composition-api";
 import sl from "../../serviceLocator";
 import { PrimaryButtonOptions } from "types";
@@ -88,6 +151,7 @@ import {
   mdiArrowULeftTopBold,
   mdiEmailSendOutline,
   mdiMicrophone,
+  mdiCheckDecagram,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 import Playback from "../../components/Playback/Playback.vue";
@@ -101,6 +165,11 @@ export default defineComponent({
   setup() {
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
+    const store = sl.get("store");
+
+    const subscriptionLevel = computed(() =>
+      store.getters.user ? store.getters.user.subscriptionLevel : "free"
+    );
 
     const primaryButtonOptions: ComputedRef<PrimaryButtonOptions> = computed(
       () => {
@@ -132,6 +201,7 @@ export default defineComponent({
       mdiArrowULeftTopBold,
       mdiEmailSendOutline,
       mdiMicrophone,
+      mdiCheckDecagram,
     });
 
     const isRecording = ref(false);
@@ -172,7 +242,8 @@ export default defineComponent({
       }
 
       mediaRecorder.value?.start();
-      beginSeconds();
+      const timeLimit = subscriptionLevel.value === "free" ? 60 : null;
+      beginSeconds(timeLimit);
     };
 
     const stopRecording = () => {
@@ -189,14 +260,27 @@ export default defineComponent({
       seconds.value = 0;
     };
 
-    const seconds = ref(0);
+    const seconds = ref(subscriptionLevel.value === "free" ? 60 : 0);
     let countingInterval: number | undefined;
-    const beginSeconds = () => {
-      seconds.value = 0;
-      countingInterval = setInterval(() => {
-        seconds.value++;
-      }, 1000);
+    const beginSeconds = (timeLimit: number | null) => {
+      if (!timeLimit) {
+        seconds.value = 0;
+        countingInterval = setInterval(() => {
+          seconds.value++;
+        }, 1000);
+      } else {
+        seconds.value = timeLimit;
+        countingInterval = setInterval(() => {
+          seconds.value--;
+        }, 1000);
+      }
     };
+
+    watch(seconds, () => {
+      if (subscriptionLevel.value === "free" && seconds.value === 0) {
+        stopRecording();
+      }
+    });
 
     const submitLoading = ref(false);
 
@@ -228,6 +312,41 @@ export default defineComponent({
       }
     };
 
+    const currentStep = ref(1);
+
+    watch([isRecording, audioUrl], () => {
+      if (!isRecording.value && !audioUrl.value) {
+        currentStep.value = 1;
+      } else if (isRecording.value) {
+        currentStep.value = 2;
+      } else {
+        currentStep.value = 3;
+      }
+    });
+
+    const monthlyMessagesLeft = ref<number | null>(null);
+    onMounted(async () => {
+      try {
+        monthlyMessagesLeft.value = (
+          await server.getMonthlyMessagesLeft()
+        ).monthlyMessagesLeft;
+      } catch {
+        actions.showErrorSnackbar(
+          "Error loading monthly messages left. Please try again."
+        );
+      }
+    });
+
+    const disableRecording = computed(() => {
+      if (
+        subscriptionLevel.value === "free" &&
+        monthlyMessagesLeft.value === 0
+      ) {
+        return true;
+      }
+      return false;
+    });
+
     return {
       icons,
       isRecording,
@@ -240,7 +359,57 @@ export default defineComponent({
       submit,
       primaryButtonOptions,
       submitLoading,
+      currentStep,
+      subscriptionLevel,
+      monthlyMessagesLeft,
+      disableRecording,
     };
   },
 });
 </script>
+
+<style scoped>
+.fade-animation {
+  animation: fadeInOut 7s infinite;
+}
+
+.fade-animation-2 {
+  animation: fadeInOut2 7s infinite;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeInOut2 {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  65% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+</style>
