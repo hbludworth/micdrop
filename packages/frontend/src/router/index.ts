@@ -12,7 +12,10 @@ import BasePlayback from '../components/Playback/BasePlayback.vue';
 import ExtensionPopup from '../views/ExtensionPages/Popup.vue';
 import Tutorial from '../views/Tutorial/index.vue';
 import ExtensionGetStarted from '../views/ExtensionPages/ExtensionGetStarted.vue';
-import authenticatedGuard from '@/navigationGuards/authenticatedGuard';
+import PastRecordingsList from '../views/Record/PastRecordingsList.vue';
+import ManageAudio from '../views/Record/ManageAudio.vue';
+import authenticatedGuard from '../navigationGuards/authenticatedGuard';
+import proGuard from '../navigationGuards/proGuard';
 
 Vue.use(VueRouter);
 
@@ -97,6 +100,29 @@ const routes: Array<RouteConfig> = [
       detailed: route.query.detailed ? route.query.detailed === 'true' : false,
     }),
     component: ExtensionGetStarted,
+  },
+  {
+    path: '/extension/past_recordings_list',
+    name: 'PastRecordingsList',
+    props: (route) => ({
+      startingGroupUuid:
+        route.query.startingGroupUuid &&
+        route.query.startingGroupUuid !== 'undefined'
+          ? (route.query.startingGroupUuid as string)
+          : undefined,
+    }),
+    component: PastRecordingsList,
+    beforeEnter: proGuard,
+  },
+  {
+    path: '/extension/manage_audio/:uuid',
+    name: 'ManageAudio',
+    component: ManageAudio,
+    props: (route) => ({
+      uuid: route.params.uuid,
+      sourceGroupUuid: route.query.sourceGroupUuid || undefined,
+    }),
+    beforeEnter: proGuard,
   },
 ];
 

@@ -3,7 +3,3 @@ export interface PrimaryButtonOptions {
   clickAction: () => void;
   color: string;
 }
-
-export interface AudioLimits {
-  monthlyMessagesLeft: number | null;
-}
