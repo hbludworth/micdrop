@@ -6,6 +6,7 @@ import logout from './logout';
 import register from './register';
 import resetPassword from './reset_password';
 import profile from './profile';
+import audioGroups from './audio_groups';
 
 const serverProxy = {
   ...audio,
@@ -16,6 +17,7 @@ const serverProxy = {
   ...register,
   ...resetPassword,
   ...profile,
+  ...audioGroups,
 };
 
 export type ServerProxyType = typeof serverProxy;

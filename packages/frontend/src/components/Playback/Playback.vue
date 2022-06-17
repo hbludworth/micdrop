@@ -327,7 +327,7 @@ export default defineComponent({
 
 .slider {
   position: absolute;
-  z-index: 1000;
+  z-index: 200;
   width: 200px;
 }
 
@@ -337,7 +337,7 @@ export default defineComponent({
 
 .scrubber-indicator {
   position: absolute;
-  z-index: 999;
+  z-index: 199;
   animation: fadeInOut 4s infinite;
 }
 

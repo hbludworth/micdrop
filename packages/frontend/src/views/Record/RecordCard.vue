@@ -65,6 +65,15 @@
           >MicDrop Pro</v-btn
         >
       </v-row>
+      <v-row
+        v-if="currentStep === 1 && subscriptionLevel === 'pro'"
+        class="justify-center mt-9 mx-0"
+      >
+        <v-btn large text color="primary" to="/extension/past_recordings_list"
+          ><v-icon small class="mr-1">{{ icons.mdiArchive }}</v-icon
+          >Past Recordings</v-btn
+        >
+      </v-row>
       <v-row v-if="currentStep === 2" class="justify-center mx-0">
         <span class="text-h4">{{ seconds }} seconds</span>
       </v-row>
@@ -152,6 +161,7 @@ import {
   mdiEmailSendOutline,
   mdiMicrophone,
   mdiCheckDecagram,
+  mdiArchive,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 import Playback from "../../components/Playback/Playback.vue";
@@ -202,6 +212,7 @@ export default defineComponent({
       mdiEmailSendOutline,
       mdiMicrophone,
       mdiCheckDecagram,
+      mdiArchive,
     });
 
     const isRecording = ref(false);

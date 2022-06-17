@@ -10,6 +10,7 @@ export async function up(knex: Knex): Promise<void> {
       table.uuid('user_uuid');
       table.dateTime('created_on');
       table.string('file_type', 3);
+      table.string('label').nullable();
 
       table.foreign('user_uuid').references('user.uuid');
     });

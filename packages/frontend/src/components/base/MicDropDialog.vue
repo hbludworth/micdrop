@@ -5,6 +5,7 @@
     :width="width"
     :persistent="persistent"
     :eager="eager"
+    content-class="rounded-xl"
   >
     <template v-slot:activator="{ on }">
       <slot name="activator" :on="on"></slot>
@@ -27,10 +28,10 @@
         <slot></slot>
       </v-card-text>
       <div v-if="showCancel || showSubmit">
-        <v-divider />
-        <v-card-actions>
+        <v-card-actions class="pa-3">
           <v-spacer />
           <v-btn
+            rounded
             v-if="showCancel"
             @click="$emit('input', false)"
             color="error"
@@ -41,6 +42,7 @@
 
           <slot v-if="showSubmit" name="submit-button" :on="{ click: submit }">
             <v-btn
+              rounded
               @click="submit"
               color="primary"
               :disabled="submitLoading || submitDisabled"
