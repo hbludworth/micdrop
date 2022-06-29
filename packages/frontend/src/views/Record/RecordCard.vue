@@ -1,5 +1,14 @@
 <template>
-  <div>
+  <v-row v-if="loading" justify="center" class="ma-0 pa-0">
+    <v-progress-circular
+      indeterminate
+      size="150"
+      width="15"
+      color="primary"
+      class="mt-14"
+    />
+  </v-row>
+  <div v-else>
     <v-card-title> </v-card-title>
     <v-card-text class="ma-0 pa-0">
       <v-row class="justify-center ma-4 mt-4">
@@ -18,7 +27,10 @@
         >
       </v-row>
       <v-row v-if="currentStep === 1" class="justify-center mt-6 mx-0">
-        <span class="text-h5">Welcome to MicDrop</span>
+        <span class="text-h5"
+          >Welcome to MicDrop
+          {{ subscriptionLevel === "pro" ? "Pro" : "" }}</span
+        >
       </v-row>
       <v-row
         v-if="currentStep === 1"
@@ -153,7 +165,7 @@ import {
   onMounted,
 } from "@vue/composition-api";
 import sl from "../../serviceLocator";
-import { PrimaryButtonOptions } from "types";
+import { PrimaryButtonOptions, SubscriptionStatus } from "types";
 import {
   mdiStopCircle,
   mdiDelete,
@@ -168,14 +180,21 @@ import Playback from "../../components/Playback/Playback.vue";
 import audioEncoder from "audio-encoder";
 
 export default defineComponent({
+  props: {
+    ignorePastDue: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: {
     SoundResponse,
     Playback,
   },
-  setup() {
+  setup(props) {
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
     const store = sl.get("store");
+    const router = sl.get("router");
 
     const subscriptionLevel = computed(() =>
       store.getters.user ? store.getters.user.subscriptionLevel : "free"
@@ -335,16 +354,25 @@ export default defineComponent({
       }
     });
 
+    const loading = ref(false);
     const monthlyMessagesLeft = ref<number | null>(null);
+    const subscriptionStatus = ref<SubscriptionStatus>();
     onMounted(async () => {
       try {
+        loading.value = true;
         monthlyMessagesLeft.value = (
           await server.getMonthlyMessagesLeft()
         ).monthlyMessagesLeft;
+        subscriptionStatus.value = await server.getSubscriptionStatus();
+        if (subscriptionStatus.value === "past_due" && !props.ignorePastDue) {
+          router.push("/past_due_warning");
+        }
       } catch {
         actions.showErrorSnackbar(
-          "Error loading monthly messages left. Please try again."
+          "Error preparing recording setup. Please try again."
         );
+      } finally {
+        loading.value = false;
       }
     });
 
@@ -374,6 +402,7 @@ export default defineComponent({
       subscriptionLevel,
       monthlyMessagesLeft,
       disableRecording,
+      loading,
     };
   },
 });
