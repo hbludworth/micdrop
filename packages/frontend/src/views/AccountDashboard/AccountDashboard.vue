@@ -25,26 +25,45 @@
       <span class="white--text text-h5">Account Dashboard</span>
       <v-spacer />
       <div class="mr-10">
+        <v-btn
+          v-if="subscriptionLevel === 'free'"
+          text
+          color="white"
+          to="/upgrade"
+          class="mr-2"
+        >
+          <v-icon small>{{ icons.mdiCheckDecagram }}</v-icon>
+          Upgrade To MicDrop Pro
+        </v-btn>
         <v-btn text color="white" @click="logout">Logout</v-btn>
       </div>
     </v-app-bar>
 
     <profile v-if="selectedRoute === 'profile'" />
-    <span v-else-if="selectedRoute === 'upgrade'">Upgrade</span>
+    <manage-subscription v-else-if="selectedRoute === 'manageSubscription'" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs } from "@vue/composition-api";
+import {
+  defineComponent,
+  ref,
+  reactive,
+  toRefs,
+  computed,
+} from "@vue/composition-api";
 import Profile from "./components/Profile.vue";
+import ManageSubscription from "./components/ManageSubscription.vue";
 import sl from "../../serviceLocator";
+import { mdiCheckDecagram } from "@mdi/js";
 
-export type DashboardRoute = "profile" | "upgrade";
+export type DashboardRoute = "profile" | "manageSubscription";
 
 export default defineComponent({
   name: "AccountDashboard",
   components: {
     Profile,
+    ManageSubscription,
   },
   setup() {
     const server = sl.get("serverProxy");
@@ -53,6 +72,14 @@ export default defineComponent({
     const router = sl.get("router");
 
     const drawer = ref(true);
+
+    const icons = ref({
+      mdiCheckDecagram,
+    });
+
+    const subscriptionLevel = computed(() =>
+      store.getters.user ? store.getters.user.subscriptionLevel : "free"
+    );
 
     const logout = async () => {
       try {
@@ -73,8 +100,8 @@ export default defineComponent({
           action: () => (selectedRoute.value = "profile"),
         },
         {
-          label: "Upgrade",
-          action: () => (selectedRoute.value = "upgrade"),
+          label: "Manage Subscription",
+          action: () => (selectedRoute.value = "manageSubscription"),
         },
       ],
     });
@@ -84,6 +111,8 @@ export default defineComponent({
       drawer,
       ...toRefs(state),
       selectedRoute,
+      icons,
+      subscriptionLevel,
     };
   },
 });

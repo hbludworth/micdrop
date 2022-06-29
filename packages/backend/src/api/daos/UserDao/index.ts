@@ -10,7 +10,8 @@ class UserDao {
         'last_name as lastName',
         'email',
         'is_admin as isAdmin',
-        'subscription_level as subscriptionLevel'
+        'subscription_level as subscriptionLevel',
+        'stripe_customer_id as stripeCustomerId'
       )
       .first()
       .where({ uuid });
@@ -30,7 +31,8 @@ class UserDao {
     uuid: string,
     firstName: string,
     lastName: string,
-    email: string
+    email: string,
+    stripeCustomerId: string
   ): Promise<void> {
     const subscriptionLevel: SubscriptionLevel = 'free';
     await knex('user').insert({
@@ -41,6 +43,7 @@ class UserDao {
       is_admin: false,
       subscription_level: subscriptionLevel,
       created_on: new Date(),
+      stripe_customer_id: stripeCustomerId,
     });
   }
 
@@ -60,6 +63,23 @@ class UserDao {
         last_name: lastName,
       })
       .where('uuid', userUuid);
+  }
+
+  async setSubscriptionLevel(
+    userUuid: string,
+    subscriptionLevel: SubscriptionLevel
+  ): Promise<void> {
+    await knex('user')
+      .update({ subscription_level: subscriptionLevel })
+      .where({ uuid: userUuid });
+  }
+
+  async getUserUuidByCustomerId(customerId: string): Promise<string> {
+    const row = await knex('user')
+      .select('uuid')
+      .where({ stripe_customer_id: customerId })
+      .first();
+    return row.uuid;
   }
 }
 

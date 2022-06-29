@@ -5,6 +5,7 @@ import * as security from '../security';
 import firebase from '../firebase';
 import { HttpInternalError, HttpBadRequest } from '../exceptions';
 import sl from '../serviceLocator';
+import stripe from '../stripeInstance';
 
 const router = express.Router();
 
@@ -31,7 +32,18 @@ router.route('/register').post(async (req, res, next) => {
       displayName: `${firstName} ${lastName}`,
     });
 
-    await UserDao.createUser(uuid, firstName, lastName, email);
+    const stripeCustomer = await stripe.customers.create({
+      email,
+      name: `${firstName} ${lastName}`,
+    });
+
+    await UserDao.createUser(
+      uuid,
+      firstName,
+      lastName,
+      email,
+      stripeCustomer.id
+    );
 
     const user = await UserDao.getUserByUuid(uuid);
 

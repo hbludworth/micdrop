@@ -23,7 +23,13 @@ app.use((req, res, next) => {
   }
 });
 
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/v1/stripe_webhook') {
+    return express.raw({ type: 'application/json' })(req, res, next);
+  } else {
+    return express.json()(req, res, next);
+  }
+});
 
 app.use(userMiddleware);
 
