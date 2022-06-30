@@ -85,7 +85,7 @@
       <v-tooltip bottom open-delay="500">
         <template #activator="{ on, attrs }">
           <v-btn
-            color="#4286f5"
+            color="primary"
             @click="submit"
             fab
             depressed

@@ -126,7 +126,7 @@
             <v-tooltip top open-delay="500">
               <template #activator="{ on, attrs }">
                 <v-btn
-                  color="#4286f5"
+                  color="primary"
                   @click="submit"
                   fab
                   depressed
@@ -206,7 +206,7 @@ export default defineComponent({
           return {
             icon: icons.value.mdiMicrophone,
             clickAction: startRecording,
-            color: "#4286f5",
+            color: "primary",
           };
         } else if (!audioUrl.value && isRecording.value) {
           return {

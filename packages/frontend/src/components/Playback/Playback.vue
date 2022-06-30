@@ -22,7 +22,7 @@
               @click="toggleAudio"
               fab
               x-large
-              :color="isPlaying ? '#ea4235' : '#4286f5'"
+              :color="isPlaying ? '#ea4235' : 'primary'"
               depressed
             >
               <v-icon color="white" size="35px">{{
