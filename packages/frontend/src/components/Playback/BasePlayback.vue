@@ -48,7 +48,7 @@ export default defineComponent({
         await server.deleteAudio(props.uuid);
 
         parent.window.postMessage(
-          { type: "remove" },
+          { type: "remove", content: props.uuid },
           "https://mail.google.com"
         );
       } catch {

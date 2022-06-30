@@ -50,11 +50,17 @@ export default defineComponent({
           event.origin !== "http://localhost:8080"
         ) {
           return;
-        } else {
-          if (event.data.type === "remove") {
-            removeEventListener();
-            emit("remove");
-          }
+        }
+
+        if (event.data.type !== "remove") {
+          // Only accept remove events here
+          return;
+        }
+
+        if (event.data.content === props.uuid) {
+          // Prevents removal of incorrect messages. Checks that UUID matches before removing
+          removeEventListener();
+          emit("remove");
         }
       } catch {
         actions.showErrorSnackbar("Error removing audio. Please try again.");
