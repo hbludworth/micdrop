@@ -60,7 +60,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup({ composeBoxElement, composeBoxIndex }, { emit }) {
+  setup({ composeBoxElement, composeBoxIndex, value }, { emit }) {
     const actions = sl.get("globalActions");
 
     const loading = ref(true);
@@ -89,30 +89,38 @@ export default defineComponent({
           event.origin !== "http://localhost:8080"
         ) {
           return;
-        } else {
-          if (event.data.type === "uuid") {
-            removeMessageEventListener();
-            uuid.value = event.data.content as string;
-
-            const imagePlaceholderObserver = new ImagePlaceholderObserver(
-              composeBoxElement,
-              uuid.value
-            );
-
-            insertImagePlaceholder(composeBoxElement, uuid.value);
-
-            insertPlaybackBox(
-              composeBoxElement,
-              composeBoxIndex,
-              uuid.value,
-              imagePlaceholderObserver
-            );
-
-            imagePlaceholderObserver.observeContent();
-
-            emit("input", false);
-          }
         }
+
+        if (event.data.type !== "uuid") {
+          // Only accept uuid events here
+          return;
+        }
+
+        if (value === false) {
+          // Prevents playback from being added to the wrong compose box. Only adds to box whose recording dialog is open
+          return;
+        }
+
+        removeMessageEventListener();
+        uuid.value = event.data.content as string;
+
+        const imagePlaceholderObserver = new ImagePlaceholderObserver(
+          composeBoxElement,
+          uuid.value
+        );
+
+        insertImagePlaceholder(composeBoxElement, uuid.value);
+
+        insertPlaybackBox(
+          composeBoxElement,
+          composeBoxIndex,
+          uuid.value,
+          imagePlaceholderObserver
+        );
+
+        imagePlaceholderObserver.observeContent();
+
+        emit("input", false);
       } catch {
         actions.showErrorSnackbar("Error inserting audio. Please try again.");
       }
