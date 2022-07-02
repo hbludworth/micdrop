@@ -3,8 +3,11 @@
     <v-row justify="center">
       <v-col cols="12" align="center">
         <v-row justify="center">
-          <router-link to="/"
-            ><v-img :src="logoURL" :max-width="detailed ? '175px' : '120px'"
+          <router-link to="/" target="_blank"
+            ><v-img
+              :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+              :max-width="detailed ? '175px' : '120px'"
+              contain
           /></router-link>
         </v-row>
         <v-row justify="center" class="mb-2 mt-8">
@@ -45,8 +48,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "@vue/composition-api";
-import sl from "../../serviceLocator";
+import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
@@ -56,22 +58,7 @@ export default defineComponent({
     },
   },
   setup() {
-    const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
-
-    const logoURL = ref("");
-
-    onMounted(async () => {
-      try {
-        logoURL.value = await server.getImage("logo.png");
-      } catch {
-        actions.showErrorSnackbar("Error loading resources. Please try again.");
-      }
-    });
-
-    return {
-      logoURL,
-    };
+    return {};
   },
 });
 </script>

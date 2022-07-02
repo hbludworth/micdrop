@@ -3,9 +3,11 @@
     <div v-if="!paymentStepReady">
       <v-row justify="center" class="ma-0 mt-16">
         <router-link to="/"
-          ><v-img :src="logoURL" max-width="350px"
+          ><v-img
+            :src="require('../../../assets/logos/blue-logoPRO-alpha-1000w.png')"
+            max-width="350px"
+            contain
         /></router-link>
-        <span class="primary--text text-h2 ml-4 font-weight-bold">Pro</span>
       </v-row>
       <v-row justify="center" class="my-6">
         <span class="text-h6 grey--text"
@@ -185,11 +187,8 @@ export default defineComponent({
     const stripe = ref<Stripe | null>(null);
     const elements = ref<StripeElements>();
 
-    const logoURL = ref("");
-
     onMounted(async () => {
       try {
-        logoURL.value = await server.getImage("logo.png");
         stripe.value = await getStripe();
       } catch {
         actions.showErrorSnackbar("Error loading resources. Please try again.");
@@ -235,7 +234,6 @@ export default defineComponent({
       confirmPayment,
       confirmPaymentLoading,
       paymentErrorMessage,
-      logoURL,
       icons,
     };
   },

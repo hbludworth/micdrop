@@ -3,7 +3,11 @@
     <v-container class="ma-0 pa-10" fluid>
       <v-row class="justify-center">
         <router-link to="/"
-          ><v-img :src="logoURL" max-width="300px" class="mb-12 mt-8"
+          ><v-img
+            :src="require('../assets/logos/blue-logo-alpha-700w.png')"
+            max-width="300px"
+            class="mb-12 mt-8"
+            contain
         /></router-link>
       </v-row>
       <v-row class="justify-center mt-10">
@@ -63,8 +67,6 @@ export default defineComponent({
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
 
-    const logoURL = ref("");
-
     const audioURL = ref("");
     onMounted(async () => {
       try {
@@ -72,18 +74,9 @@ export default defineComponent({
       } catch {
         actions.showErrorSnackbar("Error retrieving audio. Please try again.");
       }
-
-      try {
-        logoURL.value = await server.getImage("logo.png");
-      } catch {
-        actions.showErrorSnackbar(
-          "Error retrieving logo resource. Please try again."
-        );
-      }
     });
 
     return {
-      logoURL,
       audioURL,
     };
   },

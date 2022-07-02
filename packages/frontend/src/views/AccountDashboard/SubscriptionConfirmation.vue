@@ -1,8 +1,11 @@
 <template>
   <div class="pa-12">
     <v-row justify="center" class="ma-0 mt-16">
-      <v-img :src="logoURL" max-width="350px" />
-      <span class="primary--text text-h2 ml-4 font-weight-bold">Pro</span>
+      <v-img
+        :src="require('../../assets/logos/blue-logoPRO-alpha-1000w.png')"
+        max-width="350px"
+        contain
+      />
     </v-row>
     <v-row justify="center" class="my-6">
       <span class="text-h4">{{ setupStatus }}</span>
@@ -59,7 +62,6 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
     const stripe = ref<Stripe | null>(null);
 
@@ -68,11 +70,8 @@ export default defineComponent({
       mdiOpenInNew,
     });
 
-    const logoURL = ref("");
-
     onMounted(async () => {
       try {
-        logoURL.value = await server.getImage("logo.png");
         stripe.value = await getStripe();
 
         if (stripe.value) {
@@ -112,7 +111,6 @@ export default defineComponent({
 
     return {
       setupStatus,
-      logoURL,
       icons,
     };
   },
