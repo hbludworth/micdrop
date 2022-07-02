@@ -100,7 +100,7 @@
       <span class="text-overline"> Powered by </span>
       <a :href="logoLink" target="_blank">
         <v-img
-          :src="logoURL"
+          :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
           height="15px"
           max-width="80px"
           contain
@@ -144,7 +144,6 @@ import {
   mdiChevronRight,
 } from "@mdi/js";
 import SoundResponse from "frontend/src/components/SoundResponse.vue";
-import sl from "frontend/src/serviceLocator";
 
 export default defineComponent({
   props: {
@@ -161,9 +160,6 @@ export default defineComponent({
     SoundResponse,
   },
   setup() {
-    const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
-
     const icons = ref({
       mdiPlayCircle,
       mdiPauseCircle,
@@ -254,20 +250,11 @@ export default defineComponent({
       }
     };
 
-    const logoURL = ref("");
-
     onMounted(async () => {
       await nextTick();
       defaultAudio.value?.addEventListener("loadedmetadata", async () => {
         await initSlider();
       });
-      try {
-        logoURL.value = await server.getImage("logo.png");
-      } catch {
-        actions.showErrorSnackbar(
-          "Error loading logo image. Please refresh to try again."
-        );
-      }
     });
 
     const logoLink =
@@ -306,7 +293,6 @@ export default defineComponent({
       playbackTime,
       audioDuration,
       convertTime,
-      logoURL,
       logoLink,
       sendFeedback,
       progressFraction,

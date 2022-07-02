@@ -61,7 +61,7 @@ export default defineComponent({
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require("../../assets/icons/128.png");
 
-    const iconURL = browser.runtime.getURL("/img/128.4e87e08d.png");
+    const iconURL = browser.runtime.getURL("/img/128.676198ac.png");
 
     const dialogKey = ref(false);
     watch(dialogOpen, () => {

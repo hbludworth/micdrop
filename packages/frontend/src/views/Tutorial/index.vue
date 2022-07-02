@@ -4,7 +4,10 @@
       <v-col cols="4" align="center">
         <v-row justify="center">
           <router-link to="/"
-            ><v-img :src="logoURL" max-width="350px"
+            ><v-img
+              :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+              max-width="350px"
+              contain
           /></router-link>
         </v-row>
         <v-row justify="center" class="my-6">
@@ -292,8 +295,30 @@
               <thead>
                 <tr>
                   <th class="text-center"></th>
-                  <th class="text-center primary--text text-h6">Free</th>
-                  <th class="text-center primary--text text-h6">Pro</th>
+                  <th>
+                    <v-row class="ma-0" justify="center">
+                      <v-img
+                        :src="
+                          require('../../assets/logos/blue-logo-NoDrop-alpha-700w.png')
+                        "
+                        max-height="25px"
+                        max-width="150px"
+                        contain
+                      />
+                    </v-row>
+                  </th>
+                  <th>
+                    <v-row class="ma-0" justify="center">
+                      <v-img
+                        :src="
+                          require('../../assets/logos/blue-logoPRO-NoDrop-alpha-1000w.png')
+                        "
+                        max-height="25px"
+                        max-width="150px"
+                        contain
+                      />
+                    </v-row>
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -468,7 +493,6 @@ export default defineComponent({
 
     const isAuthenticated = computed(() => store.getters.isAuthenticated);
 
-    const logoURL = ref("");
     const micIconScreenshotURL = ref("");
     const audioScreenRecordingURL = ref("");
     const playbackScreenRecordingURL = ref("");
@@ -498,7 +522,6 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        logoURL.value = await server.getImage("logo.png");
         demoVideoURL.value = await server.getImage("DemoVideo.mp4");
         micIconScreenshotURL.value = await server.getImage(
           "MicIconScreenshot.png"
@@ -563,7 +586,6 @@ export default defineComponent({
     ]);
 
     return {
-      logoURL,
       step,
       icons,
       micIconScreenshotURL,

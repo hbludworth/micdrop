@@ -2,7 +2,11 @@
   <div class="mt-10">
     <v-row class="justify-center">
       <router-link to="/"
-        ><v-img :src="logoURL" max-width="300px" class="mb-12 mt-8"
+        ><v-img
+          :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+          max-width="300px"
+          class="mb-12 mt-8"
+          contain
       /></router-link>
     </v-row>
     <v-row justify="center">
@@ -69,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "@vue/composition-api";
+import { defineComponent, ref } from "@vue/composition-api";
 import { RegisterPayload } from "types";
 import sl from "../../serviceLocator";
 
@@ -83,7 +87,6 @@ export default defineComponent({
   },
   setup(props) {
     const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
     const store = sl.get("store");
     const router = sl.get("router");
 
@@ -167,24 +170,12 @@ export default defineComponent({
       }
     };
 
-    const logoURL = ref("");
-    onMounted(async () => {
-      try {
-        logoURL.value = await server.getImage("logo.png");
-      } catch {
-        actions.showErrorSnackbar(
-          "Error loading image resource. Please try again."
-        );
-      }
-    });
-
     return {
       user,
       formErrors,
       errorMessage,
       validate,
       register,
-      logoURL,
       loading,
     };
   },

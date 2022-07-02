@@ -2,7 +2,11 @@
   <div class="pt-12 mt-12">
     <v-row class="justify-center">
       <router-link to="/"
-        ><v-img :src="logoURL" max-width="300px" class="mb-12 mt-8"
+        ><v-img
+          :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+          max-width="300px"
+          class="mb-12 mt-8"
+          contain
       /></router-link>
     </v-row>
     <v-progress-linear v-if="verifyingCode" indeterminate />
@@ -88,8 +92,6 @@ export default defineComponent({
 
     const oobCode = router.currentRoute.query.oobCode as string;
 
-    const logoURL = ref("");
-
     const title = computed(() =>
       serverError.value
         ? "Cannot reset password"
@@ -111,7 +113,6 @@ export default defineComponent({
 
     onMounted(async () => {
       try {
-        logoURL.value = await server.getImage("logo.png");
         const email = await server.verifyPasswordResetCode(oobCode);
 
         resettingEmail.value = email;
@@ -157,7 +158,6 @@ export default defineComponent({
       title,
       serverError,
       resettingEmail,
-      logoURL,
       verifyingCode,
     };
   },

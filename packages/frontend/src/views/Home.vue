@@ -2,7 +2,13 @@
   <div>
     <v-app-bar color="primary" height="120" app elevate-on-scroll>
       <a href="#top">
-        <v-img :src="logoURL" max-width="280" class="ma-12" href="#top" />
+        <v-img
+          :src="require('../assets/logos/white-logo-alpha-700w.png')"
+          max-width="280"
+          contain
+          class="ma-12"
+          href="#top"
+        />
       </a>
 
       <v-spacer />
@@ -246,17 +252,8 @@ export default defineComponent({
     const store = sl.get("store");
     const router = sl.get("router");
 
-    const logoURL = ref("");
     const videoURL = ref("");
     onMounted(async () => {
-      try {
-        logoURL.value = await server.getImage("logo-drop.png");
-      } catch {
-        actions.showErrorSnackbar(
-          "Error retrieving logo resource. Please refresh to try again."
-        );
-      }
-
       try {
         videoURL.value = await server.getImage("MicDropScreenRecording.mp4");
       } catch {
@@ -282,7 +279,6 @@ export default defineComponent({
     };
 
     return {
-      logoURL,
       videoURL,
       isAuthenticated,
       firstName,

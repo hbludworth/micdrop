@@ -1,27 +1,31 @@
 <template>
   <v-col class="pa-0" align="center">
-    <v-img :src="logoURL" max-width="140" class="ma-4" />
+    <v-img
+      v-if="subscriptionLevel === 'free'"
+      :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+      max-width="140"
+      class="ma-4"
+      contain
+    />
+    <v-img
+      v-else-if="subscriptionLevel === 'pro'"
+      :src="require('../../assets/logos/blue-logoPRO-alpha-1000w.png')"
+      max-width="180"
+      class="ma-4"
+      contain
+    />
     <v-btn
       text
       color="primary"
       class="my-1"
       to="/account_dashboard"
       target="_blank"
-      ><v-icon small class="mr-1">{{ icons.mdiAccount }}</v-icon> Account</v-btn
+      ><v-icon small class="mr-1">{{ icons.mdiAccount }}</v-icon
+      >Account</v-btn
     >
     <v-btn text color="primary" class="my-1" to="/tutorial" target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiClipboardList }}</v-icon
       >Tutorial</v-btn
-    >
-    <v-btn
-      v-if="subscriptionLevel === 'free'"
-      text
-      color="rgba(212, 175, 55, 1)"
-      class="my-1"
-      to="/upgrade"
-      target="_blank"
-      ><v-icon small class="mr-1">{{ icons.mdiCheckDecagram }}</v-icon
-      >MicDrop Pro</v-btn
     >
     <v-btn
       text
@@ -32,16 +36,26 @@
       ><v-icon small class="mr-1">{{ icons.mdiEmail }}</v-icon
       >Contact Us</v-btn
     >
+    <v-btn
+      v-if="subscriptionLevel === 'free'"
+      text
+      class="my-1"
+      color="primary"
+      to="/upgrade"
+      target="_blank"
+    >
+      <v-img
+        :src="require('../../assets/logos/blue-logoPRO-NoDrop-alpha-1000w.png')"
+        max-width="100"
+        class="ma-4"
+        contain
+      />
+    </v-btn>
   </v-col>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  onMounted,
-  computed,
-} from "@vue/composition-api";
+import { defineComponent, ref, computed } from "@vue/composition-api";
 import {
   mdiAccount,
   mdiClipboardList,
@@ -52,8 +66,6 @@ import sl from "../../serviceLocator";
 
 export default defineComponent({
   setup() {
-    const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
     const store = sl.get("store");
 
     const subscriptionLevel = computed(() =>
@@ -67,19 +79,7 @@ export default defineComponent({
       mdiEmail,
     });
 
-    const logoURL = ref("");
-    onMounted(async () => {
-      try {
-        logoURL.value = await server.getImage("logo.png");
-      } catch {
-        actions.showErrorSnackbar(
-          "Error retrieving logo resource. Please refresh to try again."
-        );
-      }
-    });
-
     return {
-      logoURL,
       icons,
       subscriptionLevel,
     };

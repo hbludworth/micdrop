@@ -27,10 +27,23 @@
         >
       </v-row>
       <v-row v-if="currentStep === 1" class="justify-center mt-6 mx-0">
-        <span class="text-h5"
-          >Welcome to MicDrop
-          {{ subscriptionLevel === "pro" ? "Pro" : "" }}</span
-        >
+        <span class="text-h5">Welcome to</span>
+        <v-img
+          v-if="subscriptionLevel === 'free'"
+          :src="require('../../assets/logos/blue-logo-NoDrop-alpha-700w.png')"
+          max-width="100px"
+          contain
+          class="mt-1 ml-2"
+        />
+        <v-img
+          v-else-if="subscriptionLevel === 'pro'"
+          :src="
+            require('../../assets/logos/blue-logoPRO-NoDrop-alpha-1000w.png')
+          "
+          max-width="120px"
+          contain
+          class="mt-1 ml-2"
+        />
       </v-row>
       <v-row
         v-if="currentStep === 1"
@@ -59,7 +72,7 @@
       </v-row>
       <v-row
         v-if="currentStep === 1 && subscriptionLevel === 'free'"
-        class="justify-center mt-10 mx-0 text-caption grey--text"
+        class="justify-center mt-12 mx-0 text-caption grey--text"
       >
         <span>Want more? Check out</span>
       </v-row>
@@ -67,15 +80,14 @@
         v-if="currentStep === 1 && subscriptionLevel === 'free'"
         class="justify-center mt-3 mx-0"
       >
-        <v-btn
-          large
-          text
-          color="rgba(212, 175, 55, 1)"
-          to="/upgrade"
-          target="_blank"
-          ><v-icon small class="mr-1">{{ icons.mdiCheckDecagram }}</v-icon
-          >MicDrop Pro</v-btn
-        >
+        <v-btn text color="primary" to="/upgrade" target="_blank">
+          <v-img
+            :src="require('../../assets/logos/blue-logoPRO-alpha-1000w.png')"
+            max-width="100"
+            class="ma-4"
+            contain
+          />
+        </v-btn>
       </v-row>
       <v-row
         v-if="currentStep === 1 && subscriptionLevel === 'pro'"
@@ -103,16 +115,17 @@
         v-if="currentStep === 3 && subscriptionLevel === 'free'"
         class="justify-center mt-6 mx-0 text-caption grey--text"
       >
-        <span>Need more recording time?</span
-        ><v-btn
-          x-small
-          text
-          color="rgba(212, 175, 55, 1)"
-          to="/upgrade"
-          target="_blank"
-          class="px-1 ml-1"
-          >Try MicDrop Pro</v-btn
-        >
+        <span>Need more recording time? Try </span>
+        <v-btn text x-small color="primary" to="/upgrade" target="_blank">
+          <v-img
+            :src="
+              require('../../assets/logos/blue-logoPRO-NoDrop-alpha-1000w.png')
+            "
+            max-width="70"
+            class="mx-n1"
+            contain
+          />
+        </v-btn>
       </v-row>
       <v-row class="ma-0 mt-n4" v-if="currentStep === 3">
         <v-col cols="2" class="pa-0" />
@@ -172,7 +185,6 @@ import {
   mdiArrowULeftTopBold,
   mdiEmailSendOutline,
   mdiMicrophone,
-  mdiCheckDecagram,
   mdiArchive,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
@@ -230,7 +242,6 @@ export default defineComponent({
       mdiArrowULeftTopBold,
       mdiEmailSendOutline,
       mdiMicrophone,
-      mdiCheckDecagram,
       mdiArchive,
     });
 
@@ -363,9 +374,11 @@ export default defineComponent({
         monthlyMessagesLeft.value = (
           await server.getMonthlyMessagesLeft()
         ).monthlyMessagesLeft;
-        subscriptionStatus.value = await server.getSubscriptionStatus();
-        if (subscriptionStatus.value === "past_due" && !props.ignorePastDue) {
-          router.push("/past_due_warning");
+        if (subscriptionLevel.value !== "free") {
+          subscriptionStatus.value = await server.getSubscriptionStatus();
+          if (subscriptionStatus.value === "past_due" && !props.ignorePastDue) {
+            router.push("/past_due_warning");
+          }
         }
       } catch {
         actions.showErrorSnackbar(

@@ -4,6 +4,7 @@
     @input="$emit('input', $event)"
     width="600"
     content-class="rounded-xl"
+    overlay-opacity="0.80"
   >
     <v-card height="355">
       <v-row v-show="loading" justify="center" class="ma-0 pa-0">

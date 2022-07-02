@@ -2,7 +2,11 @@
   <div class="pt-12 mt-12">
     <v-row class="justify-center">
       <router-link to="/"
-        ><v-img :src="logoURL" max-width="300px" class="mb-12 mt-8"
+        ><v-img
+          :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+          max-width="300px"
+          class="mb-12 mt-8"
+          contain
       /></router-link>
     </v-row>
     <v-row justify="center">
@@ -41,7 +45,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from "@vue/composition-api";
+import { defineComponent, ref } from "@vue/composition-api";
 import { LoginPayload } from "types";
 import sl from "../../serviceLocator";
 
@@ -64,7 +68,6 @@ export default defineComponent({
   },
   setup(props) {
     const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
     const router = sl.get("router");
 
     const loading = ref(false);
@@ -72,8 +75,6 @@ export default defineComponent({
     const email = ref("");
     const password = ref("");
     const errorMessage = ref("");
-
-    const logoURL = ref("");
 
     const login = async () => {
       errorMessage.value = "";
@@ -104,22 +105,11 @@ export default defineComponent({
       }
     };
 
-    onMounted(async () => {
-      try {
-        logoURL.value = await server.getImage("logo.png");
-      } catch {
-        actions.showErrorSnackbar(
-          "Error loading image resource. Please try again."
-        );
-      }
-    });
-
     return {
       email,
       password,
       errorMessage,
       login,
-      logoURL,
       loading,
     };
   },

@@ -2,7 +2,11 @@
   <div class="pt-12 mt-12">
     <v-row class="justify-center">
       <router-link to="/"
-        ><v-img :src="logoURL" max-width="300px" class="mb-12 mt-8"
+        ><v-img
+          :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+          max-width="300px"
+          class="mb-12 mt-8"
+          contain
       /></router-link>
     </v-row>
     <v-row justify="center">
@@ -51,12 +55,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  computed,
-  onMounted,
-} from "@vue/composition-api";
+import { defineComponent, ref, computed } from "@vue/composition-api";
 import sl from "../../serviceLocator";
 
 export default defineComponent({
@@ -67,8 +66,6 @@ export default defineComponent({
 
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
-
-    const logoURL = ref("");
 
     const sendEmail = async () => {
       try {
@@ -97,23 +94,12 @@ export default defineComponent({
       emailSent.value ? "Check your email" : "Reset password"
     );
 
-    onMounted(async () => {
-      try {
-        logoURL.value = await server.getImage("logo.png");
-      } catch {
-        actions.showErrorSnackbar(
-          "Error loading image resource. Please try again."
-        );
-      }
-    });
-
     return {
       email,
       loading,
       emailSent,
       title,
       sendEmail,
-      logoURL,
     };
   },
 });
