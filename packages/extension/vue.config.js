@@ -7,6 +7,9 @@ module.exports = {
             'content-script': ['src/content-scripts/content-script.ts'],
           },
         },
+        background: {
+          entry: 'src/background.ts',
+        },
       },
     },
   },
