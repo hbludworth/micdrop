@@ -1,30 +1,35 @@
 <template>
-  <v-dialog
-    :value="value"
-    @input="$emit('input', $event)"
-    width="600"
-    content-class="rounded-xl"
-    overlay-opacity="0.80"
-  >
-    <v-card height="355">
-      <v-row v-show="loading" justify="center" class="ma-0 pa-0">
-        <v-progress-circular
-          indeterminate
-          size="150"
-          width="15"
-          color="primary"
-          class="mt-14"
-        />
-      </v-row>
-      <iframe
-        v-show="!loading"
-        :src="iframeSource"
-        allow="microphone"
-        loading="eager"
-        ref="recordingFrame"
-      />
-    </v-card>
-  </v-dialog>
+  <div class="recording-dialog postcsswrapper">
+    <v-app>
+      <v-dialog
+        v-model="dialogOpen"
+        @input="$emit('input', $event)"
+        width="600"
+        content-class="rounded-xl"
+        overlay-opacity="0.80"
+        :key="dialogKey"
+      >
+        <v-card height="355">
+          <v-row v-show="loading" justify="center" class="ma-0 pa-0">
+            <v-progress-circular
+              indeterminate
+              size="150"
+              width="15"
+              color="primary"
+              class="mt-14"
+            />
+          </v-row>
+          <iframe
+            v-show="!loading"
+            :src="iframeSource"
+            allow="microphone"
+            loading="eager"
+            ref="recordingFrame"
+          />
+        </v-card>
+      </v-dialog>
+    </v-app>
+  </div>
 </template>
 
 <script lang="ts">
@@ -47,21 +52,7 @@ export default defineComponent({
     Playback,
     SoundResponse,
   },
-  props: {
-    value: {
-      type: Boolean,
-      required: true,
-    },
-    composeBoxElement: {
-      type: Element,
-      required: true,
-    },
-    composeBoxIndex: {
-      type: Number,
-      required: true,
-    },
-  },
-  setup({ composeBoxElement, composeBoxIndex, value }, { emit }) {
+  setup() {
     const actions = sl.get("globalActions");
 
     const loading = ref(true);
@@ -97,31 +88,37 @@ export default defineComponent({
           return;
         }
 
-        if (value === false) {
-          // Prevents playback from being added to the wrong compose box. Only adds to box whose recording dialog is open
-          return;
+        if (
+          composeBoxElement.value === undefined ||
+          composeBoxIndex.value === undefined
+        ) {
+          throw new Error("Compose box not set");
         }
 
         removeMessageEventListener();
         uuid.value = event.data.content as string;
 
         const imagePlaceholderObserver = new ImagePlaceholderObserver(
-          composeBoxElement,
+          composeBoxElement.value,
           uuid.value
         );
 
-        insertImagePlaceholder(composeBoxElement, uuid.value);
+        insertImagePlaceholder(composeBoxElement.value, uuid.value);
 
         insertPlaybackBox(
-          composeBoxElement,
-          composeBoxIndex,
+          composeBoxElement.value,
+          composeBoxIndex.value,
           uuid.value,
           imagePlaceholderObserver
         );
 
         imagePlaceholderObserver.observeContent();
 
-        emit("input", false);
+        dialogOpen.value = false;
+        composeBoxElement.value = undefined;
+        composeBoxIndex.value = undefined;
+        uuid.value = null;
+        recordingFrame.value = null;
       } catch {
         actions.showErrorSnackbar("Error inserting audio. Please try again.");
       }
@@ -135,18 +132,41 @@ export default defineComponent({
       window.removeEventListener("message", messageEventHandler);
     };
 
+    const dialogOpen = ref(false);
+    const dialogKey = ref(false);
+
+    watch(dialogOpen, () => {
+      if (dialogOpen.value) {
+        dialogKey.value = !dialogKey.value;
+        addMessageEventListener();
+      } else {
+        removeMessageEventListener();
+      }
+    });
+
     onMounted(() => {
-      addMessageEventListener();
+      window.addEventListener("micdrop-open-dialog", (event) => {
+        composeBoxElement.value = (
+          event as CustomEvent
+        ).detail.composeBoxElement;
+        composeBoxIndex.value = (event as CustomEvent).detail.composeBoxIndex;
+        dialogOpen.value = true;
+      });
     });
 
     onUnmounted(() => {
       removeMessageEventListener();
     });
 
+    const composeBoxElement = ref<Element>();
+    const composeBoxIndex = ref<number>();
+
     return {
       recordingFrame,
       loading,
       iframeSource,
+      dialogOpen,
+      dialogKey,
     };
   },
 });
