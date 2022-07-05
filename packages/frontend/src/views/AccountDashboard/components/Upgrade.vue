@@ -205,7 +205,10 @@ export default defineComponent({
           const { error } = await stripe.value.confirmSetup({
             elements: elements.value,
             confirmParams: {
-              return_url: "http://localhost:8080/subscription_confirmation",
+              return_url:
+                process.env.NODE_ENV === "development"
+                  ? "http://localhost:8080/subscription_confirmation"
+                  : "https://sendmicdrop.com/subscription_confirmation",
             },
           });
 

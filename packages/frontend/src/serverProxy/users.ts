@@ -15,7 +15,10 @@ async function getUser(uuid: string): Promise<User> {
 async function createProSubscription(
   customerId: string
 ): Promise<CreateSubscriptionResponse> {
-  const PRO_PRICE_ID = 'price_1LBVE2BD1AUOs1O8mDk1M12p';
+  const PRO_PRICE_ID =
+    process.env.NODE_ENV === 'development'
+      ? 'price_1LBVE2BD1AUOs1O8mDk1M12p'
+      : 'price_1LIJwgBD1AUOs1O8uQh9u3NW';
 
   const payload: CreateSubscriptionPayload = {
     priceId: PRO_PRICE_ID,
