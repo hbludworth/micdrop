@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import vuetify from '../../plugins/vuetify';
 import VueCompositionApi from '@vue/composition-api';
-import BasePlayback from '../Playback/BasePlayback.vue';
+import PlaybackFrame from '../PlaybackFrame/PlaybackFrame.vue';
 import ImagePlaceholderObserver from '@/utils/contentObservers/ImagePlaceholderObserver';
-import axios from 'axios';
+import sl from 'frontend/src/serviceLocator';
 
 const insertImagePlaceholder = (composeBoxElement: Element, uuid: string) => {
   const inputArea = composeBoxElement.querySelector('.LW-avf');
@@ -36,6 +36,8 @@ const insertImagePlaceholder = (composeBoxElement: Element, uuid: string) => {
 
   const image = document.createElement('img');
   image.id = 'placeholder-img-file';
+
+  // Will not use server proxy here because Google caches images. This prevents issues by directing straight to the server.
   image.src =
     process.env.NODE_ENV === 'development'
       ? 'http://localhost:8081/api/v1/image/placeholder-v2.png'
@@ -60,7 +62,6 @@ const insertPlaybackBox = (
   composeBoxElement: Element,
   composeBoxIndex: number,
   uuid: string,
-  audioUrl: string,
   imagePlaceholderObserver: ImagePlaceholderObserver
 ) => {
   const tbody = composeBoxElement.children.item(0);
@@ -81,39 +82,33 @@ const insertPlaybackBox = (
   new Vue({
     vuetify,
     render: (h) =>
-      h(BasePlayback, {
+      h(PlaybackFrame, {
         props: {
-          audioUrl,
           uuid,
           includeCenteredRow: true,
           showRemoveButton: true,
         },
         on: {
-          remove: async () =>
-            await removeRecording(
-              composeBoxElement,
-              uuid,
-              imagePlaceholderObserver
-            ),
+          remove: () =>
+            removeRecording(composeBoxElement, imagePlaceholderObserver),
         },
       }),
   }).$mount(`#emailContent-${composeBoxIndex}`);
 };
 
-const removeRecording = async (
+const removeRecording = (
   composeBoxElement: Element,
-  uuid: string,
   imagePlaceholderObserver: ImagePlaceholderObserver
 ) => {
-  composeBoxElement.querySelector('tr.playback-row')?.remove();
-  imagePlaceholderObserver.disconnectObserver();
-  composeBoxElement.querySelector('#image-placeholder')?.remove();
+  const actions = sl.get('globalActions');
 
-  const url =
-    process.env.NODE_ENV === 'development'
-      ? `http://localhost:8081/api/v1/audio/${uuid}`
-      : `https://www.sendmicdrop.com/api/v1/audio/${uuid}`;
-  await axios.delete(url);
+  try {
+    composeBoxElement.querySelector('tr.playback-row')?.remove();
+    imagePlaceholderObserver.disconnectObserver();
+    composeBoxElement.querySelector('#image-placeholder')?.remove();
+  } catch {
+    actions.showErrorSnackbar('Error deleting audio. Please try again.');
+  }
 };
 
 export { insertImagePlaceholder, insertPlaybackBox };

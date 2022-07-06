@@ -3,7 +3,11 @@
     <v-container class="ma-0 pa-10" fluid>
       <v-row class="justify-center">
         <router-link to="/"
-          ><v-img :src="logoURL" max-width="300px" class="mb-12 mt-8"
+          ><v-img
+            :src="require('../assets/logos/blue-logo-alpha-700w.png')"
+            max-width="300px"
+            class="mb-12 mt-8"
+            contain
         /></router-link>
       </v-row>
       <v-row class="justify-center mt-10">
@@ -44,8 +48,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
-import Playback from "extension/src//views/Playback/Playback.vue";
+import { defineComponent, onMounted, ref } from "@vue/composition-api";
+import Playback from "../components/Playback/Playback.vue";
+import sl from "../serviceLocator";
 
 export default defineComponent({
   name: "PlaybackPage",
@@ -59,18 +64,19 @@ export default defineComponent({
     Playback,
   },
   setup(props) {
-    const logoURL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo.png"
-        : "https://www.sendmicdrop.com/api/v1/image/logo.png";
+    const server = sl.get("serverProxy");
+    const actions = sl.get("globalActions");
 
-    const audioURL =
-      process.env.NODE_ENV === "development"
-        ? `http://localhost:8081/api/v1/audio/${props.uuid}`
-        : `https://www.sendmicdrop.com/api/v1/audio/${props.uuid}`;
+    const audioURL = ref("");
+    onMounted(async () => {
+      try {
+        audioURL.value = await server.getAudio(props.uuid);
+      } catch {
+        actions.showErrorSnackbar("Error retrieving audio. Please try again.");
+      }
+    });
 
     return {
-      logoURL,
       audioURL,
     };
   },

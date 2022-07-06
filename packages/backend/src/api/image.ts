@@ -1,30 +1,30 @@
 import express from 'express';
 import AWS from 'aws-sdk';
+import { HttpInternalError, HttpBadRequest } from '../exceptions';
 
 const router = express.Router();
 
-router.route('/image/:key').get(async (req, res, _next) => {
-  const s3 = new AWS.S3();
+router.route('/image/:key').get(async (req, res, next) => {
+  try {
+    const s3 = new AWS.S3();
 
-  // FIXME temporary fix while awaiting review
+    let { key } = req.params;
 
-  let { key } = req.params;
+    const params = {
+      Bucket: 'micdrop-images',
+      Key: key,
+    };
 
-  if (!key.includes('.')) {
-    key += '.png';
-  }
+    const signedUrl = await s3.getSignedUrlPromise('getObject', params);
 
-  const params = {
-    Bucket: 'micdrop-images',
-    Key: key,
-  };
-
-  const image = (await s3.getObject(params).promise()).Body;
-
-  if (image) {
-    res.send(image).end();
-  } else {
-    res.status(404).end();
+    if (signedUrl) {
+      res.json(signedUrl);
+    } else {
+      next(new HttpBadRequest('This image does not exist.'));
+      return;
+    }
+  } catch (err) {
+    next(new HttpInternalError(err as string));
   }
 });
 

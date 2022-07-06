@@ -1,12 +1,15 @@
 import Vue from 'vue';
-import BasePlayback from '../../views/Playback/BasePlayback.vue';
+import PlaybackFrame from '../../views/PlaybackFrame/PlaybackFrame.vue';
 import vuetify from '../../plugins/vuetify';
 import VueCompositionApi from '@vue/composition-api';
+import sl from 'frontend/src/serviceLocator';
 
 class ReceiversObserver {
   private receiversObserver = new MutationObserver(() => {
+    const actions = sl.get('globalActions');
+
     const allReceievedEmails = document.querySelectorAll('div.a3s.aiL');
-    allReceievedEmails.forEach((receivedEmail, index) => {
+    allReceievedEmails.forEach(async (receivedEmail, index) => {
       if (
         receivedEmail.querySelector(`[id*="image-placeholder"]`) &&
         !receivedEmail.querySelector(`[id*="playback-insertion-point"]`)
@@ -30,16 +33,20 @@ class ReceiversObserver {
           imagePlaceholder.appendChild(newNode);
         }
 
+        if (!uuid) {
+          actions.showErrorSnackbar(
+            'This audio email has been corrupted. Contact us for help.'
+          );
+          return;
+        }
+
         Vue.use(VueCompositionApi);
         new Vue({
           vuetify,
           render: (h) =>
-            h(BasePlayback, {
+            h(PlaybackFrame, {
               props: {
-                audioUrl:
-                  process.env.NODE_ENV === 'development'
-                    ? `http://localhost:8081/api/v1/audio/${uuid}`
-                    : `https://www.sendmicdrop.com/api/v1/audio/${uuid}`,
+                uuid,
               },
             }),
         }).$mount(`#emailInsertion-${index}`);

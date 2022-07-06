@@ -3,6 +3,8 @@ import fileupload from 'express-fileupload';
 import history from 'connect-history-api-fallback';
 import setupRoutes from './setupRoutes';
 import path from 'path';
+import errorMiddleware from './middlewares/error';
+import userMiddleware from './middlewares/user';
 
 const app = express();
 app.use((req, res, next) => {
@@ -21,10 +23,21 @@ app.use((req, res, next) => {
   }
 });
 
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === '/api/v1/stripe_webhook') {
+    return express.raw({ type: 'application/json' })(req, res, next);
+  } else {
+    return express.json()(req, res, next);
+  }
+});
+
+app.use(userMiddleware);
+
 app.use(fileupload());
 
 setupRoutes(app);
+
+app.use(errorMiddleware);
 
 app.use(history());
 

@@ -22,7 +22,7 @@
               @click="toggleAudio"
               fab
               x-large
-              :color="isPlaying ? '#ea4235' : '#4286f5'"
+              :color="isPlaying ? '#ea4235' : 'primary'"
               depressed
             >
               <v-icon color="white" size="35px">{{
@@ -100,7 +100,7 @@
       <span class="text-overline"> Powered by </span>
       <a :href="logoLink" target="_blank">
         <v-img
-          :src="logoURL"
+          :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
           height="15px"
           max-width="80px"
           contain
@@ -143,7 +143,7 @@ import {
   mdiChevronLeft,
   mdiChevronRight,
 } from "@mdi/js";
-import SoundResponse from "../../components/SoundResponse.vue";
+import SoundResponse from "frontend/src/components/SoundResponse.vue";
 
 export default defineComponent({
   props: {
@@ -257,11 +257,6 @@ export default defineComponent({
       });
     });
 
-    const logoURL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo.png"
-        : "https://www.sendmicdrop.com/api/v1/image/logo.png";
-
     const logoLink =
       process.env.NODE_ENV === "development"
         ? "localhost:8080"
@@ -298,7 +293,6 @@ export default defineComponent({
       playbackTime,
       audioDuration,
       convertTime,
-      logoURL,
       logoLink,
       sendFeedback,
       progressFraction,
@@ -319,7 +313,7 @@ export default defineComponent({
 
 .slider {
   position: absolute;
-  z-index: 1000;
+  z-index: 200;
   width: 200px;
 }
 
@@ -329,7 +323,7 @@ export default defineComponent({
 
 .scrubber-indicator {
   position: absolute;
-  z-index: 999;
+  z-index: 199;
   animation: fadeInOut 4s infinite;
 }
 

@@ -4,7 +4,7 @@
       <v-tooltip top>
         <template #activator="{ on, attrs }">
           <v-btn
-            @click="dialogOpen = !dialogOpen"
+            @click="openDialog"
             text
             class="ml-3 pa-0 mr-n1"
             min-width="28"
@@ -18,25 +18,22 @@
         </template>
         <span>MicDrop</span>
       </v-tooltip>
-      <recording-dialog
-        v-model="dialogOpen"
-        :key="dialogKey"
-        :composeBoxElement="composeBoxElement"
-        :composeBoxIndex="composeBoxIndex"
-      />
+      <mic-drop-snackbar />
     </v-app>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, watch } from "@vue/composition-api";
+import { defineComponent, ref } from "@vue/composition-api";
 import { mdiMicrophone } from "@mdi/js";
 import RecordingDialog from "../RecordingDialog/RecordingDialog.vue";
+import MicDropSnackbar from "frontend/src/components/base/MicDropSnackbar.vue";
 
 export default defineComponent({
   name: "MicButton",
   components: {
     RecordingDialog,
+    MicDropSnackbar,
   },
   props: {
     composeBoxElement: {
@@ -48,9 +45,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
-    const dialogOpen = ref(false);
-
+  setup(props) {
     const icons = ref({
       mdiMicrophone,
     });
@@ -58,18 +53,21 @@ export default defineComponent({
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     require("../../assets/icons/128.png");
 
-    const iconURL = browser.runtime.getURL("/img/128.4e87e08d.png");
+    const iconURL = browser.runtime.getURL("/img/128.676198ac.png");
 
-    const dialogKey = ref(false);
-    watch(dialogOpen, () => {
-      if (dialogOpen.value) {
-        dialogKey.value = !dialogKey.value;
-      }
-    });
+    const openDialog = () => {
+      window.dispatchEvent(
+        new CustomEvent("micdrop-open-dialog", {
+          detail: {
+            composeBoxElement: props.composeBoxElement,
+            composeBoxIndex: props.composeBoxIndex,
+          },
+        })
+      );
+    };
 
     return {
-      dialogOpen,
-      dialogKey,
+      openDialog,
       icons,
       iconURL,
     };

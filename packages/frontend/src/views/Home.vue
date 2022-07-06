@@ -2,21 +2,43 @@
   <div>
     <v-app-bar color="primary" height="120" app elevate-on-scroll>
       <a href="#top">
-        <v-img :src="logoURL" max-width="280" class="ma-12" href="#top" />
+        <v-img
+          :src="require('../assets/logos/white-logo-alpha-700w.png')"
+          max-width="280"
+          contain
+          class="ma-12"
+          href="#top"
+        />
       </a>
 
       <v-spacer />
-      <div class="mr-10">
+      <div class="mr-8">
         <v-btn text color="white" href="#aboutCard">About</v-btn>
         <v-btn text color="white" href="#requestDemoCard">Request a Demo</v-btn>
         <v-btn
           color="white"
-          class="primary--text ml-2"
+          class="primary--text mx-2"
           depressed
           href="https://chrome.google.com/webstore/detail/cfeaabebicbbcmddmgphgncpdlkadgfl?authuser=2&hl=en"
           target="_blank"
           >Install Now</v-btn
         >
+        <v-btn v-if="!isAuthenticated" text color="white" to="/login"
+          >Login</v-btn
+        >
+        <v-menu v-else offset-y>
+          <template v-slot:activator="{ on }">
+            <v-btn text v-on="on" color="white">Welcome, {{ firstName }}</v-btn>
+          </template>
+          <v-list>
+            <v-list-item @click="router.push('/account_dashboard')">
+              <v-list-item-title>Dashboard</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="logout">
+              <v-list-item-title>Logout</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </v-app-bar>
 
@@ -214,24 +236,54 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import {
+  defineComponent,
+  ref,
+  onMounted,
+  computed,
+} from "@vue/composition-api";
+import sl from "../serviceLocator";
 
 export default defineComponent({
   name: "Home",
   setup() {
-    const logoURL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/logo-drop.png"
-        : "https://www.sendmicdrop.com/api/v1/image/logo-drop.png";
+    const server = sl.get("serverProxy");
+    const actions = sl.get("globalActions");
+    const store = sl.get("store");
+    const router = sl.get("router");
 
-    const videoURL =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8081/api/v1/image/MicDropScreenRecording.mp4"
-        : "https://sendmicdrop.com/api/v1/image/MicDropScreenRecording.mp4";
+    const videoURL = ref("");
+    onMounted(async () => {
+      try {
+        videoURL.value = await server.getImage("MicDropScreenRecording.mp4");
+      } catch {
+        actions.showErrorSnackbar(
+          "Error retrieving video resource. Please refresh to try again."
+        );
+      }
+    });
+
+    const isAuthenticated = computed(() => store.getters.isAuthenticated);
+    const firstName = computed(() =>
+      store.getters.user ? store.getters.user.firstName : ""
+    );
+
+    const logout = async () => {
+      try {
+        store.logout();
+        await server.logout();
+        router.push("/login");
+      } catch {
+        actions.showErrorSnackbar("Error logging out. Please try again");
+      }
+    };
 
     return {
-      logoURL,
       videoURL,
+      isAuthenticated,
+      firstName,
+      logout,
+      router,
     };
   },
 });
