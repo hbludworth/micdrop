@@ -84,7 +84,6 @@ const routes: Array<RouteConfig> = [
       showRemoveButton: route.query.showRemove === 'true' ? true : false,
     }),
     component: BasePlayback,
-    beforeEnter: authenticatedGuard,
   },
   {
     path: '/extension/popup',

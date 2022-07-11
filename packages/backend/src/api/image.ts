@@ -15,6 +15,17 @@ router.route('/image/:key').get(async (req, res, next) => {
       Key: key,
     };
 
+    // FIXME temp fix
+    if (key === 'placeholder-v2.png') {
+      const image = (await s3.getObject(params).promise()).Body;
+      if (image) {
+        res.send(image).end();
+      } else {
+        res.status(404).end();
+      }
+      return;
+    }
+
     const signedUrl = await s3.getSignedUrlPromise('getObject', params);
 
     if (signedUrl) {
