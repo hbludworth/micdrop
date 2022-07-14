@@ -26,10 +26,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  PropType
-} from "@vue/composition-api";
+import { defineComponent, PropType } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
@@ -43,8 +40,8 @@ export default defineComponent({
     },
     currentFrequencyData: {
       type: Array as PropType<Array<number>>,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props) {
     const getHeight = (index: number) => {
@@ -66,11 +63,11 @@ export default defineComponent({
     };
 
     const getColor = (index: number) => {
-      const blue = '66, 134, 245,';
-      const yellow = '245, 180, 0,';
-      const red = '234, 66, 53,';
-      const green = '52, 168, 83,';
-      switch (index) { // Should probably turn the rgb code into constants
+      const blue = "66, 134, 245";
+      const yellow = "245, 180, 0,";
+      const red = "234, 66, 53,";
+      const green = "52, 168, 83,";
+      switch (index) {
         case 0:
         case 1:
         case 2:
@@ -97,8 +94,10 @@ export default defineComponent({
     };
 
     const getAlpha = (index: number) => {
-      if (props.progressFraction === undefined || 
-          props.progressFraction > index + 1) {
+      if (
+        props.progressFraction === undefined ||
+        props.progressFraction > index + 1
+      ) {
         return 1;
       }
       if (props.progressFraction < index) {
@@ -117,5 +116,3 @@ export default defineComponent({
   },
 });
 </script>
-
-
