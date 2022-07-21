@@ -37,5 +37,6 @@ export interface CreateNewCustomPlaybackPayload {
 
 export interface CreateNewCustomPlaybackImagePayload {
   name: string;
+  type: 'circle' | 'signature';
   file: File;
 }

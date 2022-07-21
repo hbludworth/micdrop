@@ -20,7 +20,7 @@ const uploadImage = async (
     const formData = new FormData();
     formData.append('newFile', file, 'newFile');
 
-    await axios.post(`/image/upload/${image.name}`, formData);
+    await axios.post(`/image/upload/${image.type}/${image.name}`, formData);
   }
 };
 

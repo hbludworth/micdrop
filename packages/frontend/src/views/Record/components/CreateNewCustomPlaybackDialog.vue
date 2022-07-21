@@ -190,7 +190,7 @@
               chips
               dense
               outlined
-              accept="image/png"
+              accept="image/png, image/jpeg"
               @change="setCircleImage"
               label="Click to upload"
               hide-details
@@ -249,7 +249,7 @@
               chips
               dense
               outlined
-              accept="image/png"
+              accept="image/png, image/jpeg"
               @change="setSignatureImage"
               label="Click to upload"
               hide-details
@@ -468,6 +468,7 @@ export default defineComponent({
           circleImageName = `${v4()}.png`;
           await server.uploadImage({
             name: circleImageName,
+            type: "circle",
             file: circleImage.value,
           });
         }
@@ -476,6 +477,7 @@ export default defineComponent({
           signatureImageName = `${v4()}.png`;
           await server.uploadImage({
             name: signatureImageName,
+            type: "signature",
             file: signatureImage.value,
           });
         }
@@ -499,8 +501,12 @@ export default defineComponent({
           signatureText:
             previewCustomPlayback.value.customPlayback.signatureText,
           link: previewCustomPlayback.value.customPlayback.link,
-          circleImage: circleImageName,
-          signatureImage: signatureImageName,
+          circleImage:
+            circleImageName ||
+            (noCircleImage.value ? null : "micdrop_circle.png"),
+          signatureImage:
+            signatureImageName ||
+            (noSignatureImage.value ? null : "micdrop_signature.png"),
         };
 
         const newlyCreatedCustomPlaybackRow = await server.createCustomPlayback(
