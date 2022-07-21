@@ -41,7 +41,7 @@ export async function up(knex: Knex): Promise<void> {
         scrubber_color: '#3a79d9',
         circle_img: 'micdrop_circle.png',
         signature_text: 'Powered By',
-        signature_img: null,
+        signature_img: 'micdrop_signature.png',
         link: 'https://sendmicdrop.com',
       },
       {
@@ -57,7 +57,7 @@ export async function up(knex: Knex): Promise<void> {
         scrubber_color: '#d84f3f',
         circle_img: null,
         signature_text: 'Powered By',
-        signature_img: null,
+        signature_img: 'micdrop_signature.png',
         link: 'https://sendmicdrop.com',
       },
     ]);
