@@ -13,15 +13,15 @@
     <v-card-text class="ma-0 pa-0">
       <v-row class="justify-center ma-4 mt-4">
         <v-btn
-          height="125"
-          width="125"
+          :height="primaryButtonOptions.size"
+          :width="primaryButtonOptions.size"
           @click="primaryButtonOptions.clickAction"
-          fab
+          class="v-btn--round"
           x-large
           :color="primaryButtonOptions.color"
           depressed
           :disabled="currentStep === 1 && disableRecording"
-          ><v-icon color="white" size="55px">{{
+          ><v-icon color="white" :size="`${primaryButtonOptions.iconSize}px`">{{
             primaryButtonOptions.icon
           }}</v-icon></v-btn
         >
@@ -131,7 +131,7 @@
         <v-col cols="2" class="pa-0" />
         <v-col cols="8" class="pa-0">
           <v-row justify="center" class="ma-0">
-            <playback :audioUrl="audioUrl" />
+            <playback v-if="audioMessage" :audioMessage="audioMessage" />
           </v-row>
         </v-col>
         <v-col cols="2" class="pa-0" align-self="center">
@@ -163,6 +163,63 @@
           </v-row>
         </v-col>
       </v-row>
+      <v-row
+        class="ma-0 mt-10 mx-4"
+        v-if="currentStep === 3 && subscriptionLevel === 'pro'"
+        justify="center"
+        align="center"
+      >
+        <v-chip
+          v-for="(option, idx) in customPlaybackOptions"
+          :key="idx"
+          :color="option.backgroundColor"
+          class="font-weight-medium mr-1 mb-1"
+          @click="selectedCustomPlaybackOption = option"
+          :outlined="selectedCustomPlaybackOption !== option"
+          :text-color="
+            selectedCustomPlaybackOption === option
+              ? 'white'
+              : option.backgroundColor
+          "
+          :class="{ 'chip-border': selectedCustomPlaybackOption === option }"
+        >
+          <v-img
+            v-if="option.circleImageUrl"
+            class="rounded-circle mr-1 ml-n1"
+            max-width="20"
+            max-height="20"
+            :src="option.circleImageUrl"
+          />
+          <v-icon
+            v-else
+            size="23px"
+            :color="
+              selectedCustomPlaybackOption === option
+                ? 'white'
+                : option.backgroundColor
+            "
+            class="mr-1 ml-n2"
+            >{{ icons.mdiPlayCircle }}</v-icon
+          >
+          {{ option.name }}</v-chip
+        >
+        <v-chip
+          color="primary"
+          outlined
+          class="font-weight-medium mb-1"
+          @click="createNewPlaybackDialog = true"
+        >
+          <v-icon small>{{ icons.mdiPlus }}</v-icon
+          >Create</v-chip
+        >
+      </v-row>
+      <create-new-custom-playback-dialog
+        v-if="createNewCustomPlaybackStarter"
+        v-model="createNewPlaybackDialog"
+        :startingTemplate="createNewCustomPlaybackStarter"
+        :key="createNewDialogKey"
+        @select-new-custom-playback="selectNewCustomPlayback"
+      />
     </v-card-text>
     <v-card-actions class="pa-0"></v-card-actions>
   </div>
@@ -178,7 +235,13 @@ import {
   onMounted,
 } from "@vue/composition-api";
 import sl from "../../serviceLocator";
-import { PrimaryButtonOptions, SubscriptionStatus } from "types";
+import {
+  AudioMessageWithUrl,
+  PrimaryButtonOptions,
+  SubscriptionStatus,
+  CustomPlaybackDisplay,
+  CustomPlaybackRow,
+} from "types";
 import {
   mdiStopCircle,
   mdiDelete,
@@ -186,10 +249,13 @@ import {
   mdiEmailSendOutline,
   mdiMicrophone,
   mdiArchive,
+  mdiPlus,
+  mdiPlayCircle,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 import Playback from "../../components/Playback/Playback.vue";
 import audioEncoder from "audio-encoder";
+import CreateNewCustomPlaybackDialog from "./components/CreateNewCustomPlaybackDialog.vue";
 
 export default defineComponent({
   props: {
@@ -201,6 +267,7 @@ export default defineComponent({
   components: {
     SoundResponse,
     Playback,
+    CreateNewCustomPlaybackDialog,
   },
   setup(props) {
     const server = sl.get("serverProxy");
@@ -219,18 +286,24 @@ export default defineComponent({
             icon: icons.value.mdiMicrophone,
             clickAction: startRecording,
             color: "primary",
+            size: 125,
+            iconSize: 55,
           };
         } else if (!audioUrl.value && isRecording.value) {
           return {
             icon: icons.value.mdiStopCircle,
             clickAction: stopRecording,
-            color: "#ea4235",
+            color: "accent",
+            size: 125,
+            iconSize: 55,
           };
         } else {
           return {
             icon: icons.value.mdiArrowULeftTopBold,
             clickAction: deleteRecording,
-            color: "grey lighten-1",
+            color: "accent",
+            size: 80,
+            iconSize: 40,
           };
         }
       }
@@ -243,6 +316,8 @@ export default defineComponent({
       mdiEmailSendOutline,
       mdiMicrophone,
       mdiArchive,
+      mdiPlus,
+      mdiPlayCircle,
     });
 
     const isRecording = ref(false);
@@ -335,8 +410,14 @@ export default defineComponent({
 
         audioEncoder(audioBuffer, null, null, async (audioBlob: Blob) => {
           try {
+            if (!selectedCustomPlaybackOption.value) {
+              throw new Error("No playback option selected. Cannot submit.");
+            }
             submitLoading.value = true;
-            const uuid = await server.uploadAudio(audioBlob);
+            const uuid = await server.uploadAudio(
+              audioBlob,
+              selectedCustomPlaybackOption.value.uuid
+            );
 
             parent.window.postMessage(
               { type: "uuid", content: uuid },
@@ -368,18 +449,24 @@ export default defineComponent({
     const loading = ref(false);
     const monthlyMessagesLeft = ref<number | null>(null);
     const subscriptionStatus = ref<SubscriptionStatus>();
+    const customPlaybackOptions = ref<CustomPlaybackDisplay[]>([]);
+
     onMounted(async () => {
       try {
         loading.value = true;
         monthlyMessagesLeft.value = (
           await server.getMonthlyMessagesLeft()
         ).monthlyMessagesLeft;
+
         if (subscriptionLevel.value !== "free") {
           subscriptionStatus.value = await server.getSubscriptionStatus();
           if (subscriptionStatus.value === "past_due" && !props.ignorePastDue) {
             router.push("/past_due_warning");
           }
         }
+
+        customPlaybackOptions.value = await server.getCustomPlaybackOptions();
+        selectedCustomPlaybackOption.value = customPlaybackOptions.value[0];
       } catch {
         actions.showErrorSnackbar(
           "Error preparing recording setup. Please try again."
@@ -399,6 +486,71 @@ export default defineComponent({
       return false;
     });
 
+    const selectedCustomPlaybackOption = ref<CustomPlaybackDisplay>();
+
+    const audioMessage: ComputedRef<Pick<
+      AudioMessageWithUrl,
+      "customPlaybackUuid" | "customPlayback" | "url"
+    > | null> = computed(() => {
+      if (audioUrl.value && selectedCustomPlaybackOption.value) {
+        return {
+          customPlaybackUuid: selectedCustomPlaybackOption.value.uuid,
+          url: audioUrl.value,
+          customPlayback: selectedCustomPlaybackOption.value,
+        };
+      }
+      return null;
+    });
+
+    const createNewCustomPlaybackStarter = ref<Pick<
+      AudioMessageWithUrl,
+      "customPlaybackUuid" | "customPlayback" | "url"
+    > | null>(null);
+
+    watch(audioMessage, () => {
+      if (audioMessage.value) {
+        createNewCustomPlaybackStarter.value = {
+          ...audioMessage.value,
+          customPlaybackUuid: customPlaybackOptions.value[0].uuid,
+          customPlayback: {
+            ...customPlaybackOptions.value[0],
+            name: "",
+          },
+        };
+      }
+    });
+
+    const createNewPlaybackDialog = ref(false);
+
+    const createNewDialogKey = ref(false);
+    watch(createNewPlaybackDialog, () => {
+      if (createNewPlaybackDialog.value && audioMessage.value) {
+        createNewDialogKey.value = !createNewDialogKey.value;
+        createNewCustomPlaybackStarter.value = {
+          ...audioMessage.value,
+          customPlaybackUuid: customPlaybackOptions.value[0].uuid,
+          customPlayback: {
+            ...customPlaybackOptions.value[0],
+            name: "",
+          },
+        };
+      }
+    });
+
+    const selectNewCustomPlayback = async (newOption: CustomPlaybackRow) => {
+      try {
+        customPlaybackOptions.value = await server.getCustomPlaybackOptions();
+
+        selectedCustomPlaybackOption.value = customPlaybackOptions.value.find(
+          (option) => option.uuid === newOption.uuid
+        );
+      } catch {
+        actions.showErrorSnackbar(
+          "Error loading new custom playback. Please try again."
+        );
+      }
+    };
+
     return {
       icons,
       isRecording,
@@ -416,6 +568,13 @@ export default defineComponent({
       monthlyMessagesLeft,
       disableRecording,
       loading,
+      customPlaybackOptions,
+      selectedCustomPlaybackOption,
+      audioMessage,
+      createNewPlaybackDialog,
+      createNewCustomPlaybackStarter,
+      createNewDialogKey,
+      selectNewCustomPlayback,
     };
   },
 });
@@ -428,6 +587,10 @@ export default defineComponent({
 
 .fade-animation-2 {
   animation: fadeInOut2 7s infinite;
+}
+
+.chip-border {
+  outline: 2px solid white;
 }
 
 @keyframes fadeInOut {

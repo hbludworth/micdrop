@@ -7,6 +7,7 @@ import register from './register';
 import resetPassword from './reset_password';
 import profile from './profile';
 import audioGroups from './audio_groups';
+import customPlayback from './custom_playback';
 
 const serverProxy = {
   ...audio,
@@ -18,6 +19,7 @@ const serverProxy = {
   ...resetPassword,
   ...profile,
   ...audioGroups,
+  ...customPlayback,
 };
 
 export type ServerProxyType = typeof serverProxy;

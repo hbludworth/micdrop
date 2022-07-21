@@ -9,7 +9,12 @@
     />
   </v-row>
   <div v-else-if="audioMessage">
-    <v-app-bar height="55" flat fixed color="primary">
+    <v-app-bar
+      height="55"
+      flat
+      fixed
+      :color="audioMessage.customPlayback.backgroundColor"
+    >
       <v-container class="ma-0 pa-0" fluid>
         <v-row class="ma-0" align="center">
           <v-col cols="1" class="pa-0">
@@ -32,11 +37,11 @@
       </v-container>
     </v-app-bar>
     <v-row class="ma-0 mb-1 pt-14 mt-4" justify="center">
-      <span class="text-h5 primary--text mt-1">{{
+      <span class="text-h5 accent--text mt-1">{{
         audioMessage.label || "No Label"
       }}</span>
       <v-btn icon class="ml-1" @click="setupEdit"
-        ><v-icon color="primary">{{ icons.mdiPencil }}</v-icon>
+        ><v-icon color="accent">{{ icons.mdiPencil }}</v-icon>
       </v-btn>
     </v-row>
     <v-row class="ma-0" justify="center">
@@ -45,13 +50,17 @@
       >
     </v-row>
     <v-row class="ma-0" justify="center">
-      <playback :audioUrl="audioMessage.url" />
+      <playback :audioMessage="audioMessage" />
     </v-row>
     <v-row class="ma-0 mt-2" justify="center">
       <v-tooltip bottom open-delay="500">
         <template #activator="{ on, attrs }">
           <v-btn
-            color="green"
+            :color="
+              audioMessage
+                ? audioMessage.customPlayback.backgroundColor
+                : 'green'
+            "
             @click="addToGroupDialog = true"
             fab
             depressed
@@ -69,7 +78,9 @@
       <v-tooltip bottom open-delay="500">
         <template #activator="{ on, attrs }">
           <v-btn
-            color="red"
+            :color="
+              audioMessage ? audioMessage.customPlayback.backgroundColor : 'red'
+            "
             @click="confirmDeleteDialog = true"
             fab
             depressed
@@ -85,7 +96,11 @@
       <v-tooltip bottom open-delay="500">
         <template #activator="{ on, attrs }">
           <v-btn
-            color="primary"
+            :color="
+              audioMessage
+                ? audioMessage.customPlayback.backgroundColor
+                : 'primary'
+            "
             @click="submit"
             fab
             depressed

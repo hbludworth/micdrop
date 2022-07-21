@@ -17,7 +17,7 @@
         <span> To listen, simply hit the play button below.</span>
       </v-row>
       <v-row class="justify-center my-12">
-        <playback :audioUrl="audioURL" />
+        <playback v-if="audioMessage" :audioMessage="audioMessage" />
       </v-row>
       <v-row class="justify-center">
         <h3>Want to send your own audio messages?</h3>
@@ -51,6 +51,7 @@
 import { defineComponent, onMounted, ref } from "@vue/composition-api";
 import Playback from "../components/Playback/Playback.vue";
 import sl from "../serviceLocator";
+import { AudioMessageWithUrl } from "types";
 
 export default defineComponent({
   name: "PlaybackPage",
@@ -67,17 +68,17 @@ export default defineComponent({
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
 
-    const audioURL = ref("");
+    const audioMessage = ref<AudioMessageWithUrl>();
     onMounted(async () => {
       try {
-        audioURL.value = await server.getAudio(props.uuid);
+        audioMessage.value = await server.getAudioMessage(props.uuid);
       } catch {
         actions.showErrorSnackbar("Error retrieving audio. Please try again.");
       }
     });
 
     return {
-      audioURL,
+      audioMessage,
     };
   },
 });

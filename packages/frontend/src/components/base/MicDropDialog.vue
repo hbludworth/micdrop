@@ -31,7 +31,7 @@
         <v-card-actions class="pa-3">
           <v-spacer />
           <v-btn
-            rounded
+            class="rounded-lg"
             v-if="showCancel"
             @click="$emit('input', false)"
             color="error"
@@ -42,9 +42,10 @@
 
           <slot v-if="showSubmit" name="submit-button" :on="{ click: submit }">
             <v-btn
-              rounded
+              class="rounded-lg"
               @click="submit"
               color="primary"
+              text
               :disabled="submitLoading || submitDisabled"
             >
               <v-progress-circular
@@ -56,6 +57,7 @@
               <span v-else>{{ submitText }}</span>
             </v-btn>
           </slot>
+          <v-spacer />
         </v-card-actions>
       </div>
     </v-card>

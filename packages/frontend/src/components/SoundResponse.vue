@@ -60,6 +60,10 @@ export default defineComponent({
       type: Boolean,
       required: false,
     },
+    scrubberColor: {
+      type: String,
+      required: false,
+    },
   },
   setup(props) {
     const currentFrequencyData = ref<number[]>([
@@ -88,30 +92,24 @@ export default defineComponent({
     };
 
     const getColor = (index: number) => {
-      switch (index) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-          return `rgba(66, 134, 245, ${getAlpha(index)})`; // blue
-        case 4:
-        case 5:
-        case 10:
-        case 11:
-          return `rgba(245, 180, 0, ${getAlpha(index)})`; // yellow
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-          return `rgba(234, 66, 53, ${getAlpha(index)})`; // red
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-          return `rgba(52, 168, 83, ${getAlpha(index)})`; // green
-        default:
-          return `rgba(234, 66, 53, ${getAlpha(index)})`; // red
+      if (!props.scrubberColor) {
+        return "primary";
+      } else {
+        return `rgba(${hexToRGB(props.scrubberColor)!.r}, ${
+          hexToRGB(props.scrubberColor)!.g
+        }, ${hexToRGB(props.scrubberColor)!.b}, ${getAlpha(index)})`;
       }
+    };
+
+    const hexToRGB = (hex: string) => {
+      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+      return result
+        ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16),
+          }
+        : null;
     };
 
     const getAlpha = (index: number) => {

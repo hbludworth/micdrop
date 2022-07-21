@@ -2,8 +2,9 @@
   <div id="playback-insertion-point" class="postcsswrapper">
     <v-app>
       <playback
-        :audioUrl="audioUrl"
+        v-if="audioMessage"
         :showRemoveButton="showRemoveButton"
+        :audioMessage="audioMessage"
         @remove="removeRecording"
       />
       <span id="audio-uuid" hidden>{{ uuid }}</span>
@@ -15,6 +16,7 @@
 import { defineComponent, ref, onMounted } from "@vue/composition-api";
 import Playback from "./Playback.vue";
 import sl from "../../serviceLocator";
+import { AudioMessageWithUrl } from "types";
 
 export default defineComponent({
   components: {
@@ -34,10 +36,10 @@ export default defineComponent({
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
 
-    const audioUrl = ref("");
+    const audioMessage = ref<AudioMessageWithUrl>();
     onMounted(async () => {
       try {
-        audioUrl.value = await server.getAudio(props.uuid);
+        audioMessage.value = await server.getAudioMessage(props.uuid);
       } catch {
         actions.showErrorSnackbar("Error retrieving audio. Please try again.");
       }
@@ -56,7 +58,7 @@ export default defineComponent({
       }
     };
     return {
-      audioUrl,
+      audioMessage,
       removeRecording,
     };
   },

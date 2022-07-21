@@ -1,22 +1,18 @@
 import axios from '../axiosInstance';
 import { AudioLimits, AudioMessageWithUrl } from 'types';
 
-async function uploadAudio(audioBlob: Blob): Promise<string> {
+async function uploadAudio(
+  audioBlob: Blob,
+  customPlaybackUuid: string
+): Promise<string> {
   const formData = new FormData();
   formData.append('newFile', audioBlob, 'newFile.wav');
 
-  const { data } = await axios.post('/audio', formData);
-  return data;
-}
-
-async function getAudio(uuid: string): Promise<string> {
-  const { data } = await axios.get(`/audio/${uuid}`);
-
-  const response = await fetch(data);
-
-  if (!response.ok) {
-    throw new Error('The audio file does not exist');
-  }
+  const { data } = await axios.post('/audio', formData, {
+    params: {
+      customPlaybackUuid,
+    },
+  });
   return data;
 }
 
@@ -49,7 +45,6 @@ async function addGroupToAudio(
 
 export default {
   uploadAudio,
-  getAudio,
   deleteAudio,
   getMonthlyMessagesLeft,
   editLabel,
