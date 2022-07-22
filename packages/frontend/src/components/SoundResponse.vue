@@ -1,28 +1,10 @@
 <template>
-  <v-card
-    class="d-flex d-inline align-center px-1"
-    :class="mini ? 'rounded-pill' : ''"
-    :height="mini ? 60 : 80"
-    flat
-  >
-    <v-card
-      v-for="(value, idx) in currentFrequencyData"
-      :key="idx"
-      :color="getColor(idx)"
-      :width="mini ? 8 : 15"
-      :height="getHeight(idx)"
-      class="rounded-lg"
-      :class="{
-        'ml-1': mini,
-        'mx-1': !mini,
-        'mr-3': mini && idx === currentFrequencyData.length - 1,
-        'ml-3': mini && idx === 0,
-        'rounded-lg': !mini,
-        'rounded-md': mini,
-      }"
-      flat
-    />
-  </v-card>
+  <sound-visualizer
+    :progressFraction="progressFraction"
+    :mini="mini"
+    :currentFrequencyData="currentFrequencyData"
+    :scrubberColor="scrubberColor"
+  />
 </template>
 
 <script lang="ts">
@@ -33,7 +15,7 @@ import {
   onUnmounted,
   watch,
 } from "@vue/composition-api";
-import hexToRGB from "hex-rgb";
+import SoundVisualizer from "./SoundVisualizer.vue";
 
 export default defineComponent({
   props: {
@@ -66,145 +48,13 @@ export default defineComponent({
       required: false,
     },
   },
+  components: {
+    SoundVisualizer,
+  },
   setup(props) {
-    const currentFrequencyData = ref<number[]>([
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    ]);
-    const targetFrequencyData = ref<number[]>([]);
-
-    const animationCancelled = ref(false);
-
-    const getHeight = (index: number) => {
-      const isFirstHalf = index < 8;
-      const indexToUse = isFirstHalf ? index : 15 - index;
-      const valueToUse = currentFrequencyData.value[indexToUse];
-
-      const indexMultiplier = indexToUse + 1;
-      const calculatedHeight =
-        (valueToUse / 128) * indexMultiplier * indexMultiplier * 2 + 10;
-
-      if (calculatedHeight <= 80 && calculatedHeight >= 20) {
-        return props.mini ? calculatedHeight / 2 : calculatedHeight;
-      } else if (calculatedHeight > 80) {
-        return props.mini ? 40 : 80;
-      } else {
-        return props.mini ? 12 : 20;
-      }
-    };
-
-    const getColor = (index: number) => {
-      if (!props.scrubberColor) {
-        return "primary";
-      } else {
-        const rgb = hexToRGB(props.scrubberColor);
-        return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${getAlpha(
-          index
-        )})`;
-      }
-    };
-
-    const getAlpha = (index: number) => {
-      if (props.progressFraction === undefined) {
-        return 1;
-      }
-      if (props.progressFraction > index + 1) {
-        return 1;
-      }
-      if (props.progressFraction < index) {
-        return 0.2;
-      }
-
-      const decimalValue = props.progressFraction % 1;
-      const adjustedDecimalValue = 0.7 * decimalValue + 0.2;
-      return adjustedDecimalValue;
-    };
-
-    let then = 0;
-    let now = 0;
-    let updateCount = 0;
-    const handleAnimation = () => {
-      if (!animationCancelled.value) {
-        now = Date.now();
-        if (analyzer.value && dataArray.value && now > then + 250) {
-          analyzer.value.getByteFrequencyData(dataArray.value);
-          targetFrequencyData.value = Array.from(dataArray.value);
-          then = now;
-        } else if (
-          analyzer.value &&
-          dataArray.value &&
-          targetFrequencyData.value.length > 0
-        ) {
-          currentFrequencyData.value = currentFrequencyData.value.map(
-            (val, index) => {
-              const isFirstHalf = index < 8;
-              const indexToUse = isFirstHalf ? index : 15 - index;
-              const increasedValue = val + (indexToUse + 1) * 0.6;
-              if (increasedValue < targetFrequencyData.value[indexToUse]) {
-                return increasedValue;
-              }
-              updateCount++;
-              if (updateCount === 16) {
-                updateCount = 0;
-                targetFrequencyData.value = [];
-              }
-              return currentFrequencyData.value[indexToUse];
-            }
-          );
-        } else if (analyzer.value && dataArray.value) {
-          currentFrequencyData.value = currentFrequencyData.value.map(
-            (val, index) => {
-              const isFirstHalf = index < 8;
-              const indexToUse = isFirstHalf ? index : 15 - index;
-              return val - (indexToUse + 1) * 0.6;
-            }
-          );
-        }
-      }
-      if (analyzer.value) {
-        requestAnimationFrame(handleAnimation);
-      }
-    };
-
-    const audioContext = ref<AudioContext>();
-    const analyzer = ref<AnalyserNode>();
-    const dataArray = ref<Uint8Array>();
-
-    const hasBeenSetup = ref(false);
-    const setup = () => {
-      hasBeenSetup.value = true;
-      if (props.mediaStream) {
-        audioContext.value = new AudioContext();
-        analyzer.value = audioContext.value.createAnalyser();
-        analyzer.value.fftSize = 32;
-        const bufferLength = analyzer.value.frequencyBinCount;
-        dataArray.value = new Uint8Array(bufferLength);
-        analyzer.value.getByteFrequencyData(dataArray.value);
-        const source = audioContext.value.createMediaStreamSource(
-          props.mediaStream
-        );
-        source.connect(analyzer.value);
-        analyzer.value.getByteFrequencyData(dataArray.value);
-        handleAnimation();
-      } else if (props.audioElement) {
-        audioContext.value = new AudioContext();
-        analyzer.value = audioContext.value.createAnalyser();
-        analyzer.value.fftSize = 32;
-        const bufferLength = analyzer.value.frequencyBinCount;
-        dataArray.value = new Uint8Array(bufferLength);
-        analyzer.value.getByteFrequencyData(dataArray.value);
-        const source = audioContext.value.createMediaElementSource(
-          props.audioElement
-        );
-        source.connect(analyzer.value);
-        source.connect(audioContext.value.destination);
-        analyzer.value.getByteFrequencyData(dataArray.value);
-        handleAnimation();
-      }
-    };
-
     onMounted(() => {
       if (props.autoStart) {
-        setup();
+        setupAudioContext();
       }
     });
 
@@ -213,12 +63,100 @@ export default defineComponent({
       analyzer.value = undefined;
     });
 
+    const currentFrequencyData = ref<number[]>([
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ]);
+
+    const targetFrequencyData = ref<number[]>([]);
+
+    const audioContext = ref<AudioContext>();
+    const analyzer = ref<AnalyserNode>();
+    const dataArray = ref<Uint8Array>();
+
+    const hasBeenSetup = ref(false);
+
+    const createSourceNode = (audioContext: AudioContext) => {
+      if (props.mediaStream) {
+        return audioContext.createMediaStreamSource(props.mediaStream);
+      } else if (props.audioElement) {
+        const source = audioContext.createMediaElementSource(
+          props.audioElement
+        );
+        source.connect(audioContext.destination);
+        return source;
+      }
+    };
+
+    const setupAudioContext = () => {
+      hasBeenSetup.value = true;
+      audioContext.value = new AudioContext();
+      analyzer.value = audioContext.value.createAnalyser();
+      analyzer.value.fftSize = 32;
+      const bufferLength = analyzer.value.frequencyBinCount;
+      dataArray.value = new Uint8Array(bufferLength);
+      analyzer.value.getByteFrequencyData(dataArray.value);
+      const source = createSourceNode(audioContext.value);
+      if (source === undefined) {
+        return;
+      }
+      source.connect(analyzer.value);
+      analyzer.value.getByteFrequencyData(dataArray.value);
+      handleAnimation();
+    };
+
+    let then = 0;
+    let now = 0;
+    let updateCount = 0;
+    const handleAnimation = () => {
+      if (!animationCancelled.value) {
+        now = Date.now();
+        if (analyzer.value && dataArray.value) {
+          if (now > then + 250) {
+            analyzer.value.getByteFrequencyData(dataArray.value);
+            targetFrequencyData.value = Array.from(dataArray.value);
+            then = now;
+          } else if (targetFrequencyData.value.length > 0) {
+            currentFrequencyData.value = currentFrequencyData.value.map(
+              (val, index) => {
+                const isFirstHalf = index < 8;
+                const indexToUse = isFirstHalf ? index : 15 - index;
+                const increasedValue = val + (indexToUse + 1) * 0.6;
+                if (increasedValue < targetFrequencyData.value[indexToUse]) {
+                  return increasedValue;
+                }
+                updateCount++;
+                if (updateCount === 16) {
+                  updateCount = 0;
+                  targetFrequencyData.value = [];
+                }
+                return currentFrequencyData.value[indexToUse];
+              }
+            );
+          } else {
+            currentFrequencyData.value = currentFrequencyData.value.map(
+              (val, index) => {
+                const isFirstHalf = index < 8;
+                const indexToUse = isFirstHalf ? index : 15 - index;
+                return val - (indexToUse + 1) * 0.6;
+              }
+            );
+          }
+        }
+      }
+      if (analyzer.value) {
+        requestAnimationFrame(handleAnimation);
+      }
+    };
+
+    const animationCancelled = ref(false);
+
     watch(
       () => props.isPlaying,
       () => {
         if (!hasBeenSetup.value) {
-          setup();
+          setupAudioContext();
         }
+        // animationCancelled.value = !props.isPlaying;
         if (!props.isPlaying) {
           animationCancelled.value = true;
         } else {
@@ -226,13 +164,8 @@ export default defineComponent({
         }
       }
     );
-
     return {
-      handleAnimation,
       currentFrequencyData,
-      targetFrequencyData,
-      getHeight,
-      getColor,
     };
   },
 });
