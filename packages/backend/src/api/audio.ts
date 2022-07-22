@@ -6,7 +6,7 @@ import { HttpBadRequest, HttpInternalError } from '../exceptions';
 import sl from '../serviceLocator';
 import authenticatedRoute from '../middlewares/authenticatedRoute';
 import proRoute from '../middlewares/proRoute';
-import { AudioLimits, AudioMessage, AudioMessageWithUrl } from 'types';
+import { AudioLimits, AudioMessageWithUrl } from 'types';
 
 const router = express.Router();
 
@@ -18,8 +18,13 @@ router
 
       const s3 = new AWS.S3();
 
+      const bucket =
+        process.env.NODE_ENV === 'production'
+          ? 'micdrop-audio'
+          : 'micdrop-audio-development';
+
       const params: AWS.S3.GetObjectRequest = {
-        Bucket: 'micdrop-audio',
+        Bucket: bucket,
         Key: `${uuid}.wav`,
       };
 
@@ -58,8 +63,13 @@ router
 
       const s3 = new AWS.S3();
 
+      const bucket =
+        process.env.NODE_ENV === 'production'
+          ? 'micdrop-audio'
+          : 'micdrop-audio-development';
+
       const params: AWS.S3.DeleteObjectRequest = {
-        Bucket: 'micdrop-audio',
+        Bucket: bucket,
         Key: `${uuid}.wav`,
       };
 
@@ -90,8 +100,13 @@ router.route('/audio').post(authenticatedRoute, async (req, res, next) => {
 
     const uuid = v4();
 
+    const bucket =
+      process.env.NODE_ENV === 'production'
+        ? 'micdrop-audio'
+        : 'micdrop-audio-development';
+
     const params: AWS.S3.PutObjectRequest = {
-      Bucket: 'micdrop-audio',
+      Bucket: bucket,
       Key: `${uuid}.wav`,
       Body: file.data,
     };
@@ -194,8 +209,13 @@ router.route('/audio_message/:uuid').get(proRoute, async (req, res, next) => {
 
     const audioMessage = await AudioDao.getAudioMessageByUuid(uuid);
 
+    const bucket =
+      process.env.NODE_ENV === 'production'
+        ? 'micdrop-audio'
+        : 'micdrop-audio-development';
+
     const url = await s3.getSignedUrlPromise('getObject', {
-      Bucket: 'micdrop-audio',
+      Bucket: bucket,
       Key: `${audioMessage.uuid}.${audioMessage.fileType}`,
     });
 
