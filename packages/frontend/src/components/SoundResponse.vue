@@ -33,6 +33,7 @@ import {
   onUnmounted,
   watch,
 } from "@vue/composition-api";
+import hexToRGB from "hex-rgb";
 
 export default defineComponent({
   props: {
@@ -95,21 +96,11 @@ export default defineComponent({
       if (!props.scrubberColor) {
         return "primary";
       } else {
-        return `rgba(${hexToRGB(props.scrubberColor)!.r}, ${
-          hexToRGB(props.scrubberColor)!.g
-        }, ${hexToRGB(props.scrubberColor)!.b}, ${getAlpha(index)})`;
+        const rgb = hexToRGB(props.scrubberColor);
+        return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${getAlpha(
+          index
+        )})`;
       }
-    };
-
-    const hexToRGB = (hex: string) => {
-      var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-      return result
-        ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16),
-          }
-        : null;
     };
 
     const getAlpha = (index: number) => {
