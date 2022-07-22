@@ -419,8 +419,18 @@ export default defineComponent({
               selectedCustomPlaybackOption.value.uuid
             );
 
+            const placeholderImageUrl = await server.getPlaceholderImage(
+              `${selectedCustomPlaybackOption.value.uuid}_placeholder.png`
+            );
+
             parent.window.postMessage(
-              { type: "uuid", content: uuid },
+              {
+                type: "uuid",
+                content: {
+                  audioUuid: uuid,
+                  customPlaybackImage: placeholderImageUrl,
+                },
+              },
               "https://mail.google.com"
             );
           } catch {

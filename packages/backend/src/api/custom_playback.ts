@@ -9,6 +9,7 @@ import {
 } from 'types';
 import AWS from 'aws-sdk';
 import { v4 } from 'uuid';
+import createPlaceholderImage from '../utils/placeholder';
 
 const router = express.Router();
 
@@ -72,6 +73,8 @@ router.route('/custom_playback_options').get(async (req, res, next) => {
 router.route('/custom_playback').post(proRoute, async (req, res, next) => {
   try {
     const CustomPlaybackDao = sl.get('CustomPlaybackDao');
+    const s3 = new AWS.S3();
+
     const userUuid = req.user!.uuid;
 
     const payload: CreateNewCustomPlaybackPayload = req.body;
@@ -83,6 +86,16 @@ router.route('/custom_playback').post(proRoute, async (req, res, next) => {
     };
 
     await CustomPlaybackDao.createCustomPlayback(newCustomPlayback);
+
+    const placeholderImage = await createPlaceholderImage(newCustomPlayback);
+
+    const params: AWS.S3.PutObjectRequest = {
+      Bucket: 'micdrop-placeholder-images',
+      Key: `${newCustomPlayback.uuid}_placeholder.png`,
+      Body: placeholderImage,
+    };
+
+    await s3.putObject(params).promise();
 
     res.json(newCustomPlayback).status(201);
   } catch (err) {

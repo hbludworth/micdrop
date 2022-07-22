@@ -12,6 +12,17 @@ async function getImage(key: string): Promise<string> {
   return data;
 }
 
+async function getPlaceholderImage(key: string): Promise<string> {
+  const { data } = await axios.get(`/placeholder_image/${key}`);
+
+  const response = await fetch(data);
+
+  if (!response.ok) {
+    throw new Error('The image file does not exist');
+  }
+  return data;
+}
+
 const uploadImage = async (
   image: CreateNewCustomPlaybackImagePayload
 ): Promise<void> => {
@@ -26,5 +37,6 @@ const uploadImage = async (
 
 export default {
   getImage,
+  getPlaceholderImage,
   uploadImage,
 };

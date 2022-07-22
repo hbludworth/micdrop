@@ -3,10 +3,16 @@ import { insertImagePlaceholder } from '@/views/RecordingDialog/utils';
 class ImagePlaceholderObserver {
   private composeBoxElement: Element;
   private uuid: string;
+  private customPlaybackImage: string;
 
-  constructor(composeBoxElement: Element, uuid: string) {
+  constructor(
+    composeBoxElement: Element,
+    uuid: string,
+    customPlaybackImage: string
+  ) {
     this.composeBoxElement = composeBoxElement;
     this.uuid = uuid;
+    this.customPlaybackImage = customPlaybackImage;
   }
 
   private contentObserver = new MutationObserver(() => {
@@ -19,7 +25,11 @@ class ImagePlaceholderObserver {
     ) {
       this.contentObserver.disconnect();
 
-      insertImagePlaceholder(this.composeBoxElement, this.uuid);
+      insertImagePlaceholder(
+        this.composeBoxElement,
+        this.uuid,
+        this.customPlaybackImage
+      );
 
       this.observeContent();
     }

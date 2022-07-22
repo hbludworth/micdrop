@@ -260,10 +260,20 @@ export default defineComponent({
       }
     };
 
-    const submit = () => {
+    const submit = async () => {
       if (audioMessage.value) {
+        const placeholderImageUrl = await server.getPlaceholderImage(
+          `${audioMessage.value.customPlaybackUuid}_placeholder.png`
+        );
+
         parent.window.postMessage(
-          { type: "uuid", content: audioMessage.value.uuid },
+          {
+            type: "uuid",
+            content: {
+              audioUuid: audioMessage.value.uuid,
+              customPlaybackImage: placeholderImageUrl,
+            },
+          },
           "https://mail.google.com"
         );
       }
