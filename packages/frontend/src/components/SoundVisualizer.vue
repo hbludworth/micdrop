@@ -63,7 +63,7 @@ export default defineComponent({
     };
 
     const getColor = (index: number) => {
-      const blue = "66, 134, 245";
+      const blue = "66, 134, 245,";
       const yellow = "245, 180, 0,";
       const red = "234, 66, 53,";
       const green = "52, 168, 83,";
