@@ -2,7 +2,8 @@ import { Knex } from 'knex';
 import { v4 } from 'uuid';
 
 export async function up(knex: Knex): Promise<void> {
-  const micdropCustomPlaybackUuid = v4();
+  const micdropCustomPlaybackUuid = '7c4b7c5a-3b59-43ae-959b-f019cbe04a82';
+  const classicCustomPlaybackUuid = 'f5388ffc-2358-4f05-b2ac-4626df5ea9d9';
 
   const hasCustomPlaybackTable = await knex.schema.hasTable('custom_playback');
 
@@ -45,7 +46,7 @@ export async function up(knex: Knex): Promise<void> {
         link: 'https://sendmicdrop.com',
       },
       {
-        uuid: v4(),
+        uuid: classicCustomPlaybackUuid,
         user_uuid: null,
         name: 'Classic',
         background_color: '#9cc8f4',
