@@ -42,13 +42,12 @@ router.route('/placeholder_image/:key').get(async (req, res, next) => {
       Key: key,
     };
 
-    const signedUrl = await s3.getSignedUrlPromise('getObject', params);
+    const image = (await s3.getObject(params).promise()).Body;
 
-    if (signedUrl) {
-      res.json(signedUrl);
+    if (image) {
+      res.send(image).end();
     } else {
-      next(new HttpBadRequest('This image does not exist.'));
-      return;
+      res.status(404).end();
     }
   } catch (err) {
     next(new HttpInternalError(err as string));

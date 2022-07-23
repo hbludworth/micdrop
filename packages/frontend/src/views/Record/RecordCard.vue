@@ -419,9 +419,7 @@ export default defineComponent({
               selectedCustomPlaybackOption.value.uuid
             );
 
-            const placeholderImageUrl = await server.getPlaceholderImage(
-              `${selectedCustomPlaybackOption.value.uuid}_placeholder.png`
-            );
+            const placeholderImageUrl = `https://sendmicdrop.com/api/v1/placeholder_image/${selectedCustomPlaybackOption.value.uuid}_placeholder.png`;
 
             parent.window.postMessage(
               {
