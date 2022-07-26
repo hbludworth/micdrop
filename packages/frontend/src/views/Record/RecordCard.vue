@@ -169,39 +169,22 @@
         justify="center"
         align="center"
       >
-        <v-chip
-          v-for="(option, idx) in customPlaybackOptions"
+        <custom-playback-option
+          v-for="(option, idx) in customPlaybackOptions.slice(0, 3)"
           :key="idx"
-          :color="option.backgroundColor"
-          class="font-weight-medium mr-1 mb-1"
-          @click="selectedCustomPlaybackOption = option"
-          :outlined="selectedCustomPlaybackOption !== option"
-          :text-color="
-            selectedCustomPlaybackOption === option
-              ? 'white'
-              : option.backgroundColor
-          "
-          :class="{ 'chip-border': selectedCustomPlaybackOption === option }"
+          :customPlaybackOption="option"
+          :isSelected="selectedCustomPlaybackOption === option"
+          @selected="selectedCustomPlaybackOption = option"
+          class="mr-1 mb-1"
+        />
+        <v-chip
+          color="accent"
+          outlined
+          class="font-weight-medium mb-1 mr-1"
+          @click="viewAllDialog = true"
         >
-          <v-img
-            v-if="option.circleImageUrl"
-            class="rounded-circle mr-1 ml-n1"
-            max-width="20"
-            max-height="20"
-            :src="option.circleImageUrl"
-          />
-          <v-icon
-            v-else
-            size="23px"
-            :color="
-              selectedCustomPlaybackOption === option
-                ? 'white'
-                : option.backgroundColor
-            "
-            class="mr-1 ml-n2"
-            >{{ icons.mdiPlayCircle }}</v-icon
-          >
-          {{ option.name }}</v-chip
+          All
+          <v-icon small class="mr-n1">{{ icons.mdiMenuDown }}</v-icon></v-chip
         >
         <v-chip
           color="primary"
@@ -220,6 +203,28 @@
         :key="createNewDialogKey"
         @select-new-custom-playback="selectNewCustomPlayback"
       />
+      <mic-drop-dialog
+        v-model="viewAllDialog"
+        :width="300"
+        :showCancel="false"
+        :showSubmit="false"
+        title="Custom Playback"
+        centerTitle
+      >
+        <v-row
+          class="ma-0 my-2"
+          justify="center"
+          align="center"
+          v-for="(option, idx) in customPlaybackOptions"
+          :key="idx"
+        >
+          <custom-playback-option
+            :customPlaybackOption="option"
+            :isSelected="selectedCustomPlaybackOption === option"
+            @selected="handleViewAllDialogSelection(option)"
+          />
+        </v-row>
+      </mic-drop-dialog>
     </v-card-text>
     <v-card-actions class="pa-0"></v-card-actions>
   </div>
@@ -250,12 +255,16 @@ import {
   mdiMicrophone,
   mdiArchive,
   mdiPlus,
-  mdiPlayCircle,
+  mdiMenuDown,
+  mdiPinOutline,
+  mdiStarOutline,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 import Playback from "../../components/Playback/Playback.vue";
 import audioEncoder from "audio-encoder";
 import CreateNewCustomPlaybackDialog from "./components/CreateNewCustomPlaybackDialog.vue";
+import MicDropDialog from "../../components/base/MicDropDialog.vue";
+import CustomPlaybackOption from "./components/CustomPlaybackOption.vue";
 
 export default defineComponent({
   props: {
@@ -268,6 +277,8 @@ export default defineComponent({
     SoundResponse,
     Playback,
     CreateNewCustomPlaybackDialog,
+    MicDropDialog,
+    CustomPlaybackOption,
   },
   setup(props) {
     const server = sl.get("serverProxy");
@@ -317,7 +328,9 @@ export default defineComponent({
       mdiMicrophone,
       mdiArchive,
       mdiPlus,
-      mdiPlayCircle,
+      mdiMenuDown,
+      mdiPinOutline,
+      mdiStarOutline,
     });
 
     const isRecording = ref(false);
@@ -559,6 +572,12 @@ export default defineComponent({
       }
     };
 
+    const viewAllDialog = ref(false);
+    const handleViewAllDialogSelection = (option: CustomPlaybackDisplay) => {
+      selectedCustomPlaybackOption.value = option;
+      viewAllDialog.value = false;
+    };
+
     return {
       icons,
       isRecording,
@@ -583,6 +602,8 @@ export default defineComponent({
       createNewCustomPlaybackStarter,
       createNewDialogKey,
       selectNewCustomPlayback,
+      viewAllDialog,
+      handleViewAllDialogSelection,
     };
   },
 });
@@ -595,10 +616,6 @@ export default defineComponent({
 
 .fade-animation-2 {
   animation: fadeInOut2 7s infinite;
-}
-
-.chip-border {
-  outline: 2px solid white;
 }
 
 @keyframes fadeInOut {

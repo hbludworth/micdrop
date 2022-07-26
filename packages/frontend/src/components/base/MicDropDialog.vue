@@ -22,7 +22,11 @@
         <v-divider />
       </div>
       <v-card-title data-testid="dialog-title" class="test-dialog-title">
-        <slot name="title">{{ title }}</slot>
+        <slot name="title">
+          <v-row class="ma-0" :justify="centerTitle ? 'center' : 'start'">{{
+            title
+          }}</v-row>
+        </slot>
       </v-card-title>
       <v-card-text>
         <slot></slot>
@@ -76,6 +80,10 @@ export default defineComponent({
     title: {
       type: String,
       default: "",
+    },
+    centerTitle: {
+      type: Boolean,
+      default: false,
     },
     showSubmit: {
       type: Boolean,
