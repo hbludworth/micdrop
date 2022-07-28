@@ -1,8 +1,10 @@
 <template>
-  <sound-visualizer 
-  :progressFraction="progressFraction"
-  :mini="mini"
-  :currentFrequencyData="currentFrequencyData"/>
+  <sound-visualizer
+    :progressFraction="progressFraction"
+    :mini="mini"
+    :currentFrequencyData="currentFrequencyData"
+    :scrubberColor="scrubberColor"
+  />
 </template>
 
 <script lang="ts">
@@ -13,24 +15,16 @@ import {
   onUnmounted,
   watch,
 } from "@vue/composition-api";
-import SoundVisualizer from './SoundVisualizer.vue'
+import SoundVisualizer from "./SoundVisualizer.vue";
 
 export default defineComponent({
   props: {
     mediaStream: {
       type: MediaStream,
-      required: false
+      required: false,
     },
     audioElement: {
       type: HTMLAudioElement,
-      required: false
-    },
-    isPlaying: {
-      type: Boolean,
-      required: true,
-    },
-    autoStart: {
-      type: Boolean,
       required: false,
     },
     progressFraction: {
@@ -41,9 +35,21 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    isPlaying: {
+      type: Boolean,
+      required: true,
+    },
+    autoStart: {
+      type: Boolean,
+      required: false,
+    },
+    scrubberColor: {
+      type: String,
+      required: false,
+    },
   },
   components: {
-    SoundVisualizer
+    SoundVisualizer,
   },
   setup(props) {
     onMounted(() => {
@@ -71,9 +77,7 @@ export default defineComponent({
 
     const createSourceNode = (audioContext: AudioContext) => {
       if (props.mediaStream) {
-        return audioContext.createMediaStreamSource(
-          props.mediaStream
-        );
+        return audioContext.createMediaStreamSource(props.mediaStream);
       } else if (props.audioElement) {
         const source = audioContext.createMediaElementSource(
           props.audioElement
@@ -81,7 +85,7 @@ export default defineComponent({
         source.connect(audioContext.destination);
         return source;
       }
-    }
+    };
 
     const setupAudioContext = () => {
       hasBeenSetup.value = true;
@@ -98,7 +102,7 @@ export default defineComponent({
       source.connect(analyzer.value);
       analyzer.value.getByteFrequencyData(dataArray.value);
       handleAnimation();
-    }
+    };
 
     let then = 0;
     let now = 0;
@@ -161,8 +165,8 @@ export default defineComponent({
       }
     );
     return {
-      currentFrequencyData
-    }
-  }
-})
+      currentFrequencyData,
+    };
+  },
+});
 </script>

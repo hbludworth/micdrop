@@ -1,3 +1,5 @@
+import { CustomPlaybackDisplay } from './customPlayback';
+
 export interface AudioLimits {
   monthlyMessagesLeft: number | null;
 }
@@ -9,10 +11,12 @@ export interface AudioMessage {
   fileType: string;
   label: string | null;
   audioGroupUuid: string | null;
+  customPlaybackUuid: string;
 }
 
 export interface AudioMessageWithUrl extends AudioMessage {
   url: string;
+  customPlayback: CustomPlaybackDisplay;
 }
 
 export interface AudioGroup {

@@ -1,3 +1,4 @@
+import { CreateNewCustomPlaybackImagePayload } from 'types';
 import axios from '../axiosInstance';
 
 async function getImage(key: string): Promise<string> {
@@ -11,6 +12,19 @@ async function getImage(key: string): Promise<string> {
   return data;
 }
 
+const uploadImage = async (
+  image: CreateNewCustomPlaybackImagePayload
+): Promise<void> => {
+  const file = image.file;
+  if (file) {
+    const formData = new FormData();
+    formData.append('newFile', file, 'newFile');
+
+    await axios.post(`/image/upload/${image.type}/${image.name}`, formData);
+  }
+};
+
 export default {
   getImage,
+  uploadImage,
 };

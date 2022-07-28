@@ -22,7 +22,11 @@
         <v-divider />
       </div>
       <v-card-title data-testid="dialog-title" class="test-dialog-title">
-        <slot name="title">{{ title }}</slot>
+        <slot name="title">
+          <v-row class="ma-0" :justify="centerTitle ? 'center' : 'start'">{{
+            title
+          }}</v-row>
+        </slot>
       </v-card-title>
       <v-card-text>
         <slot></slot>
@@ -31,7 +35,7 @@
         <v-card-actions class="pa-3">
           <v-spacer />
           <v-btn
-            rounded
+            class="rounded-lg"
             v-if="showCancel"
             @click="$emit('input', false)"
             color="error"
@@ -42,9 +46,10 @@
 
           <slot v-if="showSubmit" name="submit-button" :on="{ click: submit }">
             <v-btn
-              rounded
+              class="rounded-lg"
               @click="submit"
               color="primary"
+              text
               :disabled="submitLoading || submitDisabled"
             >
               <v-progress-circular
@@ -56,6 +61,7 @@
               <span v-else>{{ submitText }}</span>
             </v-btn>
           </slot>
+          <v-spacer />
         </v-card-actions>
       </div>
     </v-card>
@@ -74,6 +80,10 @@ export default defineComponent({
     title: {
       type: String,
       default: "",
+    },
+    centerTitle: {
+      type: Boolean,
+      default: false,
     },
     showSubmit: {
       type: Boolean,

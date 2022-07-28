@@ -2,7 +2,7 @@
   <div style="width: 385px">
     <v-row class="ma-0 justify-center">
       <audio
-        :src="audioUrl"
+        :src="audioMessage.url"
         controls
         class="hide-audio"
         ref="defaultAudio"
@@ -12,7 +12,7 @@
         <v-card
           class="pa-3 mt-6 rounded-pill"
           width="385"
-          color="blue lighten-3"
+          :color="audioMessage.customPlayback.backgroundColor"
           flat
         >
           <v-row class="justify-center align-center ma-0">
@@ -20,14 +20,27 @@
               height="60"
               width="60"
               @click="toggleAudio"
-              fab
               x-large
-              :color="isPlaying ? '#ea4235' : 'primary'"
+              class="v-btn--round"
+              :color="
+                isPlaying
+                  ? audioMessage.customPlayback.pauseButtonColor
+                  : audioMessage.customPlayback.playButtonColor
+              "
               depressed
             >
-              <v-icon color="white" size="35px">{{
-                isPlaying ? icons.mdiPauseCircle : icons.mdiPlayCircle
-              }}</v-icon>
+              <v-icon
+                v-if="isPlaying"
+                :color="audioMessage.customPlayback.playPauseIconColor"
+                size="30px"
+                >{{ icons.mdiPause }}</v-icon
+              >
+              <v-icon
+                v-else
+                :color="audioMessage.customPlayback.playPauseIconColor"
+                size="35px"
+                >{{ icons.mdiPlay }}</v-icon
+              >
             </v-btn>
             <v-hover v-model="soundResponseHover">
               <v-slider
@@ -68,39 +81,64 @@
               :isPlaying="isPlaying"
               mini
               class="mx-2"
+              :scrubberColor="audioMessage.customPlayback.scrubberColor"
             />
             <v-spacer />
-            <v-btn
-              height="60"
-              width="60"
-              fab
-              x-large
-              :color="playbackHover && showRemoveButton ? '#ea4235' : '#34a853'"
-              depressed
-              class="white--text"
-            >
-              <v-icon
-                v-if="playbackHover && showRemoveButton"
-                size="35px"
-                @click="$emit('remove')"
-                >{{ icons.mdiCloseCircle }}</v-icon
+            <div>
+              <v-img
+                class="rounded-circle circle-image"
+                v-if="audioMessage.customPlayback.circleImageUrl"
+                v-show="!isPlaying && !playbackHover"
+                width="60"
+                height="60"
+                :src="audioMessage.customPlayback.circleImageUrl"
+              />
+              <v-btn
+                height="60"
+                width="60"
+                class="v-btn--round"
+                x-large
+                :color="
+                  playbackHover && showRemoveButton
+                    ? '#ea4235'
+                    : audioMessage.customPlayback.timeBackgroundColor
+                "
+                depressed
               >
-              <span v-else>{{
-                playbackTime !== 0
-                  ? convertTime(playbackTime)
-                  : convertTime(audioDuration)
-              }}</span>
-            </v-btn>
+                <v-icon
+                  v-if="playbackHover && showRemoveButton"
+                  size="35px"
+                  @click="$emit('remove')"
+                  color="white"
+                  >{{ icons.mdiCloseCircle }}</v-icon
+                >
+                <span
+                  :style="`color: ${audioMessage.customPlayback.timeFontColor}`"
+                  v-else
+                  >{{
+                    playbackTime !== 0
+                      ? convertTime(playbackTime)
+                      : convertTime(audioDuration)
+                  }}</span
+                >
+              </v-btn>
+            </div>
           </v-row>
         </v-card>
       </v-hover>
     </v-row>
     <v-row class="ma-0 mt-0">
       <v-spacer />
-      <span class="text-overline"> Powered by </span>
-      <a :href="logoLink" target="_blank">
+      <span class="text-overline accent--text">
+        {{ audioMessage.customPlayback.signatureText }}
+      </span>
+      <a
+        v-if="audioMessage.customPlayback.signatureImageUrl"
+        :href="audioMessage.customPlayback.link"
+        target="_blank"
+      >
         <v-img
-          :src="require('../../assets/logos/blue-logo-alpha-700w.png')"
+          :src="audioMessage.customPlayback.signatureImageUrl"
           height="15px"
           max-width="80px"
           contain
@@ -134,21 +172,23 @@ import {
   ref,
   onMounted,
   nextTick,
+  PropType,
 } from "@vue/composition-api";
 import {
-  mdiPlayCircle,
-  mdiPauseCircle,
+  mdiPlay,
+  mdiPause,
   mdiMessageAlertOutline,
   mdiCloseCircle,
   mdiChevronLeft,
   mdiChevronRight,
 } from "@mdi/js";
 import SoundResponse from "frontend/src/components/SoundResponse.vue";
+import { AudioMessageWithUrl } from "types";
 
 export default defineComponent({
   props: {
-    audioUrl: {
-      type: String,
+    audioMessage: {
+      type: Object as PropType<AudioMessageWithUrl>,
       required: true,
     },
     showRemoveButton: {
@@ -161,8 +201,8 @@ export default defineComponent({
   },
   setup() {
     const icons = ref({
-      mdiPlayCircle,
-      mdiPauseCircle,
+      mdiPlay,
+      mdiPause,
       mdiMessageAlertOutline,
       mdiCloseCircle,
       mdiChevronLeft,
@@ -259,7 +299,7 @@ export default defineComponent({
 
     const logoLink =
       process.env.NODE_ENV === "development"
-        ? "localhost:8080"
+        ? "http://localhost:8080"
         : "https://www.sendmicdrop.com";
 
     const sendFeedback = () => {
@@ -329,6 +369,11 @@ export default defineComponent({
 
 .scrubber-hide {
   display: none;
+}
+
+.circle-image {
+  position: absolute;
+  z-index: 5;
 }
 
 @keyframes fadeInOut {

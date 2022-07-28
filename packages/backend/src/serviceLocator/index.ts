@@ -2,6 +2,7 @@ import UserDao from '../api/daos/UserDao';
 import AudioDao from '../api/daos/AudioDao';
 import AudioGroupsDao from '../api/daos/AudioGroupsDao';
 import SubscriptionsDao from '../api/daos/SubscriptionsDao';
+import CustomPlaybackDao from 'src/api/daos/CustomPlaybackDao';
 
 const instances: { [key: string]: any } = {};
 
@@ -10,6 +11,7 @@ export type ServiceTypes = {
   AudioDao: typeof AudioDao;
   AudioGroupsDao: typeof AudioGroupsDao;
   SubscriptionsDao: typeof SubscriptionsDao;
+  CustomPlaybackDao: typeof CustomPlaybackDao;
 };
 
 export default {

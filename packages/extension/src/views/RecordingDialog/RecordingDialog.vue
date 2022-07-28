@@ -96,14 +96,23 @@ export default defineComponent({
         }
 
         removeMessageEventListener();
-        uuid.value = event.data.content as string;
+        const eventContent = event.data.content as {
+          audioUuid: string;
+          customPlaybackImage: string;
+        };
+        uuid.value = eventContent.audioUuid;
 
         const imagePlaceholderObserver = new ImagePlaceholderObserver(
           composeBoxElement.value,
-          uuid.value
+          uuid.value,
+          eventContent.customPlaybackImage
         );
 
-        insertImagePlaceholder(composeBoxElement.value, uuid.value);
+        insertImagePlaceholder(
+          composeBoxElement.value,
+          uuid.value,
+          eventContent.customPlaybackImage
+        );
 
         insertPlaybackBox(
           composeBoxElement.value,

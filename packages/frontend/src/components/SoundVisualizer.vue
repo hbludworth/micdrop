@@ -27,6 +27,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "@vue/composition-api";
+import hexToRGB from "hex-rgb";
 
 export default defineComponent({
   props: {
@@ -41,6 +42,10 @@ export default defineComponent({
     currentFrequencyData: {
       type: Array as PropType<Array<number>>,
       required: true,
+    },
+    scrubberColor: {
+      type: String,
+      required: false,
     },
   },
   setup(props) {
@@ -63,33 +68,13 @@ export default defineComponent({
     };
 
     const getColor = (index: number) => {
-      const blue = "66, 134, 245,";
-      const yellow = "245, 180, 0,";
-      const red = "234, 66, 53,";
-      const green = "52, 168, 83,";
-      switch (index) {
-        case 0:
-        case 1:
-        case 2:
-        case 3:
-          return `rgba(${blue} ${getAlpha(index)})`;
-        case 4:
-        case 5:
-        case 10:
-        case 11:
-          return `rgba(${yellow} ${getAlpha(index)})`;
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-          return `rgba(${red} ${getAlpha(index)})`;
-        case 12:
-        case 13:
-        case 14:
-        case 15:
-          return `rgba(${green} ${getAlpha(index)})`;
-        default:
-          return `rgba(${red} ${getAlpha(index)})`;
+      if (!props.scrubberColor) {
+        return "primary";
+      } else {
+        const rgb = hexToRGB(props.scrubberColor);
+        return `rgba(${rgb.red}, ${rgb.green}, ${rgb.blue}, ${getAlpha(
+          index
+        )})`;
       }
     };
 

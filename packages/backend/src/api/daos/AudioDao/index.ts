@@ -5,13 +5,15 @@ class AudioDao {
   async createAudio(
     uuid: string,
     userUuid: string,
-    fileType: string
+    fileType: string,
+    customPlaybackUuid: string
   ): Promise<void> {
     await knex('audio').insert({
       uuid,
       user_uuid: userUuid,
       created_on: new Date(),
       file_type: fileType,
+      custom_playback_uuid: customPlaybackUuid,
     });
   }
 
@@ -69,7 +71,8 @@ class AudioDao {
         'created_on as createdOn',
         'file_type as fileType',
         'label',
-        'audio_group_uuid as audioGroupUuid'
+        'audio_group_uuid as audioGroupUuid',
+        'custom_playback_uuid as customPlaybackUuid'
       )
       .where({ user_uuid: userUuid })
       .modify((qb) => {
@@ -89,7 +92,8 @@ class AudioDao {
         'created_on as createdOn',
         'file_type as fileType',
         'label',
-        'audio_group_uuid as audioGroupUuid'
+        'audio_group_uuid as audioGroupUuid',
+        'custom_playback_uuid as customPlaybackUuid'
       )
       .where('uuid', uuid)
       .first();

@@ -13,15 +13,15 @@
     <v-card-text class="ma-0 pa-0">
       <v-row class="justify-center ma-4 mt-4">
         <v-btn
-          height="125"
-          width="125"
+          :height="primaryButtonOptions.size"
+          :width="primaryButtonOptions.size"
           @click="primaryButtonOptions.clickAction"
-          fab
+          class="v-btn--round"
           x-large
           :color="primaryButtonOptions.color"
           depressed
           :disabled="currentStep === 1 && disableRecording"
-          ><v-icon color="white" size="55px">{{
+          ><v-icon color="white" :size="`${primaryButtonOptions.iconSize}px`">{{
             primaryButtonOptions.icon
           }}</v-icon></v-btn
         >
@@ -131,7 +131,7 @@
         <v-col cols="2" class="pa-0" />
         <v-col cols="8" class="pa-0">
           <v-row justify="center" class="ma-0">
-            <playback :audioUrl="audioUrl" />
+            <playback v-if="audioMessage" :audioMessage="audioMessage" />
           </v-row>
         </v-col>
         <v-col cols="2" class="pa-0" align-self="center">
@@ -163,6 +163,68 @@
           </v-row>
         </v-col>
       </v-row>
+      <v-row
+        class="ma-0 mt-10 mx-4"
+        v-if="currentStep === 3 && subscriptionLevel === 'pro'"
+        justify="center"
+        align="center"
+      >
+        <custom-playback-option
+          v-for="(option, idx) in customPlaybackOptions.slice(0, 3)"
+          :key="idx"
+          :customPlaybackOption="option"
+          :isSelected="selectedCustomPlaybackOption === option"
+          @selected="selectedCustomPlaybackOption = option"
+          class="mr-1 mb-1"
+        />
+        <v-chip
+          color="accent"
+          outlined
+          class="font-weight-medium mb-1 mr-1"
+          @click="viewAllDialog = true"
+        >
+          All
+          <v-icon small class="mr-n1">{{ icons.mdiMenuDown }}</v-icon></v-chip
+        >
+        <v-chip
+          color="primary"
+          outlined
+          class="font-weight-medium mb-1"
+          @click="createNewPlaybackDialog = true"
+        >
+          <v-icon small>{{ icons.mdiPlus }}</v-icon
+          >Create</v-chip
+        >
+      </v-row>
+      <create-new-custom-playback-dialog
+        v-if="createNewCustomPlaybackStarter"
+        v-model="createNewPlaybackDialog"
+        :startingTemplate="createNewCustomPlaybackStarter"
+        :key="createNewDialogKey"
+        @select-new-custom-playback="selectNewCustomPlayback"
+      />
+      <mic-drop-dialog
+        v-model="viewAllDialog"
+        :width="300"
+        :showCancel="false"
+        :showSubmit="false"
+        title="Custom Playback"
+        centerTitle
+      >
+        <v-row
+          class="ma-0 my-2"
+          justify="center"
+          align="center"
+          v-for="(option, idx) in customPlaybackOptions"
+          :key="idx"
+        >
+          <custom-playback-option
+            :customPlaybackOption="option"
+            :isSelected="selectedCustomPlaybackOption === option"
+            @selected="handleViewAllDialogSelection(option)"
+          />
+        </v-row>
+      </mic-drop-dialog>
     </v-card-text>
     <v-card-actions class="pa-0"></v-card-actions>
   </div>
@@ -178,7 +240,13 @@ import {
   onMounted,
 } from "@vue/composition-api";
 import sl from "../../serviceLocator";
-import { PrimaryButtonOptions, SubscriptionStatus } from "types";
+import {
+  AudioMessageWithUrl,
+  PrimaryButtonOptions,
+  SubscriptionStatus,
+  CustomPlaybackDisplay,
+  CustomPlaybackRow,
+} from "types";
 import {
   mdiStopCircle,
   mdiDelete,
@@ -186,10 +254,17 @@ import {
   mdiEmailSendOutline,
   mdiMicrophone,
   mdiArchive,
+  mdiPlus,
+  mdiMenuDown,
+  mdiPinOutline,
+  mdiStarOutline,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 import Playback from "../../components/Playback/Playback.vue";
 import audioEncoder from "audio-encoder";
+import CreateNewCustomPlaybackDialog from "./components/CreateNewCustomPlaybackDialog.vue";
+import MicDropDialog from "../../components/base/MicDropDialog.vue";
+import CustomPlaybackOption from "./components/CustomPlaybackOption.vue";
 
 export default defineComponent({
   props: {
@@ -201,6 +276,9 @@ export default defineComponent({
   components: {
     SoundResponse,
     Playback,
+    CreateNewCustomPlaybackDialog,
+    MicDropDialog,
+    CustomPlaybackOption,
   },
   setup(props) {
     const server = sl.get("serverProxy");
@@ -219,18 +297,24 @@ export default defineComponent({
             icon: icons.value.mdiMicrophone,
             clickAction: startRecording,
             color: "primary",
+            size: 125,
+            iconSize: 55,
           };
         } else if (!audioUrl.value && isRecording.value) {
           return {
             icon: icons.value.mdiStopCircle,
             clickAction: stopRecording,
-            color: "#ea4235",
+            color: "accent",
+            size: 125,
+            iconSize: 55,
           };
         } else {
           return {
             icon: icons.value.mdiArrowULeftTopBold,
             clickAction: deleteRecording,
-            color: "grey lighten-1",
+            color: "accent",
+            size: 80,
+            iconSize: 40,
           };
         }
       }
@@ -243,6 +327,10 @@ export default defineComponent({
       mdiEmailSendOutline,
       mdiMicrophone,
       mdiArchive,
+      mdiPlus,
+      mdiMenuDown,
+      mdiPinOutline,
+      mdiStarOutline,
     });
 
     const isRecording = ref(false);
@@ -335,11 +423,25 @@ export default defineComponent({
 
         audioEncoder(audioBuffer, null, null, async (audioBlob: Blob) => {
           try {
+            if (!selectedCustomPlaybackOption.value) {
+              throw new Error("No playback option selected. Cannot submit.");
+            }
             submitLoading.value = true;
-            const uuid = await server.uploadAudio(audioBlob);
+            const uuid = await server.uploadAudio(
+              audioBlob,
+              selectedCustomPlaybackOption.value.uuid
+            );
+
+            const placeholderImageUrl = `https://sendmicdrop.com/api/v1/placeholder_image/${selectedCustomPlaybackOption.value.uuid}_placeholder.png`;
 
             parent.window.postMessage(
-              { type: "uuid", content: uuid },
+              {
+                type: "uuid",
+                content: {
+                  audioUuid: uuid,
+                  customPlaybackImage: placeholderImageUrl,
+                },
+              },
               "https://mail.google.com"
             );
           } catch {
@@ -368,18 +470,24 @@ export default defineComponent({
     const loading = ref(false);
     const monthlyMessagesLeft = ref<number | null>(null);
     const subscriptionStatus = ref<SubscriptionStatus>();
+    const customPlaybackOptions = ref<CustomPlaybackDisplay[]>([]);
+
     onMounted(async () => {
       try {
         loading.value = true;
         monthlyMessagesLeft.value = (
           await server.getMonthlyMessagesLeft()
         ).monthlyMessagesLeft;
+
         if (subscriptionLevel.value !== "free") {
           subscriptionStatus.value = await server.getSubscriptionStatus();
           if (subscriptionStatus.value === "past_due" && !props.ignorePastDue) {
             router.push("/past_due_warning");
           }
         }
+
+        customPlaybackOptions.value = await server.getCustomPlaybackOptions();
+        selectedCustomPlaybackOption.value = customPlaybackOptions.value[0];
       } catch {
         actions.showErrorSnackbar(
           "Error preparing recording setup. Please try again."
@@ -399,6 +507,77 @@ export default defineComponent({
       return false;
     });
 
+    const selectedCustomPlaybackOption = ref<CustomPlaybackDisplay>();
+
+    const audioMessage: ComputedRef<Pick<
+      AudioMessageWithUrl,
+      "customPlaybackUuid" | "customPlayback" | "url"
+    > | null> = computed(() => {
+      if (audioUrl.value && selectedCustomPlaybackOption.value) {
+        return {
+          customPlaybackUuid: selectedCustomPlaybackOption.value.uuid,
+          url: audioUrl.value,
+          customPlayback: selectedCustomPlaybackOption.value,
+        };
+      }
+      return null;
+    });
+
+    const createNewCustomPlaybackStarter = ref<Pick<
+      AudioMessageWithUrl,
+      "customPlaybackUuid" | "customPlayback" | "url"
+    > | null>(null);
+
+    watch(audioMessage, () => {
+      if (audioMessage.value) {
+        createNewCustomPlaybackStarter.value = {
+          ...audioMessage.value,
+          customPlaybackUuid: customPlaybackOptions.value[0].uuid,
+          customPlayback: {
+            ...customPlaybackOptions.value[0],
+            name: "",
+          },
+        };
+      }
+    });
+
+    const createNewPlaybackDialog = ref(false);
+
+    const createNewDialogKey = ref(false);
+    watch(createNewPlaybackDialog, () => {
+      if (createNewPlaybackDialog.value && audioMessage.value) {
+        createNewDialogKey.value = !createNewDialogKey.value;
+        createNewCustomPlaybackStarter.value = {
+          ...audioMessage.value,
+          customPlaybackUuid: customPlaybackOptions.value[0].uuid,
+          customPlayback: {
+            ...customPlaybackOptions.value[0],
+            name: "",
+          },
+        };
+      }
+    });
+
+    const selectNewCustomPlayback = async (newOption: CustomPlaybackRow) => {
+      try {
+        customPlaybackOptions.value = await server.getCustomPlaybackOptions();
+
+        selectedCustomPlaybackOption.value = customPlaybackOptions.value.find(
+          (option) => option.uuid === newOption.uuid
+        );
+      } catch {
+        actions.showErrorSnackbar(
+          "Error loading new custom playback. Please try again."
+        );
+      }
+    };
+
+    const viewAllDialog = ref(false);
+    const handleViewAllDialogSelection = (option: CustomPlaybackDisplay) => {
+      selectedCustomPlaybackOption.value = option;
+      viewAllDialog.value = false;
+    };
+
     return {
       icons,
       isRecording,
@@ -416,6 +595,15 @@ export default defineComponent({
       monthlyMessagesLeft,
       disableRecording,
       loading,
+      customPlaybackOptions,
+      selectedCustomPlaybackOption,
+      audioMessage,
+      createNewPlaybackDialog,
+      createNewCustomPlaybackStarter,
+      createNewDialogKey,
+      selectNewCustomPlayback,
+      viewAllDialog,
+      handleViewAllDialogSelection,
     };
   },
 });

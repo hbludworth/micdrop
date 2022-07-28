@@ -6,35 +6,12 @@ import { HttpBadRequest, HttpInternalError } from '../exceptions';
 import sl from '../serviceLocator';
 import authenticatedRoute from '../middlewares/authenticatedRoute';
 import proRoute from '../middlewares/proRoute';
-import { AudioLimits, AudioMessage, AudioMessageWithUrl } from 'types';
+import { AudioLimits, AudioMessageWithUrl, CustomPlaybackDisplay } from 'types';
 
 const router = express.Router();
 
 router
   .route('/audio/:uuid')
-  .get(async (req, res, next) => {
-    try {
-      const { uuid } = req.params;
-
-      const s3 = new AWS.S3();
-
-      const params: AWS.S3.GetObjectRequest = {
-        Bucket: 'micdrop-audio',
-        Key: `${uuid}.wav`,
-      };
-
-      const signedUrl = await s3.getSignedUrlPromise('getObject', params);
-
-      if (signedUrl) {
-        res.json(signedUrl);
-      } else {
-        next(new HttpBadRequest('This audio file does not exist.'));
-        return;
-      }
-    } catch (err) {
-      next(new HttpInternalError(err as string));
-    }
-  })
   .delete(authenticatedRoute, async (req, res, next) => {
     const AudioDao = sl.get('AudioDao');
 
@@ -84,6 +61,8 @@ router.route('/audio').post(authenticatedRoute, async (req, res, next) => {
       return;
     }
 
+    const customPlaybackUuid = req.query.customPlaybackUuid as string;
+
     const s3 = new AWS.S3();
 
     const file = req.files.newFile as fileUpload.UploadedFile;
@@ -98,7 +77,7 @@ router.route('/audio').post(authenticatedRoute, async (req, res, next) => {
 
     await s3.putObject(params).promise();
 
-    await AudioDao.createAudio(uuid, userUuid, 'wav');
+    await AudioDao.createAudio(uuid, userUuid, 'wav', customPlaybackUuid);
 
     res.status(201).json(uuid);
   } catch (err) {
@@ -165,13 +144,13 @@ router.route('/audio_label/:uuid').patch(proRoute, async (req, res, next) => {
   }
 });
 
-router.route('/audio_message/:uuid').get(proRoute, async (req, res, next) => {
+router.route('/audio_message/:uuid').get(async (req, res, next) => {
   try {
     const AudioDao = sl.get('AudioDao');
+    const CustomPlaybackDao = sl.get('CustomPlaybackDao');
     const s3 = new AWS.S3();
 
     const { uuid } = req.params;
-    const userUuid = req.user!.uuid;
 
     const audioMessageExists = await AudioDao.audioMessageExists(uuid);
     if (!audioMessageExists) {
@@ -179,29 +158,43 @@ router.route('/audio_message/:uuid').get(proRoute, async (req, res, next) => {
       return;
     }
 
-    const audioBelongsToUser = await AudioDao.audioBelongsToUser(
-      uuid,
-      userUuid
-    );
-    if (!audioBelongsToUser) {
-      next(
-        new HttpBadRequest(
-          'The audio message does not belong to the current user.'
-        )
-      );
-      return;
-    }
-
     const audioMessage = await AudioDao.getAudioMessageByUuid(uuid);
+
+    const customPlaybackRow = await CustomPlaybackDao.getCustomPlaybackByUuid(
+      audioMessage.customPlaybackUuid
+    );
 
     const url = await s3.getSignedUrlPromise('getObject', {
       Bucket: 'micdrop-audio',
       Key: `${audioMessage.uuid}.${audioMessage.fileType}`,
     });
 
+    const circleImageUrl =
+      customPlaybackRow && customPlaybackRow.circleImage
+        ? await s3.getSignedUrlPromise('getObject', {
+            Bucket: 'micdrop-custom-images',
+            Key: customPlaybackRow.circleImage,
+          })
+        : null;
+
+    const signatureImageUrl =
+      customPlaybackRow && customPlaybackRow.signatureImage
+        ? await s3.getSignedUrlPromise('getObject', {
+            Bucket: 'micdrop-custom-images',
+            Key: customPlaybackRow.signatureImage,
+          })
+        : null;
+
+    const customPlaybackDisplay: CustomPlaybackDisplay = {
+      ...customPlaybackRow,
+      circleImageUrl: circleImageUrl,
+      signatureImageUrl: signatureImageUrl,
+    };
+
     const audioMessageWithUrl: AudioMessageWithUrl = {
       ...audioMessage,
       url,
+      customPlayback: customPlaybackDisplay,
     };
 
     res.json(audioMessageWithUrl);
