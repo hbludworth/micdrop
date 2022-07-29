@@ -2,11 +2,15 @@ import sharp, { OverlayOptions } from 'sharp';
 import { CustomPlaybackRow } from 'types';
 import hexToRGB from 'hex-rgb';
 import AWS from 'aws-sdk';
+import makerjs from 'makerjs';
+import opentype from 'opentype.js';
 
 const createPlaceholderImage = async (
   customPlayback: CustomPlaybackRow
 ): Promise<Buffer> => {
   const s3 = new AWS.S3();
+
+  const roboto = await opentype.load('./fonts/Roboto-Regular.ttf');
 
   const backgroundColor = hexToRGB(customPlayback.backgroundColor);
   const scrubberColor = hexToRGB(customPlayback.scrubberColor);
@@ -141,16 +145,20 @@ const createPlaceholderImage = async (
     : null;
 
   // CREATE TIME TEXT
-  const timeText = Buffer.from(`
-    <svg width="${95}" height="${40}">
-      <style>
-      .title { fill: ${
-        customPlayback.timeFontColor
-      }; font-size: 35px; font-weight: 500; font-family: sans-serif; }
-      </style>
-      <text x="50%" y="80%" text-anchor="middle" class="title">${'00:00'}</text>
-    </svg>`);
-  const timeTextImage = await sharp(timeText).png().toBuffer();
+  const timeTextModel = new makerjs.models.Text(
+    roboto,
+    '00:00',
+    35,
+    false,
+    false,
+    0
+  );
+  const timeTextSVG = makerjs.exporter.toSVG(timeTextModel, {
+    fill: customPlayback.timeFontColor,
+    fontSize: '35',
+    stroke: customPlayback.timeFontColor,
+  });
+  const timeTextImage = await sharp(Buffer.from(timeTextSVG)).png().toBuffer();
 
   // CREATE CIRCLE IMAGE
   const circleImage = circleImageFile
@@ -190,14 +198,25 @@ const createPlaceholderImage = async (
         .toBuffer();
 
   // CREATE SIGNATURE TEXT
-  const signatureText = Buffer.from(`
-    <svg width="${770}" height="${40}">
-      <style>
-      .title { fill: #616d7d; font-size: 25px; font-weight: 500; font-family: sans-serif; }
-      </style>
-      <text x="50%" y="80%" text-anchor="middle" class="title">${customPlayback.signatureText.toUpperCase()}</text>
-    </svg>`);
-  const signatureTextImage = await sharp(signatureText).trim().png().toBuffer();
+  const signatureTextModel = new makerjs.models.Text(
+    roboto,
+    customPlayback.signatureText.toUpperCase(),
+    25,
+    false,
+    false,
+    0,
+    {
+      letterSpacing: 0.25,
+    }
+  );
+  const signatureTextSVG = makerjs.exporter.toSVG(signatureTextModel, {
+    fill: '#616d7d',
+    fontSize: '25',
+    stroke: '#616d7d',
+  });
+  const signatureTextImage = customPlayback.signatureText
+    ? await sharp(Buffer.from(signatureTextSVG)).trim().png().toBuffer()
+    : null;
 
   // GET SIGNATURE IMAGE FILE FROM S3
   const signatureImageFile = customPlayback.signatureImage
@@ -220,8 +239,9 @@ const createPlaceholderImage = async (
         .toBuffer()
     : null;
 
-  const signatureTextWidth =
-    (await sharp(signatureTextImage).metadata()).width || 0;
+  const signatureTextWidth = signatureTextImage
+    ? (await sharp(signatureTextImage).metadata()).width || 0
+    : 0;
   const signatureImageWidth = signatureImage
     ? (await sharp(signatureImage).metadata()).width || 0
     : 0;
@@ -274,12 +294,14 @@ const createPlaceholderImage = async (
             top: 24,
             left: 624,
           },
-          {
-            input: signatureTextImage,
-            blend: 'over',
-            top: 183,
-            left: margin - 7,
-          },
+          signatureTextImage
+            ? {
+                input: signatureTextImage,
+                blend: 'over',
+                top: 183,
+                left: margin - 7,
+              }
+            : null,
           signatureImage
             ? {
                 input: signatureImage,
