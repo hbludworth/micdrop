@@ -14,6 +14,47 @@ const createPlaceholderImage = async (
   const playIconColor = hexToRGB(customPlayback.playPauseIconColor);
   const timeBackgroundColor = hexToRGB(customPlayback.timeBackgroundColor);
 
+  const scrubberComposite = (
+    await s3
+      .getObject({
+        Bucket: 'micdrop-custom-composites',
+        Key: 'scrubber.png',
+      })
+      .promise()
+  ).Body as Buffer;
+  const triangleMaskComposite = (
+    await s3
+      .getObject({
+        Bucket: 'micdrop-custom-composites',
+        Key: 'triangle_mask.png',
+      })
+      .promise()
+  ).Body as Buffer;
+  const circleMaskComposite = (
+    await s3
+      .getObject({
+        Bucket: 'micdrop-custom-composites',
+        Key: 'circle_mask.png',
+      })
+      .promise()
+  ).Body as Buffer;
+  const innerPillComposite = (
+    await s3
+      .getObject({
+        Bucket: 'micdrop-custom-composites',
+        Key: 'inner_pill.png',
+      })
+      .promise()
+  ).Body as Buffer;
+  const basePillComposite = (
+    await s3
+      .getObject({
+        Bucket: 'micdrop-custom-composites',
+        Key: 'base_pill.png',
+      })
+      .promise()
+  ).Body as Buffer;
+
   // CREATE SCRUBBER
   const scrubber = await sharp({
     create: {
@@ -30,7 +71,7 @@ const createPlaceholderImage = async (
   })
     .composite([
       {
-        input: './src/utils/composites/scrubber.png',
+        input: scrubberComposite,
         blend: 'dest-out',
       },
     ])
@@ -52,7 +93,7 @@ const createPlaceholderImage = async (
   })
     .composite([
       {
-        input: './src/utils/composites/triangle_mask.png',
+        input: triangleMaskComposite,
         blend: 'dest-out',
       },
     ])
@@ -74,7 +115,7 @@ const createPlaceholderImage = async (
   })
     .composite([
       {
-        input: './src/utils/composites/circle_mask.png',
+        input: circleMaskComposite,
         blend: 'dest-out',
       },
       {
@@ -105,7 +146,7 @@ const createPlaceholderImage = async (
       <style>
       .title { fill: ${
         customPlayback.timeFontColor
-      }; font-size: 35px; font-weight: 500; font-family: 'Roboto', sans-serif; }
+      }; font-size: 35px; font-weight: 500; font-family: sans-serif; }
       </style>
       <text x="50%" y="80%" text-anchor="middle" class="title">${'00:00'}</text>
     </svg>`);
@@ -117,7 +158,7 @@ const createPlaceholderImage = async (
         .resize(122, 122)
         .composite([
           {
-            input: './src/utils/composites/circle_mask.png',
+            input: circleMaskComposite,
             blend: 'dest-out',
           },
         ])
@@ -137,7 +178,7 @@ const createPlaceholderImage = async (
       })
         .composite([
           {
-            input: './src/utils/composites/circle_mask.png',
+            input: circleMaskComposite,
             blend: 'dest-out',
           },
           {
@@ -152,7 +193,7 @@ const createPlaceholderImage = async (
   const signatureText = Buffer.from(`
     <svg width="${770}" height="${40}">
       <style>
-      .title { fill: #616d7d; font-size: 25px; font-weight: 500; font-family: 'Roboto', sans-serif; }
+      .title { fill: #616d7d; font-size: 25px; font-weight: 500; font-family: sans-serif; }
       </style>
       <text x="50%" y="80%" text-anchor="middle" class="title">${customPlayback.signatureText.toUpperCase()}</text>
     </svg>`);
@@ -206,11 +247,11 @@ const createPlaceholderImage = async (
       (
         [
           {
-            input: './src/utils/composites/base_pill.png',
+            input: basePillComposite,
             blend: 'dest-out',
           },
           {
-            input: './src/utils/composites/inner_pill.png',
+            input: innerPillComposite,
             blend: 'over',
             top: 24,
             left: 165,
