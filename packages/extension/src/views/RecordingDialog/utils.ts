@@ -5,7 +5,11 @@ import PlaybackFrame from '../PlaybackFrame/PlaybackFrame.vue';
 import ImagePlaceholderObserver from '@/utils/contentObservers/ImagePlaceholderObserver';
 import sl from 'frontend/src/serviceLocator';
 
-const insertImagePlaceholder = (composeBoxElement: Element, uuid: string) => {
+const insertImagePlaceholder = (
+  composeBoxElement: Element,
+  uuid: string,
+  customPlaybackImage: string
+) => {
   const inputArea = composeBoxElement.querySelector('.LW-avf');
 
   if (composeBoxElement.querySelector('#image-placeholder')) {
@@ -38,10 +42,7 @@ const insertImagePlaceholder = (composeBoxElement: Element, uuid: string) => {
   image.id = 'placeholder-img-file';
 
   // Will not use server proxy here because Google caches images. This prevents issues by directing straight to the server.
-  image.src =
-    process.env.NODE_ENV === 'development'
-      ? 'http://localhost:8081/api/v1/image/placeholder-v2.png'
-      : 'https://www.sendmicdrop.com/api/v1/image/placeholder-v2.png';
+  image.src = customPlaybackImage;
   image.width = 400;
 
   link.appendChild(image);

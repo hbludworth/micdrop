@@ -6,13 +6,21 @@ import users from './api/users';
 import profile from './api/profile';
 import audioGroups from './api/audio_groups';
 import stripeWebhook from './api/stripe_webhook';
+import customPlayback from './api/custom_playback';
 
 const API_PATH = '/api/v1';
 
 export default (app: Express) => {
-  [audio, image, register, users, profile, audioGroups, stripeWebhook].forEach(
-    (route) => {
-      app.use(API_PATH, route);
-    }
-  );
+  [
+    audio,
+    image,
+    register,
+    users,
+    profile,
+    audioGroups,
+    stripeWebhook,
+    customPlayback,
+  ].forEach((route) => {
+    app.use(API_PATH, route);
+  });
 };
