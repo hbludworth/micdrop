@@ -141,7 +141,11 @@
         <div class="pa-2 d-flex justify-center subtitle-1">
           <span>No attachments, no files, no hassle</span>
         </div>
-        <v-btn rounded class="primary--text mx-auto d-flex pa-5"
+        <v-btn
+          rounded
+          class="primary--text mx-auto d-flex pa-5"
+          href="https://chrome.google.com/webstore/detail/cfeaabebicbbcmddmgphgncpdlkadgfl?authuser=2&hl=en"
+          target="_blank"
           >Try For Free Today</v-btn
         >
       </div>
