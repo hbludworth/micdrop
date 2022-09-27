@@ -111,7 +111,7 @@
         <v-row justify="center" class="my-6">
           <span class="text-h6 grey--text"
             >On the recording screen, use the microphone to begin recording. You
-            can stop at any time using the red stop button.</span
+            can stop at any time using the grey stop button.</span
           >
         </v-row>
         <v-row justify="center" class="my-6">
