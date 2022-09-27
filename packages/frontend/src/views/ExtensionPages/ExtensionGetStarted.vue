@@ -20,7 +20,8 @@
           >
         </v-row>
         <v-row justify="center" class="my-4">
-          <v-btn color="primary" to="/tutorial" target="_blank" class="mx-2"
+          <!-- FIXME -->
+          <v-btn color="primary" to="/onboard" target="_blank" class="mx-2"
             >Get Started</v-btn
           >
         </v-row>

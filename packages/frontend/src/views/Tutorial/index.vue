@@ -236,127 +236,11 @@
     <v-row v-show="step === 9" justify="center" class="step-area mt-16">
       <v-col cols="4" align="center">
         <v-row justify="center" class="my-6">
-          <span class="text-h4 primary--text">Activate MicDrop</span>
-        </v-row>
-        <v-row justify="center" class="my-6">
-          <span class="text-h6 grey--text"
-            >Finally, to activate MicDrop, create a MicDrop account or sign in
-            to an existing one by selecting an option below.</span
-          >
-        </v-row>
-        <v-row justify="center" class="my-6">
-          <v-icon color="primary" size="30px">{{ icons.mdiLock }}</v-icon>
-        </v-row>
-        <v-row justify="center" class="my-6">
-          <span class="text-h6 grey--text"
-            >Setting up an account allows you to personalize your experience,
-            use MicDrop on multiple devices, and sign up for Pro features. Your
-            data is always kept secure and private.</span
-          >
-        </v-row>
-        <v-row v-if="isAuthenticated" justify="center" class="my-6">
-          <v-icon color="green" size="50px">{{ icons.mdiCheckCircle }}</v-icon>
-        </v-row>
-        <v-row v-if="isAuthenticated" justify="center" class="my-6">
-          <span class="text-h4 green--text"
-            >You've logged in successfully! Move to the next step to complete
-            the tutorial and get started.</span
-          >
-        </v-row>
-        <v-row v-if="!isAuthenticated" justify="center" class="my-6">
-          <v-icon color="primary" size="30px">{{ icons.mdiAccount }}</v-icon>
-        </v-row>
-        <v-row v-if="!isAuthenticated" justify="center" class="my-6">
-          <v-btn
-            color="primary"
-            x-large
-            :to="`/register?redirect=${encodeURIComponent('/tutorial?step=9')}`"
-            >Create a New Account</v-btn
-          >
-        </v-row>
-        <v-row v-if="!isAuthenticated" justify="center" class="my-6">
-          <v-btn
-            color="primary"
-            x-large
-            :to="`/login?redirect=${encodeURIComponent('/tutorial?step=9')}`"
-            >Sign in with existing account</v-btn
-          >
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row v-show="step === 10" justify="center" class="step-area mt-16">
-      <v-col cols="4" align="center">
-        <v-row justify="center" class="my-6">
-          <span class="text-h4 primary--text">Try MicDrop Pro?</span>
-        </v-row>
-        <v-row justify="center" class="my-6">
-          <v-simple-table>
-            <template>
-              <thead>
-                <tr>
-                  <th class="text-center"></th>
-                  <th>
-                    <v-row class="ma-0" justify="center">
-                      <v-img
-                        :src="
-                          require('../../assets/logos/blue-logo-NoDrop-alpha-700w.png')
-                        "
-                        max-height="25px"
-                        max-width="150px"
-                        contain
-                      />
-                    </v-row>
-                  </th>
-                  <th>
-                    <v-row class="ma-0" justify="center">
-                      <v-img
-                        :src="
-                          require('../../assets/logos/blue-logoPRO-NoDrop-alpha-1000w.png')
-                        "
-                        max-height="25px"
-                        max-width="150px"
-                        contain
-                      />
-                    </v-row>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="item in features" :key="item.name">
-                  <td class="py-1 grey--text text-center">
-                    {{ item.name }}
-                  </td>
-                  <td class="py-1 text-center">{{ item.free }}</td>
-                  <td class="py-1 text-center">{{ item.pro }}</td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td class="py-2 text-center">
-                    <v-btn text color="primary" @click="step += 1"
-                      >Continue</v-btn
-                    >
-                  </td>
-                  <td class="py-2 text-center">
-                    <v-btn color="primary" to="/upgrade"
-                      >Start 14-day Trial</v-btn
-                    >
-                  </td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </v-row>
-      </v-col>
-    </v-row>
-    <v-row v-show="step === 11" justify="center" class="step-area mt-16">
-      <v-col cols="4" align="center">
-        <v-row justify="center" class="my-6">
           <span class="text-h4 primary--text">You're All Set!</span>
         </v-row>
         <v-row justify="center" class="my-6">
           <span class="text-h6 grey--text"
-            >Now that MicDrop has been activated and you've learned how it
-            works, you're ready to go!</span
+            >Now that you've learned how it works, you're ready to go!</span
           >
         </v-row>
         <v-row justify="center" class="my-6">
@@ -366,8 +250,8 @@
         </v-row>
         <v-row justify="center" class="my-6">
           <span class="text-h6 grey--text"
-            >Click the icon below to open Gmail and send your first MicDrop
-            audio message!</span
+            >Click the icon below to open Gmail and send a MicDrop audio
+            message!</span
           >
         </v-row>
         <v-row justify="center" class="mt-10 mb-n4">
@@ -413,7 +297,7 @@
       </v-col>
       <v-col cols="4" align="center">
         <v-btn
-          v-for="n in 11"
+          v-for="n in 9"
           :key="n"
           height="10"
           width="10"
@@ -427,14 +311,13 @@
       <v-col cols="4" align-self="center">
         <v-row justify="start">
           <v-btn
-            v-if="step < 11"
+            v-if="step < 9"
             height="60"
             width="60"
             @click="step += 1"
             fab
             x-large
             color="primary"
-            :disabled="(step === 9 && !isAuthenticated) || step === 10"
           >
             <v-icon color="white" size="35px">{{
               icons.mdiChevronRight
@@ -447,12 +330,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  onMounted,
-  computed,
-} from "@vue/composition-api";
+import { defineComponent, ref, onMounted } from "@vue/composition-api";
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -464,34 +342,16 @@ import {
   mdiPlayCircle,
   mdiEmail,
   mdiDeleteSweep,
-  mdiLock,
-  mdiCheckCircle,
-  mdiAccount,
   mdiPartyPopper,
   mdiGmail,
   mdiOpenInNew,
 } from "@mdi/js";
 import sl from "../../serviceLocator";
 
-export interface Feature {
-  name: string;
-  free: string;
-  pro: string;
-}
-
 export default defineComponent({
-  props: {
-    defaultStep: {
-      type: Number,
-      required: false,
-    },
-  },
-  setup(props) {
+  setup() {
     const server = sl.get("serverProxy");
     const actions = sl.get("globalActions");
-    const store = sl.get("store");
-
-    const isAuthenticated = computed(() => store.getters.isAuthenticated);
 
     const micIconScreenshotURL = ref("");
     const audioScreenRecordingURL = ref("");
@@ -512,9 +372,6 @@ export default defineComponent({
       mdiPlayCircle,
       mdiEmail,
       mdiDeleteSweep,
-      mdiLock,
-      mdiCheckCircle,
-      mdiAccount,
       mdiPartyPopper,
       mdiGmail,
       mdiOpenInNew,
@@ -548,42 +405,7 @@ export default defineComponent({
       }
     });
 
-    const step = ref(
-      props.defaultStep && props.defaultStep <= 10 ? props.defaultStep : 1
-    );
-
-    const features = ref<Feature[]>([
-      {
-        name: "Send and playback audio messages in Gmail",
-        free: "Included",
-        pro: "Included",
-      },
-      {
-        name: "Messages Limit",
-        free: "30/month",
-        pro: "Unlimited",
-      },
-      {
-        name: "Cloud Storage",
-        free: "Stored for 14 days",
-        pro: "Stored indefinitely",
-      },
-      {
-        name: "Read Receipts",
-        free: "",
-        pro: "Included",
-      },
-      {
-        name: "Customization",
-        free: "",
-        pro: "Customize playback colors and image (logo/profile pic)",
-      },
-      {
-        name: "Send Previous Messages",
-        free: "",
-        pro: "Access and send previously recorded messages.",
-      },
-    ]);
+    const step = ref(1);
 
     return {
       step,
@@ -594,9 +416,7 @@ export default defineComponent({
       attachScreenshotURL,
       completedComposeBoxScreenshotURL,
       deleteRecordingScreenshotURL,
-      isAuthenticated,
       demoVideoURL,
-      features,
     };
   },
 });
