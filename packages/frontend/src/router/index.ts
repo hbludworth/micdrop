@@ -11,6 +11,7 @@ import RecordCard from '../views/Record/RecordCard.vue';
 import BasePlayback from '../components/Playback/BasePlayback.vue';
 import ExtensionPopup from '../views/ExtensionPages/Popup.vue';
 import Tutorial from '../views/Tutorial/index.vue';
+import Onboard from '../views/Tutorial/Onboard.vue';
 import ExtensionGetStarted from '../views/ExtensionPages/ExtensionGetStarted.vue';
 import PastRecordingsList from '../views/Record/PastRecordingsList.vue';
 import ManageAudio from '../views/Record/ManageAudio.vue';
@@ -91,13 +92,19 @@ const routes: Array<RouteConfig> = [
     component: ExtensionPopup,
     beforeEnter: authenticatedGuard,
   },
+  // FIXME Swap in Ext update
+  {
+    path: '/onboard',
+    name: 'Onboard',
+    component: Tutorial,
+  },
   {
     path: '/tutorial',
     name: 'Tutorial',
     props: (route) => ({
       defaultStep: route.query.step ? Number(route.query.step) : 1,
     }),
-    component: Tutorial,
+    component: Onboard,
   },
   {
     path: '/extension/get_started_screen',
