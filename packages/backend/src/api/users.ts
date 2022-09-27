@@ -63,7 +63,7 @@ router
         payment_behavior: 'default_incomplete',
         payment_settings: { save_default_payment_method: 'on_subscription' },
         expand: ['latest_invoice.payment_intent'],
-        trial_period_days: 14,
+        trial_period_days: 30,
         // trial_end: parseInt((Date.now() / 1000).toFixed(0)) + 60 * 2, // TESTING - 2 minute trial
       });
 

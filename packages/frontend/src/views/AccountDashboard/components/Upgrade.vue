@@ -55,7 +55,7 @@
       </v-row>
       <v-row justify="center" class="my-6">
         <span class="text-h6 grey--text"
-          >Get started with a 14-day free trial!</span
+          >Get started with a one month free trial!</span
         >
       </v-row>
       <v-row class="ma-0 my-6" justify="center">
@@ -71,9 +71,9 @@
         <v-col cols="4">
           <v-row class="ma-0" justify="center">
             <span class="text-caption grey--text text-center"
-              >14-day trial beginning today. After the trial period, you will be
-              billed $4/month for access to the Pro features. Additional fees
-              may apply. Cancel at any time.</span
+              >One month free trial beginning today. After the trial period, you
+              will be billed $4/month for access to the Pro features. Additional
+              fees may apply. Cancel at any time.</span
             >
           </v-row>
         </v-col>
