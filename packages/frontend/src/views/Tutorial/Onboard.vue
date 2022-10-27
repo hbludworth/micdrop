@@ -42,8 +42,7 @@
         </v-row>
         <v-row justify="center" class="my-6">
           <span class="text-h6 grey--text"
-            >To activate MicDrop, create a MicDrop account or sign in to an
-            existing one by selecting an option below.</span
+            >To activate MicDrop, log in below.</span
           >
         </v-row>
         <v-row justify="center" class="my-6">
@@ -51,9 +50,9 @@
         </v-row>
         <v-row justify="center" class="my-6">
           <span class="text-h6 grey--text"
-            >Setting up an account allows you to personalize your experience,
-            use MicDrop on multiple devices, and sign up for Pro features. Your
-            data is always kept secure and private.</span
+            >Signing into your account allows you to personalize your
+            experience, use MicDrop on multiple devices, and access Pro
+            features. Your data is always kept secure and private.</span
           >
         </v-row>
         <v-row v-if="isAuthenticated" justify="center" class="my-6">
@@ -61,29 +60,19 @@
         </v-row>
         <v-row v-if="isAuthenticated" justify="center" class="my-6">
           <span class="text-h4 green--text"
-            >You're already logged in! Click continue to finish up and start
-            using MicDrop!</span
+            >You're logged in! Click continue to finish up and start using
+            MicDrop!</span
           >
         </v-row>
         <v-row v-if="!isAuthenticated" justify="center" class="my-6">
           <v-icon color="primary" size="30px">{{ icons.mdiAccount }}</v-icon>
         </v-row>
-        <v-row v-if="!isAuthenticated" justify="center" class="my-6">
-          <v-btn
-            color="primary"
-            x-large
-            :to="`/register?redirect=${encodeURIComponent('/onboard?step=2')}`"
-            >Create a New Account</v-btn
-          >
-        </v-row>
-        <v-row v-if="!isAuthenticated" justify="center" class="my-6">
-          <v-btn
-            color="primary"
-            x-large
-            :to="`/login?redirect=${encodeURIComponent('/onboard?step=2')}`"
-            >Sign in with existing account</v-btn
-          >
-        </v-row>
+        <login
+          v-if="!isAuthenticated"
+          redirectURL="/tutorial?step=2"
+          onlyShowButtons
+          class="mt-n12"
+        />
         <v-row v-if="isAuthenticated" justify="center" class="mt-12">
           <v-btn color="primary" x-large @click="step = 3">Continue</v-btn>
         </v-row>
@@ -137,9 +126,10 @@
             >Need some help getting started?</span
           >
         </v-row>
-        <!-- FIXME -->
         <v-row justify="center" class="mt-6">
-          <v-btn color="primary" x-large to="/onboard">Go To Tutorial</v-btn>
+          <v-btn color="primary" x-large to="/onboard"
+            >View Full Tutorial</v-btn
+          >
         </v-row>
       </v-col>
     </v-row>
@@ -162,6 +152,7 @@ import {
   mdiOpenInNew,
   mdiGmail,
 } from "@mdi/js";
+import Login from "../Authentication/Login.vue";
 
 export default defineComponent({
   props: {
@@ -169,6 +160,9 @@ export default defineComponent({
       type: Number,
       required: false,
     },
+  },
+  components: {
+    Login,
   },
   setup(props) {
     const server = sl.get("serverProxy");

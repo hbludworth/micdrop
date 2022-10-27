@@ -23,7 +23,6 @@
       ><v-icon small class="mr-1">{{ icons.mdiAccount }}</v-icon
       >Account</v-btn
     >
-    <!-- FIXME -->
     <v-btn text color="primary" class="my-1" to="/onboard" target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiClipboardList }}</v-icon
       >Tutorial</v-btn
