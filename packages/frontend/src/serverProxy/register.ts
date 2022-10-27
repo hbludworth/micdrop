@@ -1,5 +1,10 @@
 import axios from '../axiosInstance';
-import { RegisterPayload, RegisterResponse, User } from 'types';
+import {
+  RegisterPayload,
+  RegisterResponse,
+  RegisterWithGooglePayload,
+  User,
+} from 'types';
 import firebase from '../firebase';
 
 async function register(payload: RegisterPayload): Promise<User> {
@@ -11,4 +16,10 @@ async function register(payload: RegisterPayload): Promise<User> {
   return data.user;
 }
 
-export default { register };
+async function registerWithGoogle(
+  payload: RegisterWithGooglePayload
+): Promise<void> {
+  await axios.post('/register_with_google', payload);
+}
+
+export default { register, registerWithGoogle };

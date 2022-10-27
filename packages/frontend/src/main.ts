@@ -27,6 +27,12 @@ firebase.auth().onIdTokenChanged(async (user) => {
     store.setToken(idTokenResult);
 
     try {
+      await server.registerWithGoogle({
+        uuid: currentUser.uid,
+        email: user.email,
+        firstName: user.displayName.split(' ')[0],
+        lastName: user.displayName.split(' ')[1],
+      });
       const micdropUser = await server.getUser(currentUser.uid);
       store.setUser(micdropUser);
     } catch {

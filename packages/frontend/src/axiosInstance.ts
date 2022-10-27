@@ -41,7 +41,11 @@ axiosInstance.interceptors.response.use(
 );
 
 axiosInstance.interceptors.request.use((config) => {
-  if (store.getters.idToken && config.headers) {
+  if (
+    store.getters.idToken &&
+    (config.url?.startsWith('/users/') || store.getters.user) &&
+    config.headers
+  ) {
     config.headers.Authorization = store.getters.idToken;
   }
   return config;
