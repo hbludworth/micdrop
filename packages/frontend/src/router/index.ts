@@ -18,6 +18,7 @@ import ManageAudio from '../views/Record/ManageAudio.vue';
 import Upgrade from '../views/AccountDashboard/components/Upgrade.vue';
 import SubscriptionConfirmation from '../views/AccountDashboard/SubscriptionConfirmation.vue';
 import PastDueWarning from '../views/AccountDashboard/components/PastDueWarning.vue';
+import LoginWithEmail from '../views/Authentication/LoginWithEmail.vue';
 import authenticatedGuard from '../navigationGuards/authenticatedGuard';
 import proGuard from '../navigationGuards/proGuard';
 import freeGuard from '@/navigationGuards/freeGuard';
@@ -43,6 +44,14 @@ const routes: Array<RouteConfig> = [
       redirectURL: route.query.redirect || '/',
     }),
     component: Login,
+  },
+  {
+    path: '/login_with_email',
+    name: 'LoginWithEmail',
+    props: (route) => ({
+      redirectURL: route.query.redirect || '/',
+    }),
+    component: LoginWithEmail,
   },
   {
     path: '/register',
@@ -92,7 +101,6 @@ const routes: Array<RouteConfig> = [
     component: ExtensionPopup,
     beforeEnter: authenticatedGuard,
   },
-  // FIXME Swap in Ext update
   {
     path: '/onboard',
     name: 'Onboard',

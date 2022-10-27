@@ -20,22 +20,13 @@
           >
         </v-row>
         <v-row justify="center" class="my-4">
-          <!-- FIXME -->
-          <v-btn color="primary" to="/onboard" target="_blank" class="mx-2"
+          <v-btn color="primary" to="/tutorial" target="_blank" class="mx-2"
             >Get Started</v-btn
           >
         </v-row>
         <v-row justify="center" :class="{ 'mb-4': detailed }" class="mt-4">
-          <v-btn
-            color="primary"
-            to="/register"
-            target="_blank"
-            class="mr-1"
-            text
-            >Sign Up</v-btn
-          >
           <v-btn color="primary" to="/login" target="_blank" class="ml-1" text
-            >Log In</v-btn
+            >Sign In</v-btn
           >
         </v-row>
         <v-row v-if="detailed" justify="center" class="mt-4 mb-0 mx-16">
