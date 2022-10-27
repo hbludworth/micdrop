@@ -10,6 +10,13 @@ export interface RegisterPayload extends LoginPayload {
   lastName: string;
 }
 
+export interface RegisterWithGooglePayload {
+  uuid: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
 export interface RegisterResponse {
   user: User;
   firebaseToken: string;

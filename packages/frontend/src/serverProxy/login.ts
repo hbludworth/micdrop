@@ -7,6 +7,12 @@ async function login(payload: LoginPayload): Promise<void> {
     .signInWithEmailAndPassword(payload.email, payload.password);
 }
 
+async function loginWithGoogle(): Promise<void> {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  await firebase.auth().signInWithPopup(provider);
+}
+
 export default {
   login,
+  loginWithGoogle,
 };

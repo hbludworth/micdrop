@@ -1,6 +1,10 @@
 import express from 'express';
 import { v4 } from 'uuid';
-import { RegisterPayload, RegisterResponse } from 'types';
+import {
+  RegisterPayload,
+  RegisterResponse,
+  RegisterWithGooglePayload,
+} from 'types';
 import * as security from '../security';
 import firebase from '../firebase';
 import { HttpInternalError, HttpBadRequest } from '../exceptions';
@@ -61,6 +65,45 @@ router.route('/register').post(async (req, res, next) => {
     };
 
     res.status(201).json(response);
+  } catch (err) {
+    next(new HttpInternalError(err as string));
+  }
+});
+
+router.route('/register_with_google').post(async (req, res, next) => {
+  try {
+    const UserDao = sl.get('UserDao');
+    const { uuid, email, firstName, lastName }: RegisterWithGooglePayload =
+      req.body;
+
+    const existingUser = await UserDao.emailExists(email);
+    if (existingUser) {
+      res.status(200).end();
+      return;
+    }
+
+    const stripeCustomer = await stripe.customers.create({
+      email,
+      name: `${firstName} ${lastName}`,
+    });
+
+    await UserDao.createUser(
+      uuid,
+      firstName,
+      lastName,
+      email,
+      stripeCustomer.id
+    );
+
+    const user = await UserDao.getUserByUuid(uuid);
+
+    if (!user) {
+      next(new HttpInternalError('Error creating user'));
+      return;
+    }
+    req.user = user;
+
+    res.status(201).end();
   } catch (err) {
     next(new HttpInternalError(err as string));
   }
