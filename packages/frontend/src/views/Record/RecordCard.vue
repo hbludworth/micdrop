@@ -11,7 +11,45 @@
   <div v-else>
     <v-card-title> </v-card-title>
     <v-card-text class="ma-0 pa-0">
-      <v-row class="justify-center ma-4 mt-4">
+      <v-row class="ma-0">
+        <v-spacer />
+        <v-menu offset-y>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              v-on="on"
+              v-bind="attrs"
+              class="mr-6 mt-n4"
+              color="primary"
+              small
+              text
+            >
+              <v-icon small class="mr-1">{{ icons.mdiTranslate }}</v-icon>
+              {{ selectedLocale.value }}
+            </v-btn>
+          </template>
+          <v-list dense>
+            <v-list-item
+              v-for="(locale, idx) in locales"
+              :key="idx"
+              class="pa-0"
+            >
+              <v-btn width="100%" text @click="setLocale(locale)"
+                ><v-icon
+                  small
+                  class="mr-2"
+                  :color="
+                    selectedLocale.value === locale.value
+                      ? 'black'
+                      : 'transparent'
+                  "
+                  >{{ icons.mdiCheck }}</v-icon
+                >{{ locale.value.toUpperCase() }} - {{ locale.label }}</v-btn
+              >
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-row>
+      <v-row class="justify-center ma-4 mt-0">
         <v-btn
           :height="primaryButtonOptions.size"
           :width="primaryButtonOptions.size"
@@ -27,7 +65,7 @@
         >
       </v-row>
       <v-row v-if="currentStep === 1" class="justify-center mt-6 mx-0">
-        <span class="text-h5">Welcome to</span>
+        <span class="text-h5">{{ i18n.t("record.welcome") }}</span>
         <v-img
           v-if="subscriptionLevel === 'free'"
           :src="require('../../assets/logos/blue-logo-NoDrop-alpha-700w.png')"
@@ -50,7 +88,7 @@
         class="justify-center mt-4 mx-0"
         :class="{ 'fade-animation-2': subscriptionLevel === 'free' }"
       >
-        <span>Press to Begin Recording</span>
+        <span>{{ i18n.t("record.press") }}</span>
       </v-row>
       <v-row
         v-if="
@@ -61,20 +99,20 @@
         class="justify-center mt-n5 mx-0 fade-animation"
       >
         <span class="primary--text" v-if="monthlyMessagesLeft > 0"
-          >{{ monthlyMessagesLeft }} Message{{
-            monthlyMessagesLeft > 1 ? "s" : ""
-          }}
-          Left This Month</span
+          ><span class="mr-1">{{ i18n.t("record.messagesLeftPrefix") }}</span
+          >{{ monthlyMessagesLeft }} {{ i18n.t("record.message")
+          }}{{ monthlyMessagesLeft > 1 ? "s" : "" }}
+          {{ i18n.t("record.messagesLeftSuffix") }}</span
         >
-        <span class="primary--text" v-if="monthlyMessagesLeft === 0"
-          >No More Messages Left This Month</span
-        >
+        <span class="primary--text" v-if="monthlyMessagesLeft === 0">{{
+          i18n.t("record.noMessages")
+        }}</span>
       </v-row>
       <v-row
         v-if="currentStep === 1 && subscriptionLevel === 'free'"
         class="justify-center mt-12 mx-0 text-caption grey--text"
       >
-        <span>Want more? Check out</span>
+        <span>{{ i18n.t("record.wantMore") }}</span>
       </v-row>
       <v-row
         v-if="currentStep === 1 && subscriptionLevel === 'free'"
@@ -95,11 +133,13 @@
       >
         <v-btn large text color="primary" to="/extension/past_recordings_list"
           ><v-icon small class="mr-1">{{ icons.mdiArchive }}</v-icon
-          >Past Recordings</v-btn
+          >{{ i18n.t("record.pastRecordings") }}</v-btn
         >
       </v-row>
       <v-row v-if="currentStep === 2" class="justify-center mx-0">
-        <span class="text-h4">{{ seconds }} seconds</span>
+        <span class="text-h4"
+          >{{ seconds }} {{ i18n.t("record.seconds") }}</span
+        >
       </v-row>
       <v-row
         v-if="currentStep === 2 && mediaStream"
@@ -115,7 +155,7 @@
         v-if="currentStep === 3 && subscriptionLevel === 'free'"
         class="justify-center mt-6 mx-0 text-caption grey--text"
       >
-        <span>Need more recording time? Try </span>
+        <span>{{ i18n.t("record.needMore") }}</span>
         <v-btn text x-small color="primary" to="/upgrade" target="_blank">
           <v-img
             :src="
@@ -158,7 +198,7 @@
                   }}</v-icon></v-btn
                 >
               </template>
-              <span>Add to Email</span>
+              <span>{{ i18n.t("record.addToEmail") }}</span>
             </v-tooltip>
           </v-row>
         </v-col>
@@ -183,7 +223,7 @@
           class="font-weight-medium mb-1 mr-1"
           @click="viewAllDialog = true"
         >
-          All
+          {{ i18n.t("record.all") }}
           <v-icon small class="mr-n1">{{ icons.mdiMenuDown }}</v-icon></v-chip
         >
         <v-chip
@@ -193,7 +233,7 @@
           @click="createNewPlaybackDialog = true"
         >
           <v-icon small>{{ icons.mdiPlus }}</v-icon
-          >Create</v-chip
+          >{{ i18n.t("record.create") }}</v-chip
         >
       </v-row>
       <create-new-custom-playback-dialog
@@ -208,7 +248,7 @@
         :width="300"
         :showCancel="false"
         :showSubmit="false"
-        title="Custom Playback"
+        :title="`${i18n.t('record.customPlayback')}`"
         centerTitle
       >
         <v-row
@@ -258,6 +298,8 @@ import {
   mdiMenuDown,
   mdiPinOutline,
   mdiStarOutline,
+  mdiTranslate,
+  mdiCheck,
 } from "@mdi/js";
 import SoundResponse from "../../components/SoundResponse.vue";
 import Playback from "../../components/Playback/Playback.vue";
@@ -265,6 +307,14 @@ import audioEncoder from "audio-encoder";
 import CreateNewCustomPlaybackDialog from "./components/CreateNewCustomPlaybackDialog.vue";
 import MicDropDialog from "../../components/base/MicDropDialog.vue";
 import CustomPlaybackOption from "./components/CustomPlaybackOption.vue";
+import i18n from "../../i18n";
+
+export type LocaleCode = "en" | "es";
+
+export interface Locale {
+  label: string;
+  value: LocaleCode;
+}
 
 export default defineComponent({
   props: {
@@ -331,6 +381,8 @@ export default defineComponent({
       mdiMenuDown,
       mdiPinOutline,
       mdiStarOutline,
+      mdiTranslate,
+      mdiCheck,
     });
 
     const isRecording = ref(false);
@@ -578,6 +630,22 @@ export default defineComponent({
       viewAllDialog.value = false;
     };
 
+    const locales = ref<Locale[]>([
+      { label: "English", value: "en" },
+      { label: "Español", value: "es" },
+    ]);
+
+    const selectedLocale = ref<Locale>(
+      locales.value.find((locale) => locale.value === i18n.locale) ||
+        locales.value[0]
+    );
+
+    const setLocale = (locale: Locale) => {
+      selectedLocale.value = locale;
+      localStorage.setItem("locale", selectedLocale.value.value);
+      i18n.locale = selectedLocale.value.value;
+    };
+
     return {
       icons,
       isRecording,
@@ -604,6 +672,10 @@ export default defineComponent({
       selectNewCustomPlayback,
       viewAllDialog,
       handleViewAllDialogSelection,
+      locales,
+      setLocale,
+      selectedLocale,
+      i18n,
     };
   },
 });

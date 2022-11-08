@@ -1,0 +1,38 @@
+export default {
+  en: {
+    pastRecordings: 'Past Recordings',
+    groups: 'Groups',
+    recordings: 'Recordings',
+    allRecordings: 'All Recordings',
+    createGroup: 'Create Group',
+    noRecordings: 'There are no recordings in this group',
+    createAudioGroup: 'Create Audio Group',
+    createGroupSubmitText: 'Create',
+    name: 'Name',
+    exampleName: 'Ex: Sales Pithces',
+    deleteAudioGroup: 'Delete Audio Group',
+    yes: 'Yes',
+    deleteConfirmation:
+      'Are you sure you want to delete this audio group? All recordings in this group will still be available under "All Recordings", but they will no longer be organized in this group.',
+    renameAudioGroup: 'Rename Audio Group',
+    newName: 'New Name',
+  },
+  es: {
+    pastRecordings: 'Grabaciones Pasadas',
+    groups: 'Grupos',
+    recordings: 'Grabaciones',
+    allRecordings: 'Todas las Grabaciones',
+    createGroup: 'Crear Grupo',
+    noRecordings: 'No hay grabaciones en este grupo',
+    createAudioGroup: 'Crear Grupo de Audio',
+    createGroupSubmitText: 'Crear',
+    name: 'Nombre',
+    exampleName: 'Ej: Presentaciones de Ventas',
+    deleteAudioGroup: 'Eliminar Grupo de Audio',
+    yes: 'Si',
+    deleteConfirmation:
+      '¿Estás seguro que quieres eliminar este grupo de audio? Todas las grabaciones en este grupo todavía estarán disponibles bajo "Todas las Grabaciones", pero ya no estarán organizadas en este grupo.',
+    renameAudioGroup: 'Renombrar Grupo de Audio',
+    newName: 'Nuevo Nombre',
+  },
+};

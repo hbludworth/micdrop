@@ -13,51 +13,51 @@
       !previewCustomPlayback || !previewCustomPlayback.customPlayback.name
     "
   >
-    <v-row class="ma-0 my-2 mt-n4" justify="center"
-      >Customization Options</v-row
-    >
+    <v-row class="ma-0 my-2 mt-n4" justify="center">{{
+      i18n.t("createCustomPlayback.customizationOptions")
+    }}</v-row>
     <v-row class="ma-0" justify="center">
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'base'"
         class="mr-1"
         @click="setCustomizationOption('base')"
-        >Base</v-chip
+        >{{ i18n.t("createCustomPlayback.base") }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'controls'"
         class="mr-1"
         @click="setCustomizationOption('controls')"
-        >Controls</v-chip
+        >{{ i18n.t("createCustomPlayback.controls") }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'scrubber'"
         class="mr-1"
         @click="setCustomizationOption('scrubber')"
-        >Scrubber</v-chip
+        >{{ i18n.t("createCustomPlayback.scrubber") }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'time'"
         class="mr-1"
         @click="setCustomizationOption('time')"
-        >Time</v-chip
+        >{{ i18n.t("createCustomPlayback.time") }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'branding'"
         class="mr-1"
         @click="setCustomizationOption('branding')"
-        >Branding</v-chip
+        >{{ i18n.t("createCustomPlayback.branding") }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'signature'"
         class="mr-1"
         @click="setCustomizationOption('signature')"
-        >Signature</v-chip
+        >{{ i18n.t("createCustomPlayback.signature") }}</v-chip
       >
     </v-row>
     <v-row
@@ -73,8 +73,8 @@
           hide-details
           outlined
           v-model="previewCustomPlayback.customPlayback.name"
-          label="Name"
-          placeholder="Ex: Personal"
+          :label="`${i18n.t('createCustomPlayback.name')}`"
+          :placeholder="`${i18n.t('createCustomPlayback.exampleName')}`"
           autofocus
         />
       </v-col>
@@ -82,7 +82,8 @@
         ><v-icon>{{ icons.mdiCheck }}</v-icon></v-btn
       >
       <span v-if="!editingName" class="text-h5 accent--text my-1">{{
-        previewCustomPlayback.customPlayback.name || "No Name"
+        previewCustomPlayback.customPlayback.name ||
+        `${i18n.t("createCustomPlayback.noName")}`
       }}</span>
       <v-btn
         v-if="!editingName"
@@ -98,7 +99,9 @@
       justify="center"
       v-show="selectedCustomizationOption === 'base'"
     >
-      <v-row class="ma-0" justify="center">Background Color</v-row>
+      <v-row class="ma-0" justify="center">{{
+        i18n.t("createCustomPlayback.backgroundColor")
+      }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="previewCustomPlayback.customPlayback.backgroundColor"
@@ -110,19 +113,25 @@
       justify="center"
       v-show="selectedCustomizationOption === 'controls'"
     >
-      <v-row class="ma-0" justify="center">Play Button Color</v-row>
+      <v-row class="ma-0" justify="center">{{
+        i18n.t("createCustomPlayback.playButtonColor")
+      }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="previewCustomPlayback.customPlayback.playButtonColor"
         @color-changed="updateCustomPlayback('playButtonColor', $event)"
       />
-      <v-row class="ma-0" justify="center">Pause Button Color</v-row>
+      <v-row class="ma-0" justify="center">{{
+        i18n.t("createCustomPlayback.pauseButtonColor")
+      }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="previewCustomPlayback.customPlayback.pauseButtonColor"
         @color-changed="updateCustomPlayback('pauseButtonColor', $event)"
       />
-      <v-row class="ma-0" justify="center">Play/Pause Icon Color</v-row>
+      <v-row class="ma-0" justify="center">{{
+        i18n.t("createCustomPlayback.playPauseIconColor")
+      }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="previewCustomPlayback.customPlayback.playPauseIconColor"
@@ -134,7 +143,9 @@
       justify="center"
       v-show="selectedCustomizationOption === 'scrubber'"
     >
-      <v-row class="ma-0" justify="center">Scrubber Color</v-row>
+      <v-row class="ma-0" justify="center">{{
+        i18n.t("createCustomPlayback.scrubberColor")
+      }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="previewCustomPlayback.customPlayback.scrubberColor"
@@ -146,19 +157,30 @@
       justify="center"
       v-show="selectedCustomizationOption === 'time'"
     >
-      <v-row class="ma-0" justify="center">Time Background Color</v-row>
+      <v-row class="ma-0" justify="center">{{
+        i18n.t("createCustomPlayback.timeBackgroundColor")
+      }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="
           previewCustomPlayback.customPlayback.timeBackgroundColor
         "
-        @color-changed="updateCustomPlayback('timeBackgroundColor', $event)"
+        @color-changed="
+          updateCustomPlayback(
+            'createCustomPlayback.timeBackgroundColor',
+            $event
+          )
+        "
       />
-      <v-row class="ma-0" justify="center">Time Font Color</v-row>
+      <v-row class="ma-0" justify="center">{{
+        i18n.t("createCustomPlayback.timeFontColor")
+      }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="previewCustomPlayback.customPlayback.timeFontColor"
-        @color-changed="updateCustomPlayback('timeFontColor', $event)"
+        @color-changed="
+          updateCustomPlayback('createCustomPlayback.timeFontColor', $event)
+        "
       />
     </div>
     <div
@@ -182,7 +204,9 @@
       </v-row>
       <v-row class="ma-0 mb-4 mt-2" justify="center" align="center">
         <v-col class="pa-0" cols="3">
-          <v-row class="ma-0 mr-2" justify="end"> Circle Image </v-row>
+          <v-row class="ma-0 mr-2" justify="end">
+            {{ i18n.t("createCustomPlayback.circleImage") }}
+          </v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
           <v-row class="ma-0 my-2" justify="center" align="center">
@@ -192,7 +216,7 @@
               outlined
               accept="image/png, image/jpeg"
               @change="setCircleImage"
-              label="Click to upload"
+              :label="`${i18n.t('createCustomPlayback.clickToUpload')}`"
               hide-details
               prepend-icon=""
               :key="noCircleImage"
@@ -207,7 +231,7 @@
           <v-row class="ma-0">
             <v-checkbox
               dense
-              label="No Image"
+              :label="`${i18n.t('createCustomPlayback.noImage')}`"
               v-model="noCircleImage"
               hide-details
             />
@@ -215,10 +239,9 @@
         </v-col>
       </v-row>
       <v-row class="ma-0 mt-n2" justify="center">
-        <span class="text-caption grey--text text-center"
-          >Do not upload images with transparent elements to prevent unexpected
-          behavior. The image will be cropped to a circle.</span
-        >
+        <span class="text-caption grey--text text-center">{{
+          i18n.t("createCustomPlayback.imageWarning")
+        }}</span>
       </v-row>
     </div>
     <div
@@ -228,7 +251,9 @@
     >
       <v-row class="ma-0" justify="center" align="center">
         <v-col class="pa-0" cols="3">
-          <v-row class="ma-0 mr-2" justify="end"> Signature Text </v-row>
+          <v-row class="ma-0 mr-2" justify="end">
+            {{ i18n.t("createCustomPlayback.signatureText") }}
+          </v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
           <v-text-field
@@ -241,7 +266,9 @@
       </v-row>
       <v-row class="ma-0 my-4" justify="center" align="center">
         <v-col class="pa-0" cols="3">
-          <v-row class="ma-0 mr-2" justify="end"> Signature Image </v-row>
+          <v-row class="ma-0 mr-2" justify="end">
+            {{ i18n.t("createCustomPlayback.signatureImage") }}
+          </v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
           <v-row class="ma-0 my-2" justify="center" align="center">
@@ -251,7 +278,7 @@
               outlined
               accept="image/png, image/jpeg"
               @change="setSignatureImage"
-              label="Click to upload"
+              :label="`${i18n.t('createCustomPlayback.clickToUpload')}`"
               hide-details
               prepend-icon=""
               :key="noSignatureImage"
@@ -266,7 +293,7 @@
           <v-row class="ma-0">
             <v-checkbox
               dense
-              label="No Image"
+              :label="`${i18n.t('createCustomPlayback.noImage')}`"
               v-model="noSignatureImage"
               hide-details
             />
@@ -287,7 +314,9 @@
         v-if="previewCustomPlayback.customPlayback.signatureImageUrl !== null"
       >
         <v-col class="pa-0" cols="3">
-          <v-row class="ma-0 mr-2" justify="end">Image Link</v-row>
+          <v-row class="ma-0 mr-2" justify="end">{{
+            i18n.t("createCustomPlayback.imageLink")
+          }}</v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
           <v-text-field
@@ -338,6 +367,7 @@ import ColorPicker from "./ColorPicker.vue";
 import { mdiCheck, mdiPencil } from "@mdi/js";
 import sl from "../../../serviceLocator";
 import { v4 } from "uuid";
+import i18n from "../../../i18n";
 
 type CustomizationOption =
   | "base"
@@ -542,6 +572,7 @@ export default defineComponent({
       editingName,
       noCircleImage,
       noSignatureImage,
+      i18n,
     };
   },
 });

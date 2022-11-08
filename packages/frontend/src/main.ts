@@ -8,6 +8,7 @@ import server from './serverProxy';
 import globalActions from './globalActions';
 import store from './store';
 import firebase from './firebase';
+import i18n from './i18n';
 
 sl.set('serverProxy', server);
 sl.set('globalActions', globalActions);
@@ -45,6 +46,7 @@ firebase.auth().onIdTokenChanged(async (user) => {
     app = new Vue({
       router,
       vuetify,
+      i18n,
       render: (h) => h(App),
     }).$mount('#app');
   }

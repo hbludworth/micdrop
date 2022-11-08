@@ -21,11 +21,11 @@
       to="/account_dashboard"
       target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiAccount }}</v-icon
-      >Account</v-btn
+      >{{ i18n.t("extension.account") }}</v-btn
     >
     <v-btn text color="primary" class="my-1" to="/onboard" target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiClipboardList }}</v-icon
-      >Tutorial</v-btn
+      >{{ i18n.t("extension.tutorial") }}</v-btn
     >
     <v-btn
       text
@@ -34,7 +34,7 @@
       href="mailto:feedback@sendmicdrop.com?subject=Feedback Report - MicDrop"
       target="_blank"
       ><v-icon small class="mr-1">{{ icons.mdiEmail }}</v-icon
-      >Contact Us</v-btn
+      >{{ i18n.t("extension.contactUs") }}</v-btn
     >
     <v-btn
       v-if="subscriptionLevel === 'free'"
@@ -63,6 +63,7 @@ import {
   mdiEmail,
 } from "@mdi/js";
 import sl from "../../serviceLocator";
+import i18n from "../../i18n";
 
 export default defineComponent({
   setup() {
@@ -82,6 +83,7 @@ export default defineComponent({
     return {
       icons,
       subscriptionLevel,
+      i18n,
     };
   },
 });

@@ -19,7 +19,9 @@
           </v-col>
           <v-col cols="10" class="pa-0">
             <v-row justify="center" class="ma-0">
-              <span class="text-button white--text">Past Recordings</span>
+              <span class="text-button white--text">{{
+                i18n.t("pastRecordings.pastRecordings")
+              }}</span>
             </v-row>
           </v-col>
           <v-col cols="1" class="pa-0" />
@@ -29,13 +31,17 @@
     <v-row class="ma-0 px-2 py-1 pt-14 primary">
       <v-col cols="4" class="pa-0">
         <v-row class="ma-0 py-1">
-          <span class="text-h6 white--text pl-3">Groups</span>
+          <span class="text-h6 white--text pl-3">{{
+            i18n.t("pastRecordings.groups")
+          }}</span>
         </v-row>
       </v-col>
       <v-col cols="1" class="pa-0" align="center" />
       <v-col cols="7" class="pa-0 ml-n6">
         <v-row class="ma-0 py-1">
-          <span class="text-h6 pl-6 white--text pl-10">Recordings</span>
+          <span class="text-h6 pl-6 white--text pl-10">{{
+            i18n.t("pastRecordings.recordings")
+          }}</span>
         </v-row>
       </v-col>
     </v-row>
@@ -44,9 +50,9 @@
         <v-card class="overflow-y-auto pb-6 pt-2" height="255" flat>
           <v-list-item-group v-model="currentGroupIndex">
             <v-list-item dense @click="setCurrentGroup(null)"
-              ><span class="text-button primary--text"
-                >All Recordings</span
-              ></v-list-item
+              ><span class="text-button primary--text">{{
+                i18n.t("pastRecordings.allRecordings")
+              }}</span></v-list-item
             >
             <v-hover
               v-slot="{ hover }"
@@ -80,7 +86,9 @@
               </v-list-item>
             </v-hover>
             <v-list-item dense @click="createAudioGroupDialog = true">
-              <span class="text-button primary--text">Create Group</span>
+              <span class="text-button primary--text">{{
+                i18n.t("pastRecordings.createGroup")
+              }}</span>
             </v-list-item>
           </v-list-item-group>
         </v-card>
@@ -95,9 +103,9 @@
             class="ma-0 mt-12 pt-12"
             justify="center"
           >
-            <span class="text-caption grey--text px-2"
-              >There are no recordings in this group</span
-            >
+            <span class="text-caption grey--text px-2">{{
+              i18n.t("pastRecordings.noRecordings")
+            }}</span>
           </v-row>
           <v-list-item-group v-else>
             <v-list-item
@@ -125,43 +133,39 @@
     </v-row>
     <mic-drop-dialog
       v-model="createAudioGroupDialog"
-      title="Create Audio Group"
-      submitText="Create"
+      :title="`${i18n.t('pastRecordings.createAudioGroup')}`"
+      :submitText="`${i18n.t('pastRecordings.createGroupSubmitText')}`"
       closeOnSubmit
       @submit="createAudioGroup"
     >
-      <span>Name</span>
+      <span>{{ i18n.t("pastRecordings.name") }}</span>
       <v-text-field
         outlined
         v-model="newGroupName"
-        placeholder="Ex: Sales Pitches"
+        :placeholder="`${i18n.t('pastRecordings.exampleName')}`"
         hide-details
       />
     </mic-drop-dialog>
     <mic-drop-dialog
       v-model="deleteAudioGroupDialog"
-      title="Delete Audio Group?"
-      submitText="Yes"
+      :title="`${i18n.t('pastRecordings.deleteAudioGroup')}?`"
+      :submitText="`${i18n.t('pastRecordings.yes')}`"
       closeOnSubmit
       @submit="deleteAudioGroup"
     >
-      <span
-        >Are you sure you want to delete this audio group? All recordings in
-        this group will still be available under "All Recordings", but they will
-        no longer be organized in this group.</span
-      >
+      <span>{{ i18n.t("pastRecordings.deleteConfirmation") }}</span>
     </mic-drop-dialog>
     <mic-drop-dialog
       v-model="renameAudioGroupDialog"
-      title="Rename Audio Group"
+      :title="`${i18n.t('pastRecordings.renameAudioGroup')}`"
       closeOnSubmit
       @submit="renameAudioGroup"
     >
-      <span>New Name</span>
+      <span>{{ i18n.t("pastRecordings.newName") }}</span>
       <v-text-field
         outlined
         v-model="renameGroupName"
-        placeholder="Ex: Sales Pitches"
+        :placeholder="`${i18n.t('pastRecordings.exampleName')}`"
         hide-details
       />
     </mic-drop-dialog>
@@ -175,6 +179,7 @@ import sl from "../../serviceLocator";
 import { AudioGroup, AudioMessage } from "types";
 import MicDropDialog from "../../components/base/MicDropDialog.vue";
 import { DateTime } from "luxon";
+import i18n from "../../i18n";
 
 export default defineComponent({
   props: {
@@ -343,6 +348,7 @@ export default defineComponent({
       renameAudioGroupDialog,
       renameGroupName,
       renameAudioGroup,
+      i18n,
     };
   },
 });
