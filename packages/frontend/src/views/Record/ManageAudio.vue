@@ -29,7 +29,9 @@
           </v-col>
           <v-col cols="10" class="pa-0">
             <v-row justify="center" class="ma-0">
-              <span class="text-button white--text">Manage Past Recording</span>
+              <span class="text-button white--text">{{
+                i18n.t("audio.managePastRecording")
+              }}</span>
             </v-row>
           </v-col>
           <v-col cols="1" class="pa-0" />
@@ -38,7 +40,7 @@
     </v-app-bar>
     <v-row class="ma-0 mb-1 pt-14 mt-4" justify="center">
       <span class="text-h5 accent--text mt-1">{{
-        audioMessage.label || "No Label"
+        audioMessage.label || `${i18n.t("audio.noLabel")}`
       }}</span>
       <v-btn icon class="ml-1" @click="setupEdit"
         ><v-icon color="accent">{{ icons.mdiPencil }}</v-icon>
@@ -46,7 +48,8 @@
     </v-row>
     <v-row class="ma-0" justify="center">
       <span class="text-caption grey--text"
-        >Recorded: {{ formatDate(audioMessage.createdOn) }}</span
+        >{{ i18n.t("audio.recorded") }}:
+        {{ formatDate(audioMessage.createdOn) }}</span
       >
     </v-row>
     <v-row class="ma-0" justify="center">
@@ -73,7 +76,7 @@
             }}</v-icon></v-btn
           >
         </template>
-        <span>Manage Audio Group</span>
+        <span>{{ i18n.t("audio.manageAudioGroup") }}</span>
       </v-tooltip>
       <v-tooltip bottom open-delay="500">
         <template #activator="{ on, attrs }">
@@ -91,7 +94,7 @@
             <v-icon color="white">{{ icons.mdiDelete }}</v-icon></v-btn
           >
         </template>
-        <span>Permanently Delete Recording</span>
+        <span>{{ i18n.t("audio.permanentlyDeleteRecording") }}</span>
       </v-tooltip>
       <v-tooltip bottom open-delay="500">
         <template #activator="{ on, attrs }">
@@ -113,30 +116,25 @@
             }}</v-icon></v-btn
           >
         </template>
-        <span>Add to Email</span>
+        <span>{{ i18n.t("audio.addToEmail") }}</span>
       </v-tooltip>
     </v-row>
     <mic-drop-dialog
       v-model="confirmDeleteDialog"
-      title="Are you sure?"
-      submitText="Yes, Continue"
+      :title="`${i18n.t('audio.areYouSure')}`"
+      :submitText="`${i18n.t('audio.yesContinue')}`"
       closeOnSubmit
       @submit="deleteRecording"
-      >Are you sure you want to permanently delete this audio recording? If
-      deleted, this MicDrop message will not appear in past recordings, cannot
-      be used again, and will be removed from cloud storage.</mic-drop-dialog
+      >{{ i18n.t("audio.deleteConfirmation") }}</mic-drop-dialog
     >
     <mic-drop-dialog
       v-model="addToGroupDialog"
-      title="Manage Audio Group"
-      submitText="Add"
+      :title="`${i18n.t('audio.manageAudioGroup')}`"
+      :submitText="`${i18n.t('audio.add')}`"
       closeOnSubmit
       @submit="addToGroup"
     >
-      <span class="grey--text"
-        >The audio message will be added to the selected group. A message can
-        only belong to one group at a time.</span
-      >
+      <span class="grey--text">{{ i18n.t("audio.addConfirmation") }}</span>
       <v-checkbox
         v-for="group in userAudioGroups"
         :key="group.uuid"
@@ -148,16 +146,16 @@
     </mic-drop-dialog>
     <mic-drop-dialog
       v-model="editLabelDialog"
-      title="Edit Recording Label"
-      submitText="Save"
+      :title="`${i18n.t('audio.editRecordingLabel')}`"
+      :submitText="`${i18n.t('audio.save')}`"
       closeOnSubmit
       @submit="editLabel"
     >
-      <span>Label</span>
+      <span>{{ i18n.t("audio.label") }}</span>
       <v-text-field
         outlined
         v-model="newLabelText"
-        placeholder="Ex: Sales Pitch 1"
+        :placeholder="`${i18n.t('audio.exampleLabel')}`"
         hide-details
       />
     </mic-drop-dialog>
@@ -180,6 +178,7 @@ import {
 import Playback from "../../components/Playback/Playback.vue";
 import MicDropDialog from "../../components/base/MicDropDialog.vue";
 import { DateTime } from "luxon";
+import i18n from "../../i18n";
 
 export default defineComponent({
   props: {
@@ -332,6 +331,7 @@ export default defineComponent({
       loading,
       editLabelDialog,
       formatDate,
+      i18n,
     };
   },
 });
