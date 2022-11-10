@@ -322,6 +322,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    ignoreTrialEnding: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     SoundResponse,
@@ -535,6 +539,11 @@ export default defineComponent({
           subscriptionStatus.value = await server.getSubscriptionStatus();
           if (subscriptionStatus.value === "past_due" && !props.ignorePastDue) {
             router.push("/past_due_warning");
+          } else if (
+            subscriptionStatus.value === "trial_will_end" &&
+            !props.ignoreTrialEnding
+          ) {
+            router.push("/trial_will_end_warning");
           }
         }
 

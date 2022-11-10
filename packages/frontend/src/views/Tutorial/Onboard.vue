@@ -79,7 +79,83 @@
       </v-col>
     </v-row>
 
-    <v-row v-show="step === 3" justify="center" class="step-area mt-16">
+    <v-row v-show="step === 3" justify="center" class="step-area mt-0">
+      <v-col cols="4" align="center">
+        <v-row justify="center" class="my-6">
+          <span class="text-h4 primary--text">Welcome to </span>
+        </v-row>
+        <v-row justify="center">
+          <v-img
+            :src="require('../../assets/logos/blue-logoPRO-alpha-1000w.png')"
+            max-width="350px"
+            contain
+          />
+        </v-row>
+        <v-row justify="center">
+          <span class="text-h6 grey--text my-6"
+            >To help you get started, we've included a 30-day free trial of
+            MicDrop Pro!</span
+          >
+        </v-row>
+        <v-row justify="center" class="my-6">
+          <span class="text-h6 grey--text"
+            >MicDrop Pro brings a ton of new features to help you do more,
+            improve credibility, and save time!</span
+          >
+        </v-row>
+        <v-row justify="center" class="mx-0 my-2">
+          <span class="text-button grey--text">
+            <v-icon color="green" class="mr-1">{{
+              icons.mdiCheckCircle
+            }}</v-icon>
+            Unlimited audio messages per month
+          </span>
+        </v-row>
+        <v-row justify="center" class="mx-0 my-2">
+          <span class="text-button grey--text">
+            <v-icon color="green" class="mr-1">{{
+              icons.mdiCheckCircle
+            }}</v-icon>
+            Unlimited audio cloud storage
+          </span>
+        </v-row>
+        <v-row justify="center" class="mx-0 my-2">
+          <span class="text-button grey--text">
+            <v-icon color="green" class="mr-1">{{
+              icons.mdiCheckCircle
+            }}</v-icon>
+            Label and resend previously recordings
+          </span>
+        </v-row>
+        <v-row justify="center" class="mx-0 my-2">
+          <span class="text-button grey--text">
+            <v-icon color="green" class="mr-1">{{
+              icons.mdiCheckCircle
+            }}</v-icon>
+            Customize playback interface
+          </span>
+        </v-row>
+        <v-row justify="center" class="mx-0 my-2">
+          <span class="text-button grey--text">
+            <v-icon color="green" class="mr-1">{{
+              icons.mdiCheckCircle
+            }}</v-icon>
+            Read Receipts (Coming Soon)
+          </span>
+        </v-row>
+        <v-row justify="center">
+          <span class="text-caption grey--text my-6"
+            >Once your 30-day trial is over, you can continue to access these
+            features for just $4/month. Cancel anytime.</span
+          >
+        </v-row>
+        <v-row v-if="isAuthenticated" justify="center" class="mt-12">
+          <v-btn color="primary" x-large @click="step = 4">Continue</v-btn>
+        </v-row>
+      </v-col>
+    </v-row>
+
+    <v-row v-show="step === 4" justify="center" class="step-area mt-16">
       <v-col cols="4" align="center">
         <v-row justify="center" class="my-6">
           <span class="text-h4 primary--text">You're All Set!</span>
@@ -142,6 +218,7 @@ import {
   ref,
   onMounted,
   computed,
+  watch,
 } from "@vue/composition-api";
 import sl from "../../serviceLocator";
 import {
@@ -153,6 +230,7 @@ import {
   mdiGmail,
 } from "@mdi/js";
 import Login from "../Authentication/Login.vue";
+import { SubscriptionStatus } from "types";
 
 export default defineComponent({
   props: {
@@ -172,7 +250,7 @@ export default defineComponent({
     const isAuthenticated = computed(() => store.getters.isAuthenticated);
 
     const step = ref(
-      props.defaultStep && props.defaultStep <= 3 ? props.defaultStep : 1
+      props.defaultStep && props.defaultStep <= 4 ? props.defaultStep : 1
     );
 
     const demoVideoURL = ref("");
@@ -194,21 +272,26 @@ export default defineComponent({
           "Error retrieving tutorial resources. Please try again."
         );
       }
+    });
 
-      if (
-        isAuthenticated.value &&
-        props.defaultStep &&
-        props.defaultStep === 2
-      ) {
-        step.value = 3;
+    watch(step, async () => {
+      if (step.value === 3) {
+        subscriptionStatus.value = await server.getSubscriptionStatus();
+        console.log(subscriptionStatus.value);
+        if (subscriptionStatus.value !== "trialing") {
+          step.value = 4;
+        }
       }
     });
+
+    const subscriptionStatus = ref<SubscriptionStatus>();
 
     return {
       step,
       demoVideoURL,
       icons,
       isAuthenticated,
+      subscriptionStatus,
     };
   },
 });
