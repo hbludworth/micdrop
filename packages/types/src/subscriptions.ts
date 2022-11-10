@@ -5,4 +5,5 @@ export type SubscriptionStatus =
   | 'canceled'
   | 'unpaid'
   | 'incomplete'
-  | 'incomplete_expired';
+  | 'incomplete_expired'
+  | 'trial_will_end';

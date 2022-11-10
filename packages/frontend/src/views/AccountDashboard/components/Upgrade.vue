@@ -47,7 +47,7 @@
       <v-row justify="center" class="mx-0 my-2">
         <span class="text-button grey--text">
           <v-icon color="green" class="mr-1">{{ icons.mdiCheckCircle }}</v-icon>
-          Read Receipts
+          Read Receipts (Coming Soon)
         </span>
       </v-row>
       <v-row justify="center" class="mt-16 mb-6">
@@ -71,9 +71,9 @@
         <v-col cols="4">
           <v-row class="ma-0" justify="center">
             <span class="text-caption grey--text text-center"
-              >One month free trial beginning today. After the trial period, you
-              will be billed $4/month for access to the Pro features. Additional
-              fees may apply. Cancel at any time.</span
+              >Starting today, you will be billed $4/month for access to the Pro
+              features. Additional fees may apply. Cancel at any time via the
+              account dashboard.</span
             >
           </v-row>
         </v-col>
@@ -213,11 +213,8 @@ export default defineComponent({
           });
 
           if (error) {
-            console.log("ERROR HERE");
-            console.log(error);
             paymentErrorMessage.value = error.message || "ERROR";
-          } else {
-            console.log("Cool");
+            throw new Error(error.message);
           }
         } else {
           throw new Error("Stripe not initialized");

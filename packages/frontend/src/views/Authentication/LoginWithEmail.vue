@@ -31,7 +31,9 @@
           <v-btn text to="/send_reset_password" color="primary"
             >Forgot your password?</v-btn
           >
-          <v-btn text to="/register" color="primary">Register</v-btn>
+          <v-btn text :to="`/register?redirect=${redirectURL}`" color="primary"
+            >Register</v-btn
+          >
           <br />
         </v-card-text>
         <v-card-actions>
