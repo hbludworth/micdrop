@@ -40,12 +40,13 @@ export default defineComponent({
     const iframeSource = ref(
       process.env.NODE_ENV === "development"
         ? `http://localhost:8080/base_playback/${props.uuid}?showRemove=${props.showRemoveButton}`
-        : `https://sendmicdrop.com/base_playback/${props.uuid}?showRemove=${props.showRemoveButton}`
+        : `https://app.sendmicdrop.com/base_playback/${props.uuid}?showRemove=${props.showRemoveButton}`
     );
 
     const messageEventHandler = async (event: MessageEvent) => {
       try {
         if (
+          event.origin !== "https://app.sendmicdrop.com" &&
           event.origin !== "https://sendmicdrop.com" &&
           event.origin !== "http://localhost:8080"
         ) {

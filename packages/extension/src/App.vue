@@ -17,7 +17,7 @@ export default defineComponent({
     const iframeSource = ref(
       process.env.NODE_ENV === "development"
         ? "http://localhost:8080/extension/popup"
-        : "https://sendmicdrop.com/extension/popup"
+        : "https://app.sendmicdrop.com/extension/popup"
     );
     return {
       iframeSource,

@@ -60,7 +60,7 @@ export default defineComponent({
     const iframeSource = ref(
       process.env.NODE_ENV === "development"
         ? `http://localhost:8080/record`
-        : `https://sendmicdrop.com/record`
+        : `https://app.sendmicdrop.com/record`
     );
 
     const uuid = ref<string | null>(null);
@@ -77,6 +77,7 @@ export default defineComponent({
     const messageEventHandler = async (event: MessageEvent) => {
       try {
         if (
+          event.origin !== "https://app.sendmicdrop.com" &&
           event.origin !== "https://sendmicdrop.com" &&
           event.origin !== "http://localhost:8080"
         ) {

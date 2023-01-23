@@ -8,7 +8,7 @@ chrome.runtime.onInstalled.addListener((details) => {
       url:
         process.env.NODE_ENV === 'development'
           ? 'http://localhost:8080/tutorial'
-          : 'https://sendmicdrop.com/tutorial',
+          : 'https://app.sendmicdrop.com/tutorial',
     });
   }
 });

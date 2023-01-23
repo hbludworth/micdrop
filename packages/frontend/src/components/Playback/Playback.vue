@@ -297,11 +297,6 @@ export default defineComponent({
       });
     });
 
-    const logoLink =
-      process.env.NODE_ENV === "development"
-        ? "http://localhost:8080"
-        : "https://www.sendmicdrop.com";
-
     const sendFeedback = () => {
       window.open(
         "mailto:feedback@sendmicdrop.com?subject=Feedback Report - MicDrop"
@@ -333,7 +328,6 @@ export default defineComponent({
       playbackTime,
       audioDuration,
       convertTime,
-      logoLink,
       sendFeedback,
       progressFraction,
       updateSlider,

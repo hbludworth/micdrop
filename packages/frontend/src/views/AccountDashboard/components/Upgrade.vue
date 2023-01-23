@@ -208,7 +208,7 @@ export default defineComponent({
               return_url:
                 process.env.NODE_ENV === "development"
                   ? "http://localhost:8080/subscription_confirmation"
-                  : "https://sendmicdrop.com/subscription_confirmation",
+                  : "https://app.sendmicdrop.com/subscription_confirmation",
             },
           });
 

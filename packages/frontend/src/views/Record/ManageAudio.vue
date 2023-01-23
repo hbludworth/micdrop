@@ -261,7 +261,7 @@ export default defineComponent({
 
     const submit = async () => {
       if (audioMessage.value) {
-        const placeholderImageUrl = `https://sendmicdrop.com/api/v1/placeholder_image/${audioMessage.value.customPlaybackUuid}_placeholder.png`;
+        const placeholderImageUrl = `https://app.sendmicdrop.com/api/v1/placeholder_image/${audioMessage.value.customPlaybackUuid}_placeholder.png`;
         parent.window.postMessage(
           {
             type: "uuid",

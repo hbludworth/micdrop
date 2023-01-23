@@ -35,7 +35,7 @@ const insertImagePlaceholder = (
   link.href =
     process.env.NODE_ENV === 'development'
       ? `http://localhost:8080/playback/${uuid}`
-      : `https://www.sendmicdrop.com/playback/${uuid}`;
+      : `https://app.sendmicdrop.com/playback/${uuid}`;
   link.target = '_blank';
 
   const image = document.createElement('img');
