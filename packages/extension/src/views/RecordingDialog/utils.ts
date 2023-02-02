@@ -56,7 +56,11 @@ const insertImagePlaceholder = (
 
   div.appendChild(uuidPlaceholder);
 
-  inputArea?.appendChild(div);
+  if (inputArea?.firstChild) {
+    inputArea.insertBefore(div, inputArea.firstChild);
+  } else {
+    inputArea?.appendChild(div);
+  }
 };
 
 const insertPlaybackBox = (

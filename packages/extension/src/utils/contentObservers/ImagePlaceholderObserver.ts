@@ -17,6 +17,9 @@ class ImagePlaceholderObserver {
 
   private contentObserver = new MutationObserver(() => {
     if (
+      !this.composeBoxElement.firstElementChild?.classList.contains(
+        'image-placeholder'
+      ) ||
       !this.composeBoxElement.querySelector('#image-placeholder') ||
       !this.composeBoxElement.querySelector('#preview-message') ||
       !this.composeBoxElement.querySelector('#placeholder-img-link') ||
