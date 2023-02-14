@@ -17,6 +17,25 @@ class AudioDao {
     });
   }
 
+  async hasRecentAudio(userUuid: string): Promise<boolean> {
+    const row = await knex('audio')
+      .where({ user_uuid: userUuid })
+      .andWhere('created_on', '>', new Date(Date.now() - 1000 * 60 * 5)) // Made in last 5 minutes
+      .first();
+
+    return !!row;
+  }
+
+  async getMostRecentAudio(userUuid: string): Promise<string | null> {
+    const row = await knex('audio')
+      .select('uuid')
+      .where({ user_uuid: userUuid })
+      .orderBy('created_on', 'desc')
+      .first();
+
+    return row ? row.uuid : null;
+  }
+
   async deleteAudio(uuid: string): Promise<void> {
     await knex('audio').del().where({ uuid });
   }

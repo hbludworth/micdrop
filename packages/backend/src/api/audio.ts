@@ -11,6 +11,43 @@ import { AudioLimits, AudioMessageWithUrl, CustomPlaybackDisplay } from 'types';
 const router = express.Router();
 
 router
+  .route('/audio_has_recent')
+  .get(authenticatedRoute, async (req, res, next) => {
+    const AudioDao = sl.get('AudioDao');
+
+    try {
+      const userUuid = req.user!.uuid;
+
+      const hasRecentAudio = await AudioDao.hasRecentAudio(userUuid);
+
+      res.json(hasRecentAudio);
+    } catch (err) {
+      next(new HttpInternalError(err as string));
+    }
+  });
+
+router
+  .route('/audio_most_recent')
+  .get(authenticatedRoute, async (req, res, next) => {
+    const AudioDao = sl.get('AudioDao');
+
+    try {
+      const userUuid = req.user!.uuid;
+
+      const uuid = await AudioDao.getMostRecentAudio(userUuid);
+
+      if (!uuid) {
+        res.status(404).end();
+        return;
+      }
+
+      res.json(uuid);
+    } catch (err) {
+      next(new HttpInternalError(err as string));
+    }
+  });
+
+router
   .route('/audio/:uuid')
   .delete(authenticatedRoute, async (req, res, next) => {
     const AudioDao = sl.get('AudioDao');
