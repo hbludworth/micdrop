@@ -460,9 +460,6 @@ export default defineComponent({
     const IMAGE_URL = ref<{ [key: string]: string }>({
       WHITE_DROP: 'white-drop-500w.png',
       WHITE_LOGO_ALPHA: 'white-logo-alpha-700w.png',
-      BLUE_LOGO_ALPHA: 'blue-logo-alpha-700w.png',
-      BLUE_LOGO_PRO_ALPHA: 'blue-logoPRO-alpha-1000w.png',
-      BLUE_LOGO_TEAMS_ALPHA: 'blue-teamslogo-drop-alpha-1000w.png',
       BLANK_COMPOSE_BOX: 'BlankGmailDraft.png',
     });
     let headerElements: ElementArray;
@@ -601,83 +598,11 @@ export default defineComponent({
       }
     };
 
-    const cards = ref([
-      {
-        id: 'card_1',
-        logo: 'BLUE_LOGO_ALPHA',
-        logoName: '',
-        price: 0,
-        blurb: 'For casual users looking to improve efficiency',
-        points: [
-          {
-            text: 'Integrate MicDrop seamlessly within Gmail',
-            id: 1,
-          },
-          {
-            text: 'Record and send 30 audio messages/month',
-            id: 2,
-          },
-          {
-            text: 'Record audio messages up to 60 seconds',
-            id: 3,
-          },
-        ],
-      },
-      {
-        id: 'card_2',
-        logo: 'BLUE_LOGO_PRO_ALPHA',
-        logoName: '',
-        price: 4,
-        blurb: 'For professionals looking to build rapport with their clients',
-        points: [
-          {
-            text: 'Record and send unlimited audio messages/month',
-            id: 1,
-          },
-          {
-            text: 'Unlimited audio recording time',
-            id: 2,
-          },
-          {
-            text: 'Customize your MicDrop playback',
-            id: 3,
-          },
-          {
-            text: 'Save and resend past recordings',
-            id: 4,
-          },
-        ],
-      },
-      {
-        id: 'card_3',
-        logo: 'BLUE_LOGO_TEAMS_ALPHA',
-        logoName: '',
-        price: 12,
-        blurb:
-          'For Business teams looking to improve email efficiency and response rate',
-        points: [
-          {
-            text: 'Custom playback branding for your business',
-            id: 1,
-          },
-          {
-            text: 'Team dashboard with key email analytics',
-            id: 2,
-          },
-          {
-            text: 'AI assisted scripting to help improve response rate',
-            id: 3,
-          },
-        ],
-      },
-    ]);
-
     return {
       isAuthenticated,
       firstName,
       logout,
       router,
-      cards,
       scrollState,
       widthState,
       IMAGE_URL,
