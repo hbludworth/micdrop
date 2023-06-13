@@ -58,87 +58,32 @@
           x-large
           :color="primaryButtonOptions.color"
           depressed
-          :disabled="currentStep === 1 && disableRecording"
           ><v-icon color="white" :size="`${primaryButtonOptions.iconSize}px`">{{
             primaryButtonOptions.icon
           }}</v-icon></v-btn
         >
       </v-row>
       <v-row v-if="currentStep === 1" class="justify-center mt-6 mx-0">
-        <span class="text-h5">{{ i18n.t("record.welcome") }}</span>
+        <span class="text-h5">{{ i18n.t('record.welcome') }}</span>
         <v-img
-          v-if="subscriptionLevel === 'free'"
           :src="require('../../assets/logos/blue-logo-NoDrop-alpha-700w.png')"
           max-width="100px"
           contain
           class="mt-1 ml-2"
         />
-        <v-img
-          v-else-if="subscriptionLevel === 'pro'"
-          :src="
-            require('../../assets/logos/blue-logoPRO-NoDrop-alpha-1000w.png')
-          "
-          max-width="120px"
-          contain
-          class="mt-1 ml-2"
-        />
       </v-row>
-      <v-row
-        v-if="currentStep === 1"
-        class="justify-center mt-4 mx-0"
-        :class="{ 'fade-animation-2': subscriptionLevel === 'free' }"
-      >
-        <span>{{ i18n.t("record.press") }}</span>
+      <v-row v-if="currentStep === 1" class="justify-center mt-4 mx-0">
+        <span>{{ i18n.t('record.press') }}</span>
       </v-row>
-      <v-row
-        v-if="
-          currentStep === 1 &&
-          monthlyMessagesLeft !== null &&
-          subscriptionLevel === 'free'
-        "
-        class="justify-center mt-n5 mx-0 fade-animation"
-      >
-        <span class="primary--text" v-if="monthlyMessagesLeft > 0"
-          ><span class="mr-1">{{ i18n.t("record.messagesLeftPrefix") }}</span
-          >{{ monthlyMessagesLeft }} {{ i18n.t("record.message")
-          }}{{ monthlyMessagesLeft > 1 ? "s" : "" }}
-          {{ i18n.t("record.messagesLeftSuffix") }}</span
-        >
-        <span class="primary--text" v-if="monthlyMessagesLeft === 0">{{
-          i18n.t("record.noMessages")
-        }}</span>
-      </v-row>
-      <v-row
-        v-if="currentStep === 1 && subscriptionLevel === 'free'"
-        class="justify-center mt-12 mx-0 text-caption grey--text"
-      >
-        <span>{{ i18n.t("record.wantMore") }}</span>
-      </v-row>
-      <v-row
-        v-if="currentStep === 1 && subscriptionLevel === 'free'"
-        class="justify-center mt-3 mx-0"
-      >
-        <v-btn text color="primary" to="/upgrade" target="_blank">
-          <v-img
-            :src="require('../../assets/logos/blue-logoPRO-alpha-1000w.png')"
-            max-width="100"
-            class="ma-4"
-            contain
-          />
-        </v-btn>
-      </v-row>
-      <v-row
-        v-if="currentStep === 1 && subscriptionLevel === 'pro'"
-        class="justify-center mt-9 mx-0"
-      >
+      <v-row v-if="currentStep === 1" class="justify-center mt-9 mx-0">
         <v-btn large text color="primary" to="/extension/past_recordings_list"
           ><v-icon small class="mr-1">{{ icons.mdiArchive }}</v-icon
-          >{{ i18n.t("record.pastRecordings") }}</v-btn
+          >{{ i18n.t('record.pastRecordings') }}</v-btn
         >
       </v-row>
       <v-row v-if="currentStep === 2" class="justify-center mx-0">
         <span class="text-h4"
-          >{{ seconds }} {{ i18n.t("record.seconds") }}</span
+          >{{ seconds }} {{ i18n.t('record.seconds') }}</span
         >
       </v-row>
       <v-row
@@ -150,22 +95,6 @@
           :isPlaying="true"
           :autoStart="true"
         />
-      </v-row>
-      <v-row
-        v-if="currentStep === 3 && subscriptionLevel === 'free'"
-        class="justify-center mt-6 mx-0 text-caption grey--text"
-      >
-        <span>{{ i18n.t("record.needMore") }}</span>
-        <v-btn text x-small color="primary" to="/upgrade" target="_blank">
-          <v-img
-            :src="
-              require('../../assets/logos/blue-logoPRO-NoDrop-alpha-1000w.png')
-            "
-            max-width="70"
-            class="mx-n1"
-            contain
-          />
-        </v-btn>
       </v-row>
       <v-row class="ma-0 mt-n4" v-if="currentStep === 3">
         <v-col cols="2" class="pa-0" />
@@ -198,14 +127,14 @@
                   }}</v-icon></v-btn
                 >
               </template>
-              <span>{{ i18n.t("record.addToEmail") }}</span>
+              <span>{{ i18n.t('record.addToEmail') }}</span>
             </v-tooltip>
           </v-row>
         </v-col>
       </v-row>
       <v-row
         class="ma-0 mt-10 mx-4"
-        v-if="currentStep === 3 && subscriptionLevel === 'pro'"
+        v-if="currentStep === 3"
         justify="center"
         align="center"
       >
@@ -223,7 +152,7 @@
           class="font-weight-medium mb-1 mr-1"
           @click="viewAllDialog = true"
         >
-          {{ i18n.t("record.all") }}
+          {{ i18n.t('record.all') }}
           <v-icon small class="mr-n1">{{ icons.mdiMenuDown }}</v-icon></v-chip
         >
         <v-chip
@@ -233,7 +162,7 @@
           @click="createNewPlaybackDialog = true"
         >
           <v-icon small>{{ icons.mdiPlus }}</v-icon
-          >{{ i18n.t("record.create") }}</v-chip
+          >{{ i18n.t('record.create') }}</v-chip
         >
       </v-row>
       <create-new-custom-playback-dialog
@@ -278,15 +207,14 @@ import {
   ref,
   watch,
   onMounted,
-} from "@vue/composition-api";
-import sl from "../../serviceLocator";
+} from '@vue/composition-api';
+import sl from '../../serviceLocator';
 import {
   AudioMessageWithUrl,
   PrimaryButtonOptions,
-  SubscriptionStatus,
   CustomPlaybackDisplay,
   CustomPlaybackRow,
-} from "types";
+} from 'types';
 import {
   mdiStopCircle,
   mdiDelete,
@@ -300,16 +228,16 @@ import {
   mdiStarOutline,
   mdiTranslate,
   mdiCheck,
-} from "@mdi/js";
-import SoundResponse from "../../components/SoundResponse.vue";
-import Playback from "../../components/Playback/Playback.vue";
-import audioEncoder from "audio-encoder";
-import CreateNewCustomPlaybackDialog from "./components/CreateNewCustomPlaybackDialog.vue";
-import MicDropDialog from "../../components/base/MicDropDialog.vue";
-import CustomPlaybackOption from "./components/CustomPlaybackOption.vue";
-import i18n from "../../i18n";
+} from '@mdi/js';
+import SoundResponse from '../../components/SoundResponse.vue';
+import Playback from '../../components/Playback/Playback.vue';
+import audioEncoder from 'audio-encoder';
+import CreateNewCustomPlaybackDialog from './components/CreateNewCustomPlaybackDialog.vue';
+import MicDropDialog from '../../components/base/MicDropDialog.vue';
+import CustomPlaybackOption from './components/CustomPlaybackOption.vue';
+import i18n from '../../i18n';
 
-export type LocaleCode = "en" | "es";
+export type LocaleCode = 'en' | 'es';
 
 export interface Locale {
   label: string;
@@ -317,16 +245,6 @@ export interface Locale {
 }
 
 export default defineComponent({
-  props: {
-    ignorePastDue: {
-      type: Boolean,
-      default: false,
-    },
-    ignoreTrialEnding: {
-      type: Boolean,
-      default: false,
-    },
-  },
   components: {
     SoundResponse,
     Playback,
@@ -334,15 +252,9 @@ export default defineComponent({
     MicDropDialog,
     CustomPlaybackOption,
   },
-  setup(props) {
-    const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
-    const store = sl.get("store");
-    const router = sl.get("router");
-
-    const subscriptionLevel = computed(() =>
-      store.getters.user ? store.getters.user.subscriptionLevel : "free"
-    );
+  setup() {
+    const server = sl.get('serverProxy');
+    const actions = sl.get('globalActions');
 
     const primaryButtonOptions: ComputedRef<PrimaryButtonOptions> = computed(
       () => {
@@ -350,7 +262,7 @@ export default defineComponent({
           return {
             icon: icons.value.mdiMicrophone,
             clickAction: startRecording,
-            color: "primary",
+            color: 'primary',
             size: 125,
             iconSize: 55,
           };
@@ -358,7 +270,7 @@ export default defineComponent({
           return {
             icon: icons.value.mdiStopCircle,
             clickAction: stopRecording,
-            color: "accent",
+            color: 'accent',
             size: 125,
             iconSize: 55,
           };
@@ -366,7 +278,7 @@ export default defineComponent({
           return {
             icon: icons.value.mdiArrowULeftTopBold,
             clickAction: deleteRecording,
-            color: "accent",
+            color: 'accent',
             size: 80,
             iconSize: 40,
           };
@@ -411,24 +323,23 @@ export default defineComponent({
           };
 
           mediaRecorder.value.onstop = () => {
-            const blob = new Blob(chunks, { type: "audio/x-wav" });
+            const blob = new Blob(chunks, { type: 'audio/x-wav' });
             chunks = [];
             audioUrl.value = window.URL.createObjectURL(blob);
           };
         } catch (err) {
           actions.showErrorSnackbar(
-            "Error loading recording interface. Please try again."
+            'Error loading recording interface. Please try again.'
           );
         }
       } else {
         actions.showErrorSnackbar(
-          "Your browser does not support audio recording. Please update or try another browser."
+          'Your browser does not support audio recording. Please update or try another browser.'
         );
       }
 
       mediaRecorder.value?.start();
-      const timeLimit = subscriptionLevel.value === "free" ? 60 : null;
-      beginSeconds(timeLimit);
+      beginSeconds();
     };
 
     const stopRecording = () => {
@@ -445,27 +356,14 @@ export default defineComponent({
       seconds.value = 0;
     };
 
-    const seconds = ref(subscriptionLevel.value === "free" ? 60 : 0);
+    const seconds = ref(0);
     let countingInterval: number | undefined;
-    const beginSeconds = (timeLimit: number | null) => {
-      if (!timeLimit) {
-        seconds.value = 0;
-        countingInterval = setInterval(() => {
-          seconds.value++;
-        }, 1000);
-      } else {
-        seconds.value = timeLimit;
-        countingInterval = setInterval(() => {
-          seconds.value--;
-        }, 1000);
-      }
+    const beginSeconds = () => {
+      seconds.value = 0;
+      countingInterval = setInterval(() => {
+        seconds.value++;
+      }, 1000);
     };
-
-    watch(seconds, () => {
-      if (subscriptionLevel.value === "free" && seconds.value === 0) {
-        stopRecording();
-      }
-    });
 
     const submitLoading = ref(false);
 
@@ -480,7 +378,7 @@ export default defineComponent({
         audioEncoder(audioBuffer, null, null, async (audioBlob: Blob) => {
           try {
             if (!selectedCustomPlaybackOption.value) {
-              throw new Error("No playback option selected. Cannot submit.");
+              throw new Error('No playback option selected. Cannot submit.');
             }
             submitLoading.value = true;
             const uuid = await server.uploadAudio(
@@ -492,17 +390,17 @@ export default defineComponent({
 
             parent.window.postMessage(
               {
-                type: "uuid",
+                type: 'uuid',
                 content: {
                   audioUuid: uuid,
                   customPlaybackImage: placeholderImageUrl,
                 },
               },
-              "https://mail.google.com"
+              'https://mail.google.com'
             );
           } catch {
             actions.showErrorSnackbar(
-              "Error inserting audio file. Please try again."
+              'Error inserting audio file. Please try again.'
             );
           } finally {
             submitLoading.value = false;
@@ -524,55 +422,28 @@ export default defineComponent({
     });
 
     const loading = ref(false);
-    const monthlyMessagesLeft = ref<number | null>(null);
-    const subscriptionStatus = ref<SubscriptionStatus>();
     const customPlaybackOptions = ref<CustomPlaybackDisplay[]>([]);
 
     onMounted(async () => {
       try {
         loading.value = true;
-        monthlyMessagesLeft.value = (
-          await server.getMonthlyMessagesLeft()
-        ).monthlyMessagesLeft;
-
-        if (subscriptionLevel.value !== "free") {
-          subscriptionStatus.value = await server.getSubscriptionStatus();
-          if (subscriptionStatus.value === "past_due" && !props.ignorePastDue) {
-            router.push("/past_due_warning");
-          } else if (
-            subscriptionStatus.value === "trial_will_end" &&
-            !props.ignoreTrialEnding
-          ) {
-            router.push("/trial_will_end_warning");
-          }
-        }
 
         customPlaybackOptions.value = await server.getCustomPlaybackOptions();
         selectedCustomPlaybackOption.value = customPlaybackOptions.value[0];
       } catch {
         actions.showErrorSnackbar(
-          "Error preparing recording setup. Please try again."
+          'Error preparing recording setup. Please try again.'
         );
       } finally {
         loading.value = false;
       }
     });
 
-    const disableRecording = computed(() => {
-      if (
-        subscriptionLevel.value === "free" &&
-        monthlyMessagesLeft.value === 0
-      ) {
-        return true;
-      }
-      return false;
-    });
-
     const selectedCustomPlaybackOption = ref<CustomPlaybackDisplay>();
 
     const audioMessage: ComputedRef<Pick<
       AudioMessageWithUrl,
-      "customPlaybackUuid" | "customPlayback" | "url"
+      'customPlaybackUuid' | 'customPlayback' | 'url'
     > | null> = computed(() => {
       if (audioUrl.value && selectedCustomPlaybackOption.value) {
         return {
@@ -586,7 +457,7 @@ export default defineComponent({
 
     const createNewCustomPlaybackStarter = ref<Pick<
       AudioMessageWithUrl,
-      "customPlaybackUuid" | "customPlayback" | "url"
+      'customPlaybackUuid' | 'customPlayback' | 'url'
     > | null>(null);
 
     watch(audioMessage, () => {
@@ -596,7 +467,7 @@ export default defineComponent({
           customPlaybackUuid: customPlaybackOptions.value[0].uuid,
           customPlayback: {
             ...customPlaybackOptions.value[0],
-            name: "",
+            name: '',
           },
         };
       }
@@ -613,7 +484,7 @@ export default defineComponent({
           customPlaybackUuid: customPlaybackOptions.value[0].uuid,
           customPlayback: {
             ...customPlaybackOptions.value[0],
-            name: "",
+            name: '',
           },
         };
       }
@@ -628,7 +499,7 @@ export default defineComponent({
         );
       } catch {
         actions.showErrorSnackbar(
-          "Error loading new custom playback. Please try again."
+          'Error loading new custom playback. Please try again.'
         );
       }
     };
@@ -640,8 +511,8 @@ export default defineComponent({
     };
 
     const locales = ref<Locale[]>([
-      { label: "English", value: "en" },
-      { label: "Español", value: "es" },
+      { label: 'English', value: 'en' },
+      { label: 'Español', value: 'es' },
     ]);
 
     const selectedLocale = ref<Locale>(
@@ -651,7 +522,7 @@ export default defineComponent({
 
     const setLocale = (locale: Locale) => {
       selectedLocale.value = locale;
-      localStorage.setItem("locale", selectedLocale.value.value);
+      localStorage.setItem('locale', selectedLocale.value.value);
       i18n.locale = selectedLocale.value.value;
     };
 
@@ -668,9 +539,6 @@ export default defineComponent({
       primaryButtonOptions,
       submitLoading,
       currentStep,
-      subscriptionLevel,
-      monthlyMessagesLeft,
-      disableRecording,
       loading,
       customPlaybackOptions,
       selectedCustomPlaybackOption,
@@ -689,49 +557,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style scoped>
-.fade-animation {
-  animation: fadeInOut 7s infinite;
-}
-
-.fade-animation-2 {
-  animation: fadeInOut2 7s infinite;
-}
-
-@keyframes fadeInOut {
-  0% {
-    opacity: 0;
-  }
-  15% {
-    opacity: 1;
-  }
-  35% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes fadeInOut2 {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  65% {
-    opacity: 1;
-  }
-  85% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-</style>

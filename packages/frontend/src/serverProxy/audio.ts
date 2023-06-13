@@ -1,5 +1,5 @@
 import axios from '../axiosInstance';
-import { AudioLimits, AudioMessageWithUrl } from 'types';
+import { AudioMessageWithUrl } from 'types';
 
 async function uploadAudio(
   audioBlob: Blob,
@@ -18,11 +18,6 @@ async function uploadAudio(
 
 async function deleteAudio(uuid: string): Promise<void> {
   await axios.delete(`/audio/${uuid}`);
-}
-
-async function getMonthlyMessagesLeft(): Promise<AudioLimits> {
-  const { data } = await axios.get('/audio_limit');
-  return data;
 }
 
 async function editLabel(uuid: string, label: string): Promise<void> {
@@ -46,7 +41,6 @@ async function addGroupToAudio(
 export default {
   uploadAudio,
   deleteAudio,
-  getMonthlyMessagesLeft,
   editLabel,
   getAudioMessage,
   addGroupToAudio,

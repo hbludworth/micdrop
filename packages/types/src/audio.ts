@@ -1,9 +1,5 @@
 import { CustomPlaybackDisplay } from './customPlayback';
 
-export interface AudioLimits {
-  monthlyMessagesLeft: number | null;
-}
-
 export interface AudioMessage {
   uuid: string;
   userUuid: string;

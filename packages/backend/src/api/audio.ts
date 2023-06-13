@@ -5,56 +5,18 @@ import AWS from 'aws-sdk';
 import { HttpBadRequest, HttpInternalError } from '../exceptions';
 import sl from '../serviceLocator';
 import authenticatedRoute from '../middlewares/authenticatedRoute';
-import proRoute from '../middlewares/proRoute';
-import { AudioLimits, AudioMessageWithUrl, CustomPlaybackDisplay } from 'types';
+import { AudioMessageWithUrl, CustomPlaybackDisplay } from 'types';
 
 const router = express.Router();
 
 router
-  .route('/audio_has_recent')
-  .get(authenticatedRoute, async (req, res, next) => {
-    const AudioDao = sl.get('AudioDao');
-
-    try {
-      const userUuid = req.user!.uuid;
-
-      const hasRecentAudio = await AudioDao.hasRecentAudio(userUuid);
-
-      res.json(hasRecentAudio);
-    } catch (err) {
-      next(new HttpInternalError(err as string));
-    }
-  });
-
-router
-  .route('/audio_most_recent')
-  .get(authenticatedRoute, async (req, res, next) => {
-    const AudioDao = sl.get('AudioDao');
-
-    try {
-      const userUuid = req.user!.uuid;
-
-      const uuid = await AudioDao.getMostRecentAudio(userUuid);
-
-      if (!uuid) {
-        res.status(404).end();
-        return;
-      }
-
-      res.json(uuid);
-    } catch (err) {
-      next(new HttpInternalError(err as string));
-    }
-  });
-
-router
   .route('/audio/:uuid')
   .delete(authenticatedRoute, async (req, res, next) => {
-    const AudioDao = sl.get('AudioDao');
-
-    const userUuid = req.user!.uuid;
-
     try {
+      const s3 = new AWS.S3();
+      const AudioDao = sl.get('AudioDao');
+
+      const userUuid = req.user!.uuid;
       const { uuid } = req.params;
 
       const audioBelongsToUser = await AudioDao.audioBelongsToUser(
@@ -69,8 +31,6 @@ router
         );
         return;
       }
-
-      const s3 = new AWS.S3();
 
       const params: AWS.S3.DeleteObjectRequest = {
         Bucket: 'micdrop-audio',
@@ -88,17 +48,16 @@ router
   });
 
 router.route('/audio').post(authenticatedRoute, async (req, res, next) => {
-  const AudioDao = sl.get('AudioDao');
-
-  const userUuid = req.user!.uuid;
-
   try {
+    const AudioDao = sl.get('AudioDao');
+
+    const userUuid = req.user!.uuid;
+    const customPlaybackUuid = req.query.customPlaybackUuid as string;
+
     if (!req.files) {
       next(new HttpBadRequest('No file was attached for upload.'));
       return;
     }
-
-    const customPlaybackUuid = req.query.customPlaybackUuid as string;
 
     const s3 = new AWS.S3();
 
@@ -122,70 +81,48 @@ router.route('/audio').post(authenticatedRoute, async (req, res, next) => {
   }
 });
 
-router.route('/audio_limit').get(authenticatedRoute, async (req, res, next) => {
-  const AudioDao = sl.get('AudioDao');
+router
+  .route('/audio_label/:uuid')
+  .patch(authenticatedRoute, async (req, res, next) => {
+    try {
+      const AudioDao = sl.get('AudioDao');
 
-  try {
-    const userUuid = req.user!.uuid;
-    const subscriptionLevel = req.user!.subscriptionLevel;
+      const { uuid } = req.params;
+      const { label }: { label: string } = req.body;
+      const userUuid = req.user!.uuid;
 
-    if (subscriptionLevel !== 'free') {
-      const response: AudioLimits = {
-        monthlyMessagesLeft: null,
-      };
-      res.json(response);
-      return;
-    }
+      const audioMessageExists = await AudioDao.audioMessageExists(uuid);
+      if (!audioMessageExists) {
+        next(new HttpBadRequest('The requested audio message does not exist.'));
+        return;
+      }
 
-    const messagesLeft = await AudioDao.getMonthlyMessagesLeft(userUuid);
-    const response: AudioLimits = {
-      monthlyMessagesLeft: messagesLeft,
-    };
-    res.json(response);
-  } catch (err) {
-    next(new HttpInternalError(err as string));
-  }
-});
-
-router.route('/audio_label/:uuid').patch(proRoute, async (req, res, next) => {
-  const AudioDao = sl.get('AudioDao');
-
-  try {
-    const { uuid } = req.params;
-    const { label }: { label: string } = req.body;
-    const userUuid = req.user!.uuid;
-
-    const audioMessageExists = await AudioDao.audioMessageExists(uuid);
-    if (!audioMessageExists) {
-      next(new HttpBadRequest('The requested audio message does not exist.'));
-      return;
-    }
-
-    const audioBelongsToUser = await AudioDao.audioBelongsToUser(
-      uuid,
-      userUuid
-    );
-    if (!audioBelongsToUser) {
-      next(
-        new HttpBadRequest(
-          'The audio message does not belong to the current user.'
-        )
+      const audioBelongsToUser = await AudioDao.audioBelongsToUser(
+        uuid,
+        userUuid
       );
-      return;
-    }
+      if (!audioBelongsToUser) {
+        next(
+          new HttpBadRequest(
+            'The audio message does not belong to the current user.'
+          )
+        );
+        return;
+      }
 
-    await AudioDao.editLabel(uuid, label);
-    res.status(204).end();
-  } catch (err) {
-    next(new HttpInternalError(err as string));
-  }
-});
+      await AudioDao.editLabel(uuid, label);
+
+      res.status(204).end();
+    } catch (err) {
+      next(new HttpInternalError(err as string));
+    }
+  });
 
 router.route('/audio_message/:uuid').get(async (req, res, next) => {
   try {
+    const s3 = new AWS.S3();
     const AudioDao = sl.get('AudioDao');
     const CustomPlaybackDao = sl.get('CustomPlaybackDao');
-    const s3 = new AWS.S3();
 
     const { uuid } = req.params;
 
@@ -242,7 +179,7 @@ router.route('/audio_message/:uuid').get(async (req, res, next) => {
 
 router
   .route('/audio/:uuid/:groupUuid')
-  .patch(proRoute, async (req, res, next) => {
+  .patch(authenticatedRoute, async (req, res, next) => {
     try {
       const AudioDao = sl.get('AudioDao');
       const AudioGroupsDao = sl.get('AudioGroupsDao');

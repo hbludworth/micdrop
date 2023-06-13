@@ -10,7 +10,7 @@
     ]
   },
   "scripts": {
-    "start": "yarn migrate:latest && concurrently --kill-others-on-fail \"yarn extension\" \"NODE_ENV=development yarn server\" \"yarn client\" \"yarn stripe\"",
+    "start": "yarn migrate:latest && concurrently --kill-others-on-fail \"yarn extension\" \"NODE_ENV=development yarn server\" \"yarn client\"",
     "build": "./build.sh",
     "client": "yarn workspace frontend serve",
     "server": "yarn workspace backend dev",
@@ -25,8 +25,7 @@
     "migrate:up-prod": "NODE_ENV=production yarn migrate:up",
     "migrate:latest-prod": "NODE_ENV=production yarn migrate:latest",
     "migrate:rollback-prod": "NODE_ENV=production yarn migrate:rollback",
-    "migrate:down-prod": "NODE_ENV=production yarn migrate:down",
-    "stripe": "stripe listen --forward-to localhost:8081/api/v1/stripe_webhook"
+    "migrate:down-prod": "NODE_ENV=production yarn migrate:down"
   },
   "dependencies": {
     "concurrently": "^5.3.0"

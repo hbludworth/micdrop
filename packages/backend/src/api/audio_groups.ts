@@ -1,13 +1,13 @@
 import express from 'express';
 import { HttpBadRequest, HttpInternalError } from '../exceptions';
 import sl from '../serviceLocator';
-import proRoute from '../middlewares/proRoute';
+import authenticatedRoute from '../middlewares/authenticatedRoute';
 
 const router = express.Router();
 
 router
   .route('/audio_groups')
-  .get(proRoute, async (req, res, next) => {
+  .get(authenticatedRoute, async (req, res, next) => {
     try {
       const AudioGroupsDao = sl.get('AudioGroupsDao');
 
@@ -20,7 +20,7 @@ router
       next(new HttpInternalError(err as string));
     }
   })
-  .post(proRoute, async (req, res, next) => {
+  .post(authenticatedRoute, async (req, res, next) => {
     try {
       const AudioGroupsDao = sl.get('AudioGroupsDao');
 
@@ -28,6 +28,7 @@ router
       const { name }: { name: string } = req.body;
 
       await AudioGroupsDao.createAudioGroup(userUuid, name);
+
       res.status(201).end();
     } catch (err) {
       next(new HttpInternalError(err as string));
@@ -36,7 +37,7 @@ router
 
 router
   .route('/audio_groups/:groupUuid')
-  .get(proRoute, async (req, res, next) => {
+  .get(authenticatedRoute, async (req, res, next) => {
     try {
       const AudioDao = sl.get('AudioDao');
       const AudioGroupsDao = sl.get('AudioGroupsDao');
@@ -44,6 +45,8 @@ router
       const userUuid = req.user!.uuid;
       const groupUuid =
         req.params.groupUuid !== 'null' ? req.params.groupUuid : null;
+
+      // Null is used to represent the "All" group
 
       if (groupUuid) {
         const audioGroupBelongsToUser =
@@ -68,7 +71,7 @@ router
       next(new HttpInternalError(err as string));
     }
   })
-  .delete(proRoute, async (req, res, next) => {
+  .delete(authenticatedRoute, async (req, res, next) => {
     try {
       const AudioDao = sl.get('AudioDao');
       const AudioGroupsDao = sl.get('AudioGroupsDao');
@@ -97,12 +100,13 @@ router
 
       await AudioDao.removeGroupFromAudio(groupUuid);
       await AudioGroupsDao.deleteGroup(groupUuid);
+
       res.status(204).end();
     } catch (err) {
       next(new HttpInternalError(err as string));
     }
   })
-  .patch(proRoute, async (req, res, next) => {
+  .patch(authenticatedRoute, async (req, res, next) => {
     try {
       const AudioGroupsDao = sl.get('AudioGroupsDao');
 
@@ -130,6 +134,7 @@ router
       }
 
       await AudioGroupsDao.renameGroup(groupUuid, name);
+
       res.status(204).end();
     } catch (err) {
       next(new HttpInternalError(err as string));

@@ -9,13 +9,13 @@ import * as security from '../security';
 import firebase from '../firebase';
 import { HttpInternalError, HttpBadRequest } from '../exceptions';
 import sl from '../serviceLocator';
-import stripe from '../stripeInstance';
 
 const router = express.Router();
 
 router.route('/register').post(async (req, res, next) => {
   try {
     const UserDao = sl.get('UserDao');
+
     const { firstName, lastName, email, password }: RegisterPayload = req.body;
 
     const existingUser = await UserDao.emailExists(email);
@@ -36,18 +36,7 @@ router.route('/register').post(async (req, res, next) => {
       displayName: `${firstName} ${lastName}`,
     });
 
-    const stripeCustomer = await stripe.customers.create({
-      email,
-      name: `${firstName} ${lastName}`,
-    });
-
-    await UserDao.createUser(
-      uuid,
-      firstName,
-      lastName,
-      email,
-      stripeCustomer.id
-    );
+    await UserDao.createUser(uuid, firstName, lastName, email);
 
     const user = await UserDao.getUserByUuid(uuid);
 
@@ -82,18 +71,7 @@ router.route('/register_with_google').post(async (req, res, next) => {
       return;
     }
 
-    const stripeCustomer = await stripe.customers.create({
-      email,
-      name: `${firstName} ${lastName}`,
-    });
-
-    await UserDao.createUser(
-      uuid,
-      firstName,
-      lastName,
-      email,
-      stripeCustomer.id
-    );
+    await UserDao.createUser(uuid, firstName, lastName, email);
 
     const user = await UserDao.getUserByUuid(uuid);
 

@@ -1,7 +1,7 @@
 import express from 'express';
 import AWS from 'aws-sdk';
 import { HttpInternalError, HttpBadRequest } from '../exceptions';
-import proRoute from '../middlewares/proRoute';
+import authenticatedRoute from '../middlewares/authenticatedRoute';
 import fileUpload from 'express-fileupload';
 import sharp from 'sharp';
 
@@ -25,29 +25,6 @@ router.route('/image/:key').get(async (req, res, next) => {
     } else {
       next(new HttpBadRequest('This image does not exist.'));
       return;
-    }
-  } catch (err) {
-    next(new HttpInternalError(err as string));
-  }
-});
-
-router.route('/image_file/:key').get(async (req, res, next) => {
-  try {
-    const s3 = new AWS.S3();
-
-    const { key } = req.params;
-
-    const params = {
-      Bucket: 'micdrop-images',
-      Key: key,
-    };
-
-    const image = (await s3.getObject(params).promise()).Body;
-
-    if (image) {
-      res.send(image).end();
-    } else {
-      res.status(404).end();
     }
   } catch (err) {
     next(new HttpInternalError(err as string));
@@ -79,7 +56,7 @@ router.route('/placeholder_image/:key').get(async (req, res, next) => {
 
 router
   .route('/image/upload/:type/:key')
-  .post(proRoute, async (req, res, next) => {
+  .post(authenticatedRoute, async (req, res, next) => {
     try {
       const s3 = new AWS.S3();
       const { type, key } = req.params;

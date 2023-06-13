@@ -25,83 +25,51 @@
       <span class="white--text text-h5">Account Dashboard</span>
       <v-spacer />
       <div class="mr-10">
-        <v-btn
-          v-if="subscriptionLevel === 'free'"
-          text
-          color="white"
-          to="/upgrade"
-          class="mr-2"
-        >
-          <v-icon small>{{ icons.mdiCheckDecagram }}</v-icon>
-          Upgrade To MicDrop Pro
-        </v-btn>
         <v-btn text color="white" @click="logout">Logout</v-btn>
       </div>
     </v-app-bar>
 
     <profile v-if="selectedRoute === 'profile'" />
-    <manage-subscription v-else-if="selectedRoute === 'manageSubscription'" />
   </div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  ref,
-  reactive,
-  toRefs,
-  computed,
-} from "@vue/composition-api";
-import Profile from "./components/Profile.vue";
-import ManageSubscription from "./components/ManageSubscription.vue";
-import sl from "../../serviceLocator";
-import { mdiCheckDecagram } from "@mdi/js";
+import { defineComponent, ref, reactive, toRefs } from '@vue/composition-api';
+import Profile from './components/Profile.vue';
+import sl from '../../serviceLocator';
 
-export type DashboardRoute = "profile" | "manageSubscription";
+export type DashboardRoute = 'profile';
 
 export default defineComponent({
-  name: "AccountDashboard",
+  name: 'AccountDashboard',
   components: {
     Profile,
-    ManageSubscription,
   },
   setup() {
-    const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
-    const store = sl.get("store");
-    const router = sl.get("router");
+    const server = sl.get('serverProxy');
+    const actions = sl.get('globalActions');
+    const store = sl.get('store');
+    const router = sl.get('router');
 
     const drawer = ref(true);
-
-    const icons = ref({
-      mdiCheckDecagram,
-    });
-
-    const subscriptionLevel = computed(() =>
-      store.getters.user ? store.getters.user.subscriptionLevel : "free"
-    );
 
     const logout = async () => {
       try {
         store.logout();
         await server.logout();
-        router.push("/login");
+        router.push('/login');
       } catch {
-        actions.showErrorSnackbar("Error logging out. Please try again.");
+        actions.showErrorSnackbar('Error logging out. Please try again.');
       }
     };
 
-    const selectedRoute = ref<DashboardRoute>("profile");
+    const selectedRoute = ref<DashboardRoute>('profile');
 
     const state = reactive({
       routes: [
         {
-          label: "Profile",
-          action: () => (selectedRoute.value = "profile"),
-        },
-        {
-          label: "Manage Subscription",
-          action: () => (selectedRoute.value = "manageSubscription"),
+          label: 'Profile',
+          action: () => (selectedRoute.value = 'profile'),
         },
       ],
     });
@@ -111,8 +79,6 @@ export default defineComponent({
       drawer,
       ...toRefs(state),
       selectedRoute,
-      icons,
-      subscriptionLevel,
     };
   },
 });

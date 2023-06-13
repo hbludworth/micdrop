@@ -6,13 +6,11 @@ import firebase from '../firebase';
 Vue.use(VueCompositionAPI);
 
 export interface State {
-  landed: boolean;
   user: null | User;
   idToken: string | null;
 }
 
 const state: State = reactive({
-  landed: false,
   user: null,
   idToken: null,
 });
@@ -20,9 +18,6 @@ const state: State = reactive({
 export default {
   setUser: (user: User) => {
     state.user = user;
-  },
-  setLanded: (landed: boolean) => {
-    state.landed = landed;
   },
   setToken: (token: Pick<firebase.auth.IdTokenResult, 'token'>) => {
     state.idToken = token.token;
@@ -32,9 +27,6 @@ export default {
     state.idToken = null;
   },
   getters: {
-    get landed() {
-      return state.landed;
-    },
     get isAuthenticated() {
       return !!state.user;
     },

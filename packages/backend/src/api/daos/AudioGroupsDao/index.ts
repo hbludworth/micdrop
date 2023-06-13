@@ -7,6 +7,7 @@ class AudioGroupsDao {
     const rows = await knex('audio_groups')
       .select('uuid', 'name')
       .where({ user_uuid: userUuid });
+
     return rows;
   }
 
@@ -25,11 +26,13 @@ class AudioGroupsDao {
     const row = await knex('audio_groups')
       .where({ uuid, user_uuid: userUuid })
       .first();
+
     return !!row;
   }
 
   async audioGroupExists(uuid: string): Promise<boolean> {
     const row = await knex('audio_groups').where({ uuid }).first();
+
     return !!row;
   }
 

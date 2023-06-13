@@ -15,14 +15,8 @@ import Onboard from '../views/Tutorial/Onboard.vue';
 import ExtensionGetStarted from '../views/ExtensionPages/ExtensionGetStarted.vue';
 import PastRecordingsList from '../views/Record/PastRecordingsList.vue';
 import ManageAudio from '../views/Record/ManageAudio.vue';
-import Upgrade from '../views/AccountDashboard/components/Upgrade.vue';
-import SubscriptionConfirmation from '../views/AccountDashboard/SubscriptionConfirmation.vue';
-import PastDueWarning from '../views/AccountDashboard/components/PastDueWarning.vue';
-import TrialWillEndWarning from '../views/AccountDashboard/components/TrialWillEndWarning.vue';
 import LoginWithEmail from '../views/Authentication/LoginWithEmail.vue';
 import authenticatedGuard from '../navigationGuards/authenticatedGuard';
-import proGuard from '../navigationGuards/proGuard';
-import freeGuard from '@/navigationGuards/freeGuard';
 
 Vue.use(VueRouter);
 
@@ -81,11 +75,6 @@ const routes: Array<RouteConfig> = [
   {
     path: '/record',
     name: 'Record',
-    props: (route) => ({
-      ignorePastDue: route.query.ignore_past_due === 'true' ? true : false,
-      ignoreTrialEnding:
-        route.query.ignore_trial_ending === 'true' ? true : false,
-    }),
     component: RecordCard,
     beforeEnter: authenticatedGuard,
   },
@@ -136,7 +125,7 @@ const routes: Array<RouteConfig> = [
           : undefined,
     }),
     component: PastRecordingsList,
-    beforeEnter: proGuard,
+    beforeEnter: authenticatedGuard,
   },
   {
     path: '/extension/manage_audio/:uuid',
@@ -146,34 +135,6 @@ const routes: Array<RouteConfig> = [
       uuid: route.params.uuid,
       sourceGroupUuid: route.query.sourceGroupUuid || undefined,
     }),
-    beforeEnter: proGuard,
-  },
-  {
-    path: '/subscription_confirmation',
-    name: 'SubscriptionConfirmation',
-    component: SubscriptionConfirmation,
-    props: (route) => ({
-      setupIntent: route.query.setup_intent as string,
-      setupIntentClientSecret: route.query.setup_intent_client_secret as string,
-    }),
-    beforeEnter: authenticatedGuard,
-  },
-  {
-    path: '/upgrade',
-    name: 'Upgrade',
-    component: Upgrade,
-    beforeEnter: freeGuard,
-  },
-  {
-    path: '/past_due_warning',
-    name: 'PastDueWarning',
-    component: PastDueWarning,
-    beforeEnter: authenticatedGuard,
-  },
-  {
-    path: '/trial_will_end_warning',
-    name: 'TrialWillEndWarning',
-    component: TrialWillEndWarning,
     beforeEnter: authenticatedGuard,
   },
 ];
