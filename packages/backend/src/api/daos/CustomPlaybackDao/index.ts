@@ -22,6 +22,7 @@ class CustomPlaybackDao {
       )
       .where({ uuid })
       .first();
+
     return row;
   }
 
@@ -52,6 +53,7 @@ class CustomPlaybackDao {
           qb.whereNull('user_uuid');
         }
       });
+
     return rows;
   }
 

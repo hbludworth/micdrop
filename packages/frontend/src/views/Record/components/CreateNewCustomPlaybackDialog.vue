@@ -14,7 +14,7 @@
     "
   >
     <v-row class="ma-0 my-2 mt-n4" justify="center">{{
-      i18n.t("createCustomPlayback.customizationOptions")
+      i18n.t('createCustomPlayback.customizationOptions')
     }}</v-row>
     <v-row class="ma-0" justify="center">
       <v-chip
@@ -22,42 +22,42 @@
         :outlined="selectedCustomizationOption !== 'base'"
         class="mr-1"
         @click="setCustomizationOption('base')"
-        >{{ i18n.t("createCustomPlayback.base") }}</v-chip
+        >{{ i18n.t('createCustomPlayback.base') }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'controls'"
         class="mr-1"
         @click="setCustomizationOption('controls')"
-        >{{ i18n.t("createCustomPlayback.controls") }}</v-chip
+        >{{ i18n.t('createCustomPlayback.controls') }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'scrubber'"
         class="mr-1"
         @click="setCustomizationOption('scrubber')"
-        >{{ i18n.t("createCustomPlayback.scrubber") }}</v-chip
+        >{{ i18n.t('createCustomPlayback.scrubber') }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'time'"
         class="mr-1"
         @click="setCustomizationOption('time')"
-        >{{ i18n.t("createCustomPlayback.time") }}</v-chip
+        >{{ i18n.t('createCustomPlayback.time') }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'branding'"
         class="mr-1"
         @click="setCustomizationOption('branding')"
-        >{{ i18n.t("createCustomPlayback.branding") }}</v-chip
+        >{{ i18n.t('createCustomPlayback.branding') }}</v-chip
       >
       <v-chip
         color="primary"
         :outlined="selectedCustomizationOption !== 'signature'"
         class="mr-1"
         @click="setCustomizationOption('signature')"
-        >{{ i18n.t("createCustomPlayback.signature") }}</v-chip
+        >{{ i18n.t('createCustomPlayback.signature') }}</v-chip
       >
     </v-row>
     <v-row
@@ -83,7 +83,7 @@
       >
       <span v-if="!editingName" class="text-h5 accent--text my-1">{{
         previewCustomPlayback.customPlayback.name ||
-        `${i18n.t("createCustomPlayback.noName")}`
+        `${i18n.t('createCustomPlayback.noName')}`
       }}</span>
       <v-btn
         v-if="!editingName"
@@ -100,7 +100,7 @@
       v-show="selectedCustomizationOption === 'base'"
     >
       <v-row class="ma-0" justify="center">{{
-        i18n.t("createCustomPlayback.backgroundColor")
+        i18n.t('createCustomPlayback.backgroundColor')
       }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
@@ -114,7 +114,7 @@
       v-show="selectedCustomizationOption === 'controls'"
     >
       <v-row class="ma-0" justify="center">{{
-        i18n.t("createCustomPlayback.playButtonColor")
+        i18n.t('createCustomPlayback.playButtonColor')
       }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
@@ -122,7 +122,7 @@
         @color-changed="updateCustomPlayback('playButtonColor', $event)"
       />
       <v-row class="ma-0" justify="center">{{
-        i18n.t("createCustomPlayback.pauseButtonColor")
+        i18n.t('createCustomPlayback.pauseButtonColor')
       }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
@@ -130,7 +130,7 @@
         @color-changed="updateCustomPlayback('pauseButtonColor', $event)"
       />
       <v-row class="ma-0" justify="center">{{
-        i18n.t("createCustomPlayback.playPauseIconColor")
+        i18n.t('createCustomPlayback.playPauseIconColor')
       }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
@@ -144,7 +144,7 @@
       v-show="selectedCustomizationOption === 'scrubber'"
     >
       <v-row class="ma-0" justify="center">{{
-        i18n.t("createCustomPlayback.scrubberColor")
+        i18n.t('createCustomPlayback.scrubberColor')
       }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
@@ -158,29 +158,22 @@
       v-show="selectedCustomizationOption === 'time'"
     >
       <v-row class="ma-0" justify="center">{{
-        i18n.t("createCustomPlayback.timeBackgroundColor")
+        i18n.t('createCustomPlayback.timeBackgroundColor')
       }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="
           previewCustomPlayback.customPlayback.timeBackgroundColor
         "
-        @color-changed="
-          updateCustomPlayback(
-            'createCustomPlayback.timeBackgroundColor',
-            $event
-          )
-        "
+        @color-changed="updateCustomPlayback('timeBackgroundColor', $event)"
       />
       <v-row class="ma-0" justify="center">{{
-        i18n.t("createCustomPlayback.timeFontColor")
+        i18n.t('createCustomPlayback.timeFontColor')
       }}</v-row>
       <color-picker
         :key="selectedCustomizationOption"
         :startingColor="previewCustomPlayback.customPlayback.timeFontColor"
-        @color-changed="
-          updateCustomPlayback('createCustomPlayback.timeFontColor', $event)
-        "
+        @color-changed="updateCustomPlayback('timeFontColor', $event)"
       />
     </div>
     <div
@@ -205,7 +198,7 @@
       <v-row class="ma-0 mb-4 mt-2" justify="center" align="center">
         <v-col class="pa-0" cols="3">
           <v-row class="ma-0 mr-2" justify="end">
-            {{ i18n.t("createCustomPlayback.circleImage") }}
+            {{ i18n.t('createCustomPlayback.circleImage') }}
           </v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
@@ -240,7 +233,7 @@
       </v-row>
       <v-row class="ma-0 mt-n2" justify="center">
         <span class="text-caption grey--text text-center">{{
-          i18n.t("createCustomPlayback.imageWarning")
+          i18n.t('createCustomPlayback.imageWarning')
         }}</span>
       </v-row>
     </div>
@@ -252,7 +245,7 @@
       <v-row class="ma-0" justify="center" align="center">
         <v-col class="pa-0" cols="3">
           <v-row class="ma-0 mr-2" justify="end">
-            {{ i18n.t("createCustomPlayback.signatureText") }}
+            {{ i18n.t('createCustomPlayback.signatureText') }}
           </v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
@@ -267,7 +260,7 @@
       <v-row class="ma-0 my-4" justify="center" align="center">
         <v-col class="pa-0" cols="3">
           <v-row class="ma-0 mr-2" justify="end">
-            {{ i18n.t("createCustomPlayback.signatureImage") }}
+            {{ i18n.t('createCustomPlayback.signatureImage') }}
           </v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
@@ -315,7 +308,7 @@
       >
         <v-col class="pa-0" cols="3">
           <v-row class="ma-0 mr-2" justify="end">{{
-            i18n.t("createCustomPlayback.imageLink")
+            i18n.t('createCustomPlayback.imageLink')
           }}</v-row>
         </v-col>
         <v-col class="pa-0" cols="6">
@@ -355,27 +348,27 @@ import {
   PropType,
   onMounted,
   watch,
-} from "@vue/composition-api";
-import MicDropDialog from "../../../components/base/MicDropDialog.vue";
-import Playback from "../../../components/Playback/Playback.vue";
+} from '@vue/composition-api';
+import MicDropDialog from '../../../components/base/MicDropDialog.vue';
+import Playback from '../../../components/Playback/Playback.vue';
 import {
   AudioMessageWithUrl,
   CreateNewCustomPlaybackPayload,
   CustomPlaybackDisplay,
-} from "types";
-import ColorPicker from "./ColorPicker.vue";
-import { mdiCheck, mdiPencil } from "@mdi/js";
-import sl from "../../../serviceLocator";
-import { v4 } from "uuid";
-import i18n from "../../../i18n";
+} from 'types';
+import ColorPicker from './ColorPicker.vue';
+import { mdiCheck, mdiPencil } from '@mdi/js';
+import sl from '../../../serviceLocator';
+import { v4 } from 'uuid';
+import i18n from '../../../i18n';
 
 type CustomizationOption =
-  | "base"
-  | "controls"
-  | "scrubber"
-  | "time"
-  | "branding"
-  | "signature";
+  | 'base'
+  | 'controls'
+  | 'scrubber'
+  | 'time'
+  | 'branding'
+  | 'signature';
 
 export default defineComponent({
   components: {
@@ -394,8 +387,8 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
+    const server = sl.get('serverProxy');
+    const actions = sl.get('globalActions');
 
     const saveLoading = ref(false);
 
@@ -416,9 +409,9 @@ export default defineComponent({
         ...props.startingTemplate,
       };
       originalSignatureImageUrl.value =
-        props.startingTemplate.customPlayback.signatureImageUrl || "";
+        props.startingTemplate.customPlayback.signatureImageUrl || '';
       originalCircleImageUrl.value =
-        props.startingTemplate.customPlayback.circleImageUrl || "";
+        props.startingTemplate.customPlayback.circleImageUrl || '';
     });
 
     const updateCustomPlayback = (
@@ -439,7 +432,7 @@ export default defineComponent({
       }
     };
     const noCircleImage = ref(false);
-    const originalCircleImageUrl = ref<string>("");
+    const originalCircleImageUrl = ref<string>('');
     watch(noCircleImage, () => {
       if (noCircleImage.value && previewCustomPlayback.value) {
         previewCustomPlayback.value.customPlayback.circleImageUrl = null;
@@ -459,7 +452,7 @@ export default defineComponent({
       }
     };
     const noSignatureImage = ref(false);
-    const originalSignatureImageUrl = ref<string>("");
+    const originalSignatureImageUrl = ref<string>('');
     watch(noSignatureImage, () => {
       if (noSignatureImage.value && previewCustomPlayback.value) {
         previewCustomPlayback.value.customPlayback.signatureImageUrl = null;
@@ -487,7 +480,7 @@ export default defineComponent({
     const createCustomPlayback = async () => {
       try {
         if (!previewCustomPlayback.value) {
-          throw new Error("Error. No selections available.");
+          throw new Error('Error. No selections available.');
         }
         saveLoading.value = true;
 
@@ -498,7 +491,7 @@ export default defineComponent({
           circleImageName = `${v4()}.png`;
           await server.uploadImage({
             name: circleImageName,
-            type: "circle",
+            type: 'circle',
             file: circleImage.value,
           });
         }
@@ -507,7 +500,7 @@ export default defineComponent({
           signatureImageName = `${v4()}.png`;
           await server.uploadImage({
             name: signatureImageName,
-            type: "signature",
+            type: 'signature',
             file: signatureImage.value,
           });
         }
@@ -533,22 +526,22 @@ export default defineComponent({
           link: previewCustomPlayback.value.customPlayback.link,
           circleImage:
             circleImageName ||
-            (noCircleImage.value ? null : "micdrop_circle.png"),
+            (noCircleImage.value ? null : 'micdrop_circle.png'),
           signatureImage:
             signatureImageName ||
-            (noSignatureImage.value ? null : "micdrop_signature.png"),
+            (noSignatureImage.value ? null : 'micdrop_signature.png'),
         };
 
         const newlyCreatedCustomPlaybackRow = await server.createCustomPlayback(
           newCustomPlaybackRow
         );
 
-        emit("select-new-custom-playback", newlyCreatedCustomPlaybackRow);
+        emit('select-new-custom-playback', newlyCreatedCustomPlaybackRow);
 
-        emit("input", false);
+        emit('input', false);
       } catch {
         actions.showErrorSnackbar(
-          "Error saving custom playback interface. Please try again."
+          'Error saving custom playback interface. Please try again.'
         );
       } finally {
         saveLoading.value = false;

@@ -8,6 +8,7 @@ async function authenticatedRoute(
 ) {
   try {
     const { user } = req;
+
     if (!user) {
       next(new HttpUnauthorized('You must be logged in to access this route'));
       return;

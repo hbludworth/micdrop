@@ -4,7 +4,6 @@ import { User } from 'types';
 import UserDao from './api/daos/UserDao';
 import AudioDao from './api/daos/AudioDao';
 import AudioGroupsDao from './api/daos/AudioGroupsDao';
-import SubscriptionsDao from './api/daos/SubscriptionsDao';
 import CustomPlaybackDao from './api/daos/CustomPlaybackDao';
 import { initializeFirebase } from './firebase';
 
@@ -19,7 +18,6 @@ declare global {
 sl.set('UserDao', UserDao);
 sl.set('AudioDao', AudioDao);
 sl.set('AudioGroupsDao', AudioGroupsDao);
-sl.set('SubscriptionsDao', SubscriptionsDao);
 sl.set('CustomPlaybackDao', CustomPlaybackDao);
 
 initializeFirebase((err) => {

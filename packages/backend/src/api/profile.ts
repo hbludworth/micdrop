@@ -18,6 +18,7 @@ router.route('/profile').patch(authenticatedRoute, async (req, res, next) => {
       firstName: updatedProfile.firstName || firstName,
       lastName: updatedProfile.lastName || lastName,
     });
+
     res.status(204).end();
   } catch (err) {
     next(new HttpInternalError(err as string));

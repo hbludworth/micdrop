@@ -84,15 +84,7 @@
     <span class="anchor" id="top"></span>
     <div
       id="header"
-      class="
-        primary
-        d-flex
-        flex-column
-        align-center
-        justify-space-between
-        secondary--text
-        mb-8
-      "
+      class="primary d-flex flex-column align-center justify-space-between secondary--text mb-8"
     >
       <div class="d-flex flex-column align-center">
         <v-img
@@ -151,62 +143,6 @@
       </div>
     </div>
 
-    <div v-show="cardsRenderReady">
-      <div class="cards d-flex justify-space-around py-16">
-        <v-card
-          v-for="card in cards"
-          :key="card.key"
-          class="card elevation-4 d-flex flex-column align-center pa-6 relative"
-        >
-          <v-chip
-            v-if="card.id === 'card_3'"
-            outlined
-            color="red"
-            id="coming-soon"
-            >Coming Soon!</v-chip
-          >
-          <v-img
-            v-if="true"
-            :src="IMAGE_URL[card.logo]"
-            @load="imageLoaded(card.id)"
-            contain
-            max-height="30"
-            class="mb-3"
-          />
-          <div v-else style="background: teal; width: 100%; height: 60px"></div>
-          <div class="text-caption font-weight-light">
-            <span class="text-h4" style="vertical-align: sub"
-              >${{ card.price }}</span
-            >
-            /Month
-          </div>
-          <div class="text-caption font-weight-light py-2">
-            {{ card.blurb }}
-          </div>
-          <ul class="font-weight-medium pr-6">
-            <li v-for="point in card.points" :key="point.id">
-              {{ point.text }}
-            </li>
-          </ul>
-        </v-card>
-      </div>
-
-      <div
-        id="contact-us-text"
-        class="d-flex justify-center flex-wrap align-center pb-12"
-      >
-        <span class="primary--text text-center ma-3 font-weight-medium"
-          >Let us show you how MicDrop can help your team</span
-        >
-        <v-btn
-          rounded
-          class="primary secondary--text pa-5"
-          href="mailto:feedback@sendmicdrop.com"
-          >Contact Us</v-btn
-        >
-      </div>
-    </div>
-
     <hr class="ma-8 mt-10" />
 
     <div class="footer d-flex flex-wrap justify-center mx-auto">
@@ -223,8 +159,6 @@
           <h3>Products</h3>
           <ul>
             <li>MicDrop</li>
-            <li>MicDropPro</li>
-            <li>MicDropTeams</li>
           </ul>
         </div>
 
@@ -256,8 +190,8 @@
     </div>
 
     <div class="accent--text text-caption font-weight-light pb-8 pl-8 pt-4">
-      <span class="mdi mdi-copyright mr-2"></span>Copyright, MicDrop LLC, All
-      Rights Reserved
+      <span class="mdi mdi-copyright mr-2"></span>MicDrop LLC, All Rights
+      Reserved
     </div>
   </div>
 </template>
@@ -443,21 +377,21 @@ import {
   ref,
   onMounted,
   computed,
-} from "@vue/composition-api";
-import sl from "../serviceLocator";
-import Playback from "frontend/src/components/Playback/Playback.vue";
-import { AudioMessageWithUrl } from "types";
+} from '@vue/composition-api';
+import sl from '../serviceLocator';
+import Playback from 'frontend/src/components/Playback/Playback.vue';
+import { AudioMessageWithUrl } from 'types';
 
 export default defineComponent({
-  name: "Home",
+  name: 'Home',
   components: {
     Playback,
   },
   setup() {
-    const server = sl.get("serverProxy");
-    const actions = sl.get("globalActions");
-    const store = sl.get("store");
-    const router = sl.get("router");
+    const server = sl.get('serverProxy');
+    const actions = sl.get('globalActions');
+    const store = sl.get('store');
+    const router = sl.get('router');
 
     const audioMessage = ref<AudioMessageWithUrl>();
 
@@ -465,18 +399,18 @@ export default defineComponent({
       getImages();
       getHTMLElements();
       handleScroll();
-      document.addEventListener("scroll", handleScroll);
+      document.addEventListener('scroll', handleScroll);
       updateWidth();
-      window.addEventListener("resize", updateWidth);
-      check("onMounted");
+      window.addEventListener('resize', updateWidth);
+      check('onMounted');
 
       try {
         audioMessage.value = await server.getAudioMessage(
-          "79609125-9549-46cd-babc-58f581516945"
+          '79609125-9549-46cd-babc-58f581516945'
         );
       } catch {
         actions.showErrorSnackbar(
-          "Error retriving audio message. Please try again."
+          'Error retriving audio message. Please try again.'
         );
       }
     });
@@ -507,13 +441,13 @@ export default defineComponent({
       console.log(key);
       check(key);
       IMAGE_LOADED.value[key] = true;
-      if (key === "HEADER_BAR_LOGO" && !headerBarRenderReady) {
+      if (key === 'HEADER_BAR_LOGO' && !headerBarRenderReady) {
         headerBarRenderReady = true;
         headerBarElements.makeElementsAppear();
         if (headerRenderReady) {
           headerElements.makeElementsAppear();
         }
-      } else if (key === "HEADER_LOGO" || key === "COMPOSE_BOX") {
+      } else if (key === 'HEADER_LOGO' || key === 'COMPOSE_BOX') {
         if (IMAGE_LOADED.value.HEADER_LOGO && IMAGE_LOADED.value.COMPOSE_BOX) {
           headerRenderReady = true;
           if (headerBarRenderReady) {
@@ -524,28 +458,28 @@ export default defineComponent({
     };
 
     const IMAGE_URL = ref<{ [key: string]: string }>({
-      WHITE_DROP: "white-drop-500w.png",
-      WHITE_LOGO_ALPHA: "white-logo-alpha-700w.png",
-      BLUE_LOGO_ALPHA: "blue-logo-alpha-700w.png",
-      BLUE_LOGO_PRO_ALPHA: "blue-logoPRO-alpha-1000w.png",
-      BLUE_LOGO_TEAMS_ALPHA: "blue-teamslogo-drop-alpha-1000w.png",
-      BLANK_COMPOSE_BOX: "BlankGmailDraft.png",
+      WHITE_DROP: 'white-drop-500w.png',
+      WHITE_LOGO_ALPHA: 'white-logo-alpha-700w.png',
+      BLUE_LOGO_ALPHA: 'blue-logo-alpha-700w.png',
+      BLUE_LOGO_PRO_ALPHA: 'blue-logoPRO-alpha-1000w.png',
+      BLUE_LOGO_TEAMS_ALPHA: 'blue-teamslogo-drop-alpha-1000w.png',
+      BLANK_COMPOSE_BOX: 'BlankGmailDraft.png',
     });
     let headerElements: ElementArray;
     let headerBarElements: ElementArray;
     const getImages = async () => {
       try {
         headerBarElements = new ElementArray(
-          ...Array.from(document.getElementById("header-bar")?.children || [])
+          ...Array.from(document.getElementById('header-bar')?.children || [])
         );
         headerBarElements.makeElementsDisappear();
         headerElements = new ElementArray(
-          document.getElementById("header")?.children[0],
-          document.getElementById("try-free-section"),
-          document.querySelector("#header .left"),
-          document.querySelector("#header .right"),
-          document.getElementById("compose-box"),
-          document.getElementById("playback-ui")
+          document.getElementById('header')?.children[0],
+          document.getElementById('try-free-section'),
+          document.querySelector('#header .left'),
+          document.querySelector('#header .right'),
+          document.getElementById('compose-box'),
+          document.getElementById('playback-ui')
         );
         headerElements.makeElementsDisappear();
 
@@ -554,7 +488,7 @@ export default defineComponent({
             IMAGE_URL.value[image] = url;
           });
         }
-        check("getImages");
+        check('getImages');
       } catch (error) {
         console.log(error);
       }
@@ -576,13 +510,13 @@ export default defineComponent({
 
       makeElementsDisappear() {
         this.forEach((element) => {
-          element.classList.add("disappear");
+          element.classList.add('disappear');
         });
       }
 
       makeElementsAppear() {
         this.forEach((element) => {
-          element.classList.add("appear");
+          element.classList.add('appear');
         });
       }
     }
@@ -590,15 +524,15 @@ export default defineComponent({
     var mainLogo: HTMLElement;
     var elementsToAppear: ElementArray;
     const getHTMLElements = () => {
-      let logo = document.getElementById("main-logo");
+      let logo = document.getElementById('main-logo');
       if (logo != null) {
         mainLogo = logo;
       }
 
       let cardElements = Array.from(
-        document.getElementsByClassName("card v-card")
+        document.getElementsByClassName('card v-card')
       );
-      let contactUsText = document.getElementById("contact-us-text");
+      let contactUsText = document.getElementById('contact-us-text');
 
       elementsToAppear = new ElementArray(...cardElements, contactUsText);
       elementsToAppear.makeElementsDisappear();
@@ -636,15 +570,15 @@ export default defineComponent({
       for (let element of elementsToAppear) {
         let boundingRect = element.getBoundingClientRect();
         if (boundingRect.top < window.innerHeight - boundingRect.height / 3) {
-          element.classList.add("appear");
+          element.classList.add('appear');
         } else {
-          element.classList.remove("appear");
+          element.classList.remove('appear');
         }
       }
     };
 
     const getHeaderHeight = () => {
-      let header = document.getElementById("header-bar");
+      let header = document.getElementById('header-bar');
       if (header != null) {
         let height = header.getBoundingClientRect().bottom;
         return Number(height);
@@ -654,84 +588,84 @@ export default defineComponent({
 
     const isAuthenticated = computed(() => store.getters.isAuthenticated);
     const firstName = computed(() =>
-      store.getters.user ? store.getters.user.firstName : ""
+      store.getters.user ? store.getters.user.firstName : ''
     );
 
     const logout = async () => {
       try {
         store.logout();
         await server.logout();
-        router.push("/login");
+        router.push('/login');
       } catch {
-        actions.showErrorSnackbar("Error logging out. Please try again");
+        actions.showErrorSnackbar('Error logging out. Please try again');
       }
     };
 
     const cards = ref([
       {
-        id: "card_1",
-        logo: "BLUE_LOGO_ALPHA",
-        logoName: "",
+        id: 'card_1',
+        logo: 'BLUE_LOGO_ALPHA',
+        logoName: '',
         price: 0,
-        blurb: "For casual users looking to improve efficiency",
+        blurb: 'For casual users looking to improve efficiency',
         points: [
           {
-            text: "Integrate MicDrop seamlessly within Gmail",
+            text: 'Integrate MicDrop seamlessly within Gmail',
             id: 1,
           },
           {
-            text: "Record and send 30 audio messages/month",
+            text: 'Record and send 30 audio messages/month',
             id: 2,
           },
           {
-            text: "Record audio messages up to 60 seconds",
+            text: 'Record audio messages up to 60 seconds',
             id: 3,
           },
         ],
       },
       {
-        id: "card_2",
-        logo: "BLUE_LOGO_PRO_ALPHA",
-        logoName: "",
+        id: 'card_2',
+        logo: 'BLUE_LOGO_PRO_ALPHA',
+        logoName: '',
         price: 4,
-        blurb: "For professionals looking to build rapport with their clients",
+        blurb: 'For professionals looking to build rapport with their clients',
         points: [
           {
-            text: "Record and send unlimited audio messages/month",
+            text: 'Record and send unlimited audio messages/month',
             id: 1,
           },
           {
-            text: "Unlimited audio recording time",
+            text: 'Unlimited audio recording time',
             id: 2,
           },
           {
-            text: "Customize your MicDrop playback",
+            text: 'Customize your MicDrop playback',
             id: 3,
           },
           {
-            text: "Save and resend past recordings",
+            text: 'Save and resend past recordings',
             id: 4,
           },
         ],
       },
       {
-        id: "card_3",
-        logo: "BLUE_LOGO_TEAMS_ALPHA",
-        logoName: "",
+        id: 'card_3',
+        logo: 'BLUE_LOGO_TEAMS_ALPHA',
+        logoName: '',
         price: 12,
         blurb:
-          "For Business teams looking to improve email efficiency and response rate",
+          'For Business teams looking to improve email efficiency and response rate',
         points: [
           {
-            text: "Custom playback branding for your business",
+            text: 'Custom playback branding for your business',
             id: 1,
           },
           {
-            text: "Team dashboard with key email analytics",
+            text: 'Team dashboard with key email analytics',
             id: 2,
           },
           {
-            text: "AI assisted scripting to help improve response rate",
+            text: 'AI assisted scripting to help improve response rate',
             id: 3,
           },
         ],
